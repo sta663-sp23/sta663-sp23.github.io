@@ -1,0 +1,309 @@
+startdate: "2023-01-15"
+dateFormat: 'Mon, Jan 2'
+schedule:
+
+- week: 0
+  day: 3
+  lecture: "<i>No class (Monday Schedule)</i>"
+
+- week: 0
+  day: 5
+  lecture: "Welcome & Syllabus"
+  slides: 
+  screencast: 
+  readings: 
+  - text: ssh config for GitHub
+    link: https://github.com/DukeStatSci/github_auth_guide
+  notes:
+
+- week: 1
+  day: 1
+  lecture: "<i>No lab session (MLK day)</i>"
+
+- week: 1
+  day: 2
+  lecture: "<i>No lab session (MLK day)</i>"
+
+- week: 1
+  day: 3
+  lecture: "Basic types & sequence types"
+  slides: 
+  screencast: 
+  readings:
+  - text: Python Built-in Types
+    link: https://docs.python.org/3/library/stdtypes.html
+  - text: An Informal Introduction to Python
+    link: https://docs.python.org/3/tutorial/introduction.html#using-python-as-a-calculator
+  notes: 
+
+- week: 1
+  day: 5
+  lecture: "Control flow, list comprehensions<br/>and functions"
+  slides: 
+  screencast: 
+  readings:
+  - text: Control flow
+    link: https://docs.python.org/3/tutorial/controlflow.html
+  - text: List Comprehensions
+    link: https://docs.python.org/3/tutorial/datastructures.html#list-comprehensions
+  notes: 
+
+- week: 2
+  day: 3
+  lecture: "Data structures"
+  slides: 
+  screencast: 
+  readings:
+  - text: Sets and Dicts
+    link: https://docs.python.org/3/tutorial/datastructures.html#sets
+  - text: Time complexity
+    link: https://wiki.python.org/moin/TimeComplexity
+  notes:
+  
+- week: 2
+  day: 5
+  lecture: "NumPy Basics"
+  slides: 
+  screencast: 
+  readings:
+  - text: NumPy quickstart
+    link: https://numpy.org/doc/stable/user/quickstart.html
+  - text: NumPy API Reference
+    link: https://numpy.org/doc/stable/reference/index.html
+  notes: 
+
+- week: 3
+  day: 3
+  lecture: "Advanced indexing & Broadcasting"
+  slides: 
+  screencast: 
+  readings:
+  - text: Broadcasting
+    link: https://numpy.org/doc/stable/user/basics.broadcasting.html
+  - text: Advanced indexing
+    link: https://numpy.org/doc/stable/user/basics.indexing.html#advanced-indexing
+  notes: 
+
+- week: 3
+  day: 5
+  lecture: "SciPy"
+  slides: 
+  screencast: 
+  notes:
+  readings:
+  - text: SciPy User Guide
+    link: https://scipy.github.io/devdocs/tutorial/index.html
+  notes: 
+
+- week: 4
+  day: 3
+  lecture: "pandas"
+  slides: 
+  screencast: 
+  readings:
+  - text: Python for Data Analysis (Early Release)
+    link: https://wesmckinney.com/book/pandas-basics.html
+  notes:
+
+- week: 4
+  day: 5
+  lecture: "More pandas"
+  slides: 
+  screencast: 
+  readings:
+  - text: Reshaping
+    link: https://pandas.pydata.org/docs/user_guide/reshaping.html
+  - text: Group By
+    link: https://pandas.pydata.org/docs/user_guide/groupby.html
+  notes: 
+
+- week: 5
+  day: 3
+  lecture: "Visualization - pyplot & pandas"
+  slides: 
+  screencast: 
+  readings:
+  - text: matplotlib tutorials
+    link: https://matplotlib.org/stable/tutorials/index
+  - text: pandas chart visualization
+    link: https://pandas.pydata.org/pandas-docs/stable/user_guide/visualization.html
+    
+  notes: 
+
+- week: 5
+  day: 5
+  lecture: "Visualization - seaborn"
+  slides: 
+  screencast: 
+  readings:
+  - text: seaborn user guide
+    link: https://seaborn.pydata.org/tutorial.html
+  - text: plotnine
+    link: https://plotnine.readthedocs.io/en/stable/
+  notes:
+
+- week: 6
+  day: 3
+  lecture: "Numerical optimization"
+  slides: 
+  screencast: 
+  readings:
+  - text: scipy optimization lecture
+    link: https://scipy-lectures.org/advanced/mathematical_optimization/index.html
+  notes: 
+
+- week: 6
+  day: 5
+  lecture: "Numerical optimization - benchmarks"
+  slides: 
+  screencast: 
+  readings:
+  - text: scipy optimization lecture examples
+    link: https://github.com/scipy-lectures/scipy-lecture-notes/tree/master/advanced/mathematical_optimization/examples
+  notes: 
+
+
+- week: 7
+  day: 3
+  lecture: "scikit-learn"
+  slides: 
+  screencast: 
+  readings:
+  - text: scikit-learn user guide
+    link: https://scikit-learn.org/stable/user_guide.html
+  - text: scikit-learn getting started
+    link: https://scikit-learn.org/stable/getting_started.html
+  notes:
+
+- week: 7
+  day: 5
+  lecture: "scikit-learn - cross validation"
+  screencast: 
+  slides: 
+  readings:
+  notes: 
+
+- week: 8
+  day: 3
+  lecture: "scikit-learn - classification"
+  slides: 
+  screencast: 
+  readings:
+  notes: 
+
+- week: 8
+  day: 5
+  lecture: "Classes and custom transformers"
+  slides: 
+  screencast:
+  readings:
+  - text: Python tutorial - Classes
+    link: https://docs.python.org/3/tutorial/classes.html#a-first-look-at-classes
+  notes:
+  
+- week: 9
+  day: 2
+  lecture: "<i>No lab sessions (Spring recess)</i>"
+
+- week: 9
+  day: 3
+  lecture: "<i>No lecture (Spring recess)</i>"
+
+- week: 9
+  day: 5
+  lecture: "<i>No lecture (Spring recess)</i>"
+
+
+- week: 10
+  day: 3
+  lecture: "statsmodels + patsy"
+  slides: 
+  screencast: 
+  readings:
+  - text: patsy docs
+    link: https://patsy.readthedocs.io/en/latest/
+  - text: statsmodels user guide
+    link: https://www.statsmodels.org/stable/user-guide.html
+  notes: 
+  
+
+- week: 10
+  day: 5
+  lecture: "PyMC3 + ArviZ"
+  slides: 
+  screencast: 
+  readings:
+  - text: PyMC3 docs
+    link: https://docs.pymc.io/en/v3/
+  - text: ArviZ docs
+    link: https://arviz-devs.github.io/arviz/index.html
+
+- week: 11
+  day: 3
+  lecture: "More PyMC3"
+  slides: 
+  screencast: 
+  readings:
+  notes: 
+
+- week: 11
+  day: 5
+  lecture: "Apache Arrow"
+  slides: 
+  screencast: 
+  readings:
+  - text: PyArrow documentation
+    link: https://arrow.apache.org/docs/python/
+  - text: PyArrow Cookbook
+    link: https://arrow.apache.org/cookbook/py/
+  notes: 
+
+- week: 12
+  day: 3
+  lecture: "pytorch - Intro"
+  slides: 
+  screencast: 
+  readings:
+  - text: Intro to PyTorch Tensors
+    link: https://pytorch.org/tutorials/beginner/introyt/tensors_deeper_tutorial.html
+  - text: Fundamentals of AutoGrad
+    link: https://pytorch.org/tutorials/beginner/introyt/autogradyt_tutorial.html
+  notes: 
+
+
+- week: 12
+  day: 5
+  lecture: "pytorch - nn"
+  slides: 
+  screencast: 
+  readings:
+  - text: Feedforward Neural Network with PyTorch
+    link: https://www.deeplearningwizard.com/deep_learning/practical_pytorch/pytorch_feedforward_neuralnetwork/
+  - text: Convolutional Neural Network with PyTorch
+    link: https://www.deeplearningwizard.com/deep_learning/practical_pytorch/pytorch_convolutional_neuralnetwork/
+  notes: 
+  
+- week: 13
+  day: 3
+  lecture: "pytorch - gpu"
+  screencast: 
+  slides: 
+  readings:
+  notes: 
+
+- week: 13
+  day: 5
+  lecture: "jax"
+  screencast: 
+  slides: 
+  notes: 
+
+- week: 14
+  day: 3
+  lecture: "More jax"
+  slides: 
+  screencast: 
+  readings:
+  notes: 
+
+
