@@ -18,11 +18,11 @@ schedule:
 
 - week: 1
   day: 1
-  lecture: "<i>No lab session (MLK day)</i>"
+  lecture: "<i>No lab (MLK day)</i>"
 
 - week: 1
   day: 2
-  lecture: "<i>No lab session (MLK day)</i>"
+  lecture: "<i>No lab</i>"
 
 - week: 1
   day: 3
