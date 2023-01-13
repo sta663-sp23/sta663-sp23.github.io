@@ -23,7 +23,7 @@ options(
 ```
 
 ---
-class: middle, center
+
 
 # Control Flow
 
@@ -212,7 +212,7 @@ elif x % 2 == 1:
 ```
 
 ---
-class: middle, center
+
 
 # List comprehensions
 
@@ -352,7 +352,7 @@ Using list comprehensions, complete the following tasks:
 * Count the number of points $x$ or $y$ is prime.
 
 ---
-class: middle, center
+
 
 # Functions
 

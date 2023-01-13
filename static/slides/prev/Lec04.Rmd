@@ -23,7 +23,7 @@ options(
 ```
 
 ---
-class: middle, center
+
 
 # Other containers
 
@@ -390,7 +390,7 @@ x
 ]
 
 ---
-class: middle, center
+
 
 # Basics of algorithms <br/> and data structures
 

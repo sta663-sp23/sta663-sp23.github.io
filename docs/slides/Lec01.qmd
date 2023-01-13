@@ -1,20 +1,15 @@
 ---
-title: "Lec 01 - Welcome"
-subtitle: "<br/> Statistical Computing and Computation (Sta 663)"
-author: "Spring 2022"
-date: "<br/> Dr. Colin Rundel"
-output:
-  xaringan::moon_reader:
-    css: ["slides.css"]
-    lib_dir: libs
-    nature:
-      highlightStyle: solarized-light
-      highlightLines: true
-      countIncrementalSlides: false
-      ratio: "16:9"
-
+title: "Welcome & Syllabus"
+subtitle: "Lecture 01"
+author: "Dr. Colin Rundel"
+footer: "Sta 663 - Spring 2023"
+format:
+  revealjs:
+    theme: slides.scss
+    transition: fade
+    slide-number: true
+    self-contained: true
 ---
-exclude: true
 
 ```{r setup, message=FALSE, warning=FALSE, include=FALSE}
 options(
@@ -24,40 +19,38 @@ options(
 
 ```
 
----
-class: middle, center
 
 # Course Details
 
----
 
 ## Course Team
 
-### Instrutor
+
+### Instructor
+
 * Dr. Colin Rundel - colin.rundel@duke.edu / rundel@gmail.com 
 
+<br/>
 
 ### TAs
-* Samuel Rosen
-* Michael Sarkis
-* Congwei Yang
 
----
+* Vittorio Orlandi (PhD)
+* Nick Dahl (MSS)
+* Camilla Yu (MSS)
 
 ## Course website(s)
 
-* GitHub pages - https://sta663-sp22.github.io
-  - HTML, PDF, and Rmds of Slides
+* GitHub page - [sta663-sp23.github.io](https://sta663-sp23.github.io)
+  - HTML, PDF, and qmds of Slides
   - Lecture screencasts (youtube)
   - Readings
   - Links to course tools
 
-* Sakai - https://sakai.duke.edu
+* Sakai - [sakai.duke.edu](https://sakai.duke.edu)
   - Announcements
   - Gradebook
-  - Zoom recordings
+  - Zoom links
 
----
 
 ## Course Timetable
 
@@ -65,58 +58,53 @@ class: middle, center
   - Wednesdays, 1:45 - 3:00 pm - Old Chemistry 116
   - Fridays, 1:45 - 3:00 pm - Old Chemistry 116
   
+<br/>
+  
 * Labs (weekly)
-  - Lab 01 - Mondays, 1:45 to 3:00 pm - Old Chemistry 116
+  - Lab 01 - Old Chemistry 101 - Mondays, 1:45 to 3:00 pm
+  - Lab 02 - LSRC A247 - Tuesdays, 3:30 to 4:45 pm
 
----
+## Structure
 
-## Lectures
-
-- Week 0 & 1 will be online (zoom)
-  - screencast posted to Youtube
-  - Zoom recordings on Sakai
-
-- Week 2 onward will be in person (tentatively)
-  - screencast posted to Youtube
-  - No live zoom sessions
+#### Lecture
 
 - Traditional lecture, live coding / coding demos, and short exercises + solution discussion
+  
+  - screencast posted to Youtube w/ Panopto backups
 
----
-
-## Labs
+#### Labs
 
 - Attendance is expected
 
 - Opportunity to work on course assignments with TA support
 
-- Labs will begin in Week 3 (January 24th) - no lab Week 1 or Week 2
+- Labs will begin in Week 2 (January 25th) - no lab Week 0 or 1
 
-- Monday Week 1 - Optional introductory session
-  - Basic usage of Jupyter Lab
-  - Git and GitHub configuration and usage
 
----
 
 ## Announcements
 
-Will be posted on Sakai (Announcements tool) and sent via email, be sure to check both regularly.
+* Posted on Sakai (via Announcements tool) 
 
----
+* and sent via email, 
+
+* Check both regularly.
+
 
 ## Grading
 
-This course is assessed 100% on your coursework (there is no exam). We will be assessing you based on the following assignments,
+This course is assessed 100% on your coursework (there is no exam). 
+
+We will be assessing you based on the following assignments,
 
 <br/><br/>
 
 |Assignment|Type      |Value  | n  |Assigned             |
 |:---------|:---------|:------|:---|---------------------|
-|Homeworks |Team      |50%    | ~7 | ~ Every other week  |
+|Homeworks |Team      |50%    | ~5 | ~ Every other week  |
 |Midterms  |Individual|40%    | 2  | ~ Week 6 and 14     |
 |Project   |Team      |10%    | 1  | ~ Week 10           | 
 
----
 
 ## Teams
 
@@ -131,7 +119,6 @@ This course is assessed 100% on your coursework (there is no exam). We will be a
     + Everyone is expected to understand *all* code turned in
     + Individual contribution evaluated by peer evaluation, commits, etc.
 
----
 
 ## Collaboration policy
 
@@ -142,7 +129,6 @@ This course is assessed 100% on your coursework (there is no exam). We will be a
 - On Homeworks you should not directly share answers / code with other teams in this class, however you are welcome to discuss the problems in general and ask for advice.
 
 
----
 
 ## Sharing / reusing code policy
 
@@ -153,31 +139,23 @@ This course is assessed 100% on your coursework (there is no exam). We will be a
 - Any recycled code that is discovered and is not explicitly cited will be treated as plagiarism, regardless of source.
 
 
----
 
 ## Academic integrity
 
 > To uphold the Duke Community Standard:
-
+>
 > - I will not lie, cheat, or steal in my academic endeavors;
 > - I will conduct myself honorably in all my endeavors; and
 > - I will act if the Standard is compromised.
 
 
----
-class: center, middle
-
 # Course Tools
 
----
 
 ## Jupyter Lab
 
-.center[
-.large[Dept RStudio Workbench - http://rstudio.stat.duke.edu:8787]
-<br/><br/>
-.large[OIT Container - https://cmgr.oit.duke.edu/containers]
-]
+
+### Dept RStudio Workbench - [rstudio.stat.duke.edu](https://rstudio.stat.duke.edu)
 
 - Browser based + Provides consistency in hardware and software environments
 
@@ -185,31 +163,27 @@ class: center, middle
 
 - Common issues:
 
-  - If `This site can’t provide a secure connection` change `https` to `http` in the url.
-  
   - If `This site can’t be reached` make sure you are on a Duke network and are not use an alternative DNS service.
 
----
 
 ## Local Python + Jupyter
 
 If working locally you should make sure that your environment meets the following requirements:
 
-* Recent Python (3.9 or newer) with working pip (or equivalent)
+* Recent Python (3.10 or newer) with working pip (or equivalent)
 
-* Recent jupyterlab (3.2 or newer)
+* Recent jupyterlab (3.5 or newer)
 
-* working git installation ([jupyterlab-git](https://github.com/jupyterlab/jupyterlab-git) recoommended)
+* working git installation ([jupyterlab-git](https://github.com/jupyterlab/jupyterlab-git) recommended)
 
 * ability to create ssh keys (for GitHub authentication)
 
-* Packages updated to their latest version (assignments will include `requirements.txt` when needed)
+* All packages should be updated to their latest version (assignments will include `requirements.txt` when needed)
 
----
 
 ## GitHub
 
-- We will be using an organization specifically to this course <br/> https://github.com/sta663-sp22
+- We will be using an organization specifically to this course <br/> https://github.com/sta663-sp23
 
 - All assignments will be distributed and collected via GitHub
 
@@ -219,7 +193,6 @@ If working locally you should make sure that your environment meets the followin
 
     - Next week you will be invited to the course organization.
 
----
 
 ## Username advice
 
@@ -236,8 +209,6 @@ Some brief advice about selecting your account names (particularly for GitHub),
 - Make it timeless. Avoid highlighting your current university, employer, <br/>or place of residence.
 
 
----
-
 ## Before next Wednesday
 
 * Create a GitHub account if you don't have one
@@ -245,8 +216,8 @@ Some brief advice about selecting your account names (particularly for GitHub),
 * Complete the course survey (you will receive before next Monday)
 
 * make sure you can login in to the Department's RStudio server
-  - http://rstudio.stat.duke.edu:8787
+  - https://rstudio.stat.duke.edu
 
-* and OIT's Sta 663 container
-  - https://cmgr.oit.duke.edu/containers
-  
+
+# Jupyter & git demo
+

@@ -9,7 +9,7 @@ schedule:
 - week: 0
   day: 5
   lecture: "Welcome & Syllabus"
-  slides: 
+  slides: Lec01
   screencast: 
   readings: 
   - text: ssh config for GitHub

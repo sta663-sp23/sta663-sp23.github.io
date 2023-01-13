@@ -779,7 +779,7 @@ Get:22 https://cloud.r-project.org/bin/linux/ubuntu focal-cran40/ r-doc-html 4.1
 ] ]
 
 ---
-class: middle, center
+
 
 # System dependencies
 

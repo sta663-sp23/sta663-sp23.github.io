@@ -23,7 +23,7 @@ options(
 ```
 
 ---
-class: middle, center
+
 
 # Basic types
 
@@ -261,7 +261,7 @@ We will not be using these values much currently, but they will be relevant when
 ]
 
 ---
-class: middle, center
+
 
 # Sequence types
 

@@ -22,7 +22,7 @@ np.set_printoptions(edgeitems=3, linewidth=180)
 
 ---
 
-class: middle, center
+
 
 # NumPy - Advanced Indexing
 
@@ -253,7 +253,7 @@ expand.grid(
 
 ---
 
-class: middle, center
+
 
 # NumPy - Broadcasting
 
@@ -520,7 +520,7 @@ x
 
 ---
 
-class: middle, center
+
 
 # NumPy - Basic file IO
 
