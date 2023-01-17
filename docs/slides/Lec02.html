@@ -2227,6 +2227,70 @@ Dr. Colin Rundel
 <aside><div>
 <p>Hardcoding w/ magic numbers is perfectly acceptable here.</p>
 </div></aside></section>
+<section id="f-strings" class="slide level2">
+<h2>f strings</h2>
+<p>As of Python 3.6 you can use f strings for string interpolation formatting (as opposed to <code>%</code>-formatting and the <code>format()</code> method).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb306"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb306-1"><a href="#cb306-1"></a>x <span class="op">=</span> [<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>]</span>
+<span id="cb306-2"><a href="#cb306-2"></a><span class="ss">f&quot;</span><span class="sc">{</span>x[::<span class="dv">2</span>]<span class="sc">}</span><span class="ss">&quot;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&#39;[0, 2, 4]&#39;</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb308"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb308-1"><a href="#cb308-1"></a><span class="ss">f&#39;</span><span class="sc">{</span>x[<span class="dv">0</span>]<span class="sc">}</span><span class="ss">, </span><span class="sc">{</span>x[<span class="dv">1</span>]<span class="sc">}</span><span class="ss">, ...&#39;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&#39;0, 1, ...&#39;</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb310"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb310-1"><a href="#cb310-1"></a><span class="ss">f&quot;From </span><span class="sc">{</span><span class="bu">min</span>(x)<span class="sc">}</span><span class="ss"> to </span><span class="sc">{</span><span class="bu">max</span>(x)<span class="sc">}</span><span class="ss">&quot;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&#39;From 0 to 4&#39;</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb312"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb312-1"><a href="#cb312-1"></a><span class="ss">f&quot;</span><span class="sc">{</span>x<span class="sc">}</span><span class="ss"> has </span><span class="sc">{</span><span class="bu">len</span>(x)<span class="sc">}</span><span class="ss"> elements&quot;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&#39;[0, 1, 2, 3, 4] has 5 elements&#39;</code></pre>
+</div>
+</div>
+
+<aside><div>
+<p>See <a href="https://peps.python.org/pep-0498/">PEP 498</a></p>
+</div></aside></section>
+<section id="raw-strings" class="slide level2">
+<h2>raw strings</h2>
+<p>One other special type of string literal you will come across are raw strings (prefixed with <code>r</code>) - these are like regular strings except that <code>\</code> is treated as a literal character rather than an escape character.</p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb314"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb314-1"><a href="#cb314-1"></a><span class="bu">print</span>(<span class="st">&quot;ab</span><span class="ch">\\</span><span class="st">cd&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>ab\cd</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb316"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb316-1"><a href="#cb316-1"></a><span class="bu">print</span>(<span class="st">&quot;ab</span><span class="ch">\n</span><span class="st">cd&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>ab
+cd</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb318"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb318-1"><a href="#cb318-1"></a><span class="bu">print</span>(<span class="st">&quot;ab</span><span class="ch">\t</span><span class="st">cd&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>ab  cd</code></pre>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb320"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb320-1"><a href="#cb320-1"></a><span class="bu">print</span>(<span class="vs">r&quot;ab\\cd&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>ab\\cd</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb322"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb322-1"><a href="#cb322-1"></a><span class="bu">print</span>(<span class="vs">r&quot;ab\ncd&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>ab\ncd</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb324"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb324-1"><a href="#cb324-1"></a><span class="bu">print</span>(<span class="vs">r&quot;ab\tcd&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>ab\tcd</code></pre>
+</div>
+</div>
+</div>
+</div>
+</section>
 <section id="set-and-mapping-types" class="slide level2">
 <h2>Set and Mapping types</h2>
 <p>We will discuss sets (<code>set</code>) and dictionaries (<code>dict</code>) in more detail next week.</p>

@@ -695,6 +695,51 @@ String processing - take the string given below and apply the necessary methods 
 Hardcoding w/ magic numbers is perfectly acceptable here.
 :::
 
+
+## f strings
+
+As of Python 3.6 you can use f strings for string interpolation formatting (as opposed to `%`-formatting and the `format()` method).
+
+```{python}
+x = [0,1,2,3,4]
+f"{x[::2]}"
+f'{x[0]}, {x[1]}, ...'
+f"From {min(x)} to {max(x)}"
+f"{x} has {len(x)} elements"
+```
+
+::: {.aside}
+See [PEP 498](https://peps.python.org/pep-0498/)
+:::
+
+
+## raw strings
+
+One other special type of string literal you will come across are raw strings (prefixed with `r`) - these are like regular strings except that `\` is treated as a literal character rather than an escape character.
+
+:::: {.columns}
+::: {.column width='50%'}
+```{python}
+print("ab\\cd")
+print("ab\ncd")
+print("ab\tcd")
+```
+:::
+
+::: {.column width='50%'}
+```{python}
+print(r"ab\\cd")
+print(r"ab\ncd")
+print(r"ab\tcd")
+```
+:::
+::::
+
+
+
+
+
+
 ## Set and Mapping types
 
 We will discuss sets (`set`) and dictionaries (`dict`) in more detail next week.
