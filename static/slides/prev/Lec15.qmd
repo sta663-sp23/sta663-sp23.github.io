@@ -1,19 +1,15 @@
 ---
-title: "Lec 15 - scikit-learn<br/>Cross-validation"
-subtitle: "<br/> Statistical Computing and Computation"
-author: "Sta 663 | Spring 2022"
-date: "<br/> Dr. Colin Rundel"
-output:
-  xaringan::moon_reader:
-    css: ["slides.css"]
-    lib_dir: libs
-    nature:
-      highlightLines: true
-      highlightStyle: solarized-light
-      countIncrementalSlides: false
-      ratio: "16:9"
+title: "scikit-learn<br/>Cross-validation"
+subtitle: "Lecture 15"
+author: "Dr. Colin Rundel"
+footer: "Sta 663 - Spring 2023"
+format:
+  revealjs:
+    theme: slides.scss
+    transition: fade
+    slide-number: true
+    self-contained: true
 ---
-exclude: true
 
 ```{python setup}
 import numpy as np
@@ -64,8 +60,6 @@ local({
 })
 ```
 
----
-
 ## Column Transformers
 
 Are a tool for selectively applying transformer(s) to the columns of an array or DataFrame, they function in a way that is similar to a pipeline and similarly have a helper function `make_column_transformer()`.
@@ -87,9 +81,8 @@ ct = make_column_transformer(
 ct.get_feature_names_out()
 ct.transform(books)
 ```
-]
-
----
+:::
+::::
 
 ## Keeping or dropping other columns
 
@@ -110,9 +103,8 @@ ct = make_column_transformer(
 ct.get_feature_names_out()
 ct.transform(books)
 ```
-]
-
----
+:::
+::::
 
 ## Column selection
 
@@ -122,7 +114,8 @@ One lingering issue with the above approach is that we've had to hard code the c
 from sklearn.compose import make_column_selector
 ```
 
-.pull-left[ .small[
+:::: {.columns}
+::: {.column width='50%'} .small[
 ```{python}
 ct = make_column_transformer(
   ( StandardScaler(), 
@@ -133,7 +126,8 @@ ct = make_column_transformer(
 
 ct.fit_transform(books)
 ```
-] ]
+:::
+:::: ]
 
 
 .pull-right[.small[
@@ -147,9 +141,12 @@ ct = make_column_transformer(
 
 ct.fit_transform(books)
 ```
-] ]
+:::
+:::: ]
 
-.footnote[`make_column_selector()` also supports selecting via `pattern` or excluding via `dtype_exclude`]
+::: {.aside}
+`make_column_selector()` also supports selecting via `pattern` or excluding via `dtype_exclude`
+:::
 
 ---
 class: center, middle
@@ -162,8 +159,6 @@ class: center, middle
 
 ## Cross validation &<br/>hyper parameter tuning
 
----
-
 ## hw2 ridge regression data
 
 .small[
@@ -171,18 +166,18 @@ class: center, middle
 d = pd.read_csv("data/ridge.csv")
 d
 ```
-]
+:::
+::::
 
---
+. . .
 
 .small[
 ```{python}
 d = pd.get_dummies(d)
 d
 ```
-]
-
----
+:::
+::::
 
 ## Fitting a ridge regession model
 
@@ -203,16 +198,16 @@ rg.coef_
 lm.coef_
 ```
 
---
+. . .
 
 ```{python}
 mean_squared_error(y, rg.predict(X))
 mean_squared_error(y, lm.predict(X))
 ```
 
-.footnote[Generally for a Ridge (or Lasso) model it is important to scale the features before fitting - in this case this is not necessary as $x\_1,\ldots,x\_4$ all have mean of ~0 and std dev of ~1 ]
-
----
+::: {.aside}
+Generally for a Ridge (or Lasso) model it is important to scale the features before fitting - in this case this is not necessary as $x\_1,\ldots,x\_4$ all have mean of ~0 and std dev of ~1 
+:::
 
 ## Test-Train split
 
@@ -224,39 +219,40 @@ from sklearn.model_selection import train_test_split
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1234)
 ```
 
---
+. . .
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 X.shape
 X_train.shape
 X_test.shape
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python}
 y.shape
 y_train.shape
 y_test.shape
 ```
-]
+:::
+::::
 
----
-
-.pull-left[ .small[
+:::: {.columns}
+::: {.column width='50%'} .small[
 ```{python}
 X_train
 ```
-] ]
+:::
+:::: :::
 
-.pull-right[ .small[
+::: {.column width='50%'} .small[
 ```{python}
 y_train
 ```
-] ]
-
----
+:::
+:::: ]
 
 ## Train vs Test rmse
 
@@ -279,36 +275,32 @@ res = pd.DataFrame(data = {"alpha": alpha, "train_rmse": train_rmse, "test_rmse"
 res
 ```
 
----
-
 ```{python out.width="66%"}
 g = sns.relplot(x="alpha", y="value", hue="variable", data = pd.melt(res, id_vars=["alpha"]))
 g.set(xscale="log")
 ```
 
----
-
 ## Best alpha?
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 min_i = np.argmin(res.train_rmse)
 min_i
 
 res.iloc[[min_i],:]
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python}
 min_i = np.argmin(res.test_rmse)
 min_i
 
 res.iloc[[min_i],:]
 ```
-]
-
----
+:::
+::::
 
 ## k-fold cross validation
 
@@ -326,11 +318,9 @@ cross_val_score(
 ```
 
 
-.footnote[
+::: {.aside}
 🚩🚩🚩 Note that the default k-fold cross validation used here does not shuffle your data which can be massively problematic if your data is ordered 🚩🚩🚩 
-]
-
----
+:::
 
 ## Controling k-fold behavior
 
@@ -348,8 +338,6 @@ cross_val_score(
 ```
 
 
----
-
 ## KFold object
 
 `KFold()` returns a class object which provides the method `split()` which in turn is a generator that returns a tuple with the indexes of the training and testing selects for each fold given a model matrix `X`,
@@ -362,7 +350,7 @@ for train, test in cv.split(ex):
   print(f'Train: {train} | test: {test}')
 ```
 
---
+. . .
 
 ```{python}
 cv = KFold(5, shuffle=True, random_state=1234)
@@ -372,8 +360,6 @@ for train, test in cv.split(ex):
 
 
 
-
----
 
 ## Train vs Test rmse (again)
 
@@ -401,14 +387,10 @@ res = pd.DataFrame(
 res
 ```
 
----
-
 ```{python out.width="66%"}
 g = sns.relplot(x="alpha", y="value", hue="variable", data=res.melt(id_vars=["alpha"]), marker="o", kind="line")
 g.set(xscale="log")
 ```
-
----
 
 ## Best alpha? (again)
 
@@ -424,8 +406,6 @@ i = np.sort(np.unique(i))
 res.iloc[ i, : ]
 ```
 
----
-
 ## Aside - Available metrics 
 
 For most of the cross validation functions we pass in a string instead of a scoring function from the metrics submodule - if you are interested in seeing the names of the possible metrics, these are available via the `sklearn.metrics.SCORERS` dictionary,
@@ -435,8 +415,6 @@ np.array( sorted(
   sklearn.metrics.SCORERS.keys()
 ) )
 ```
-
----
 
 ## Grid Search
 
@@ -461,8 +439,6 @@ gs.best_params_
 gs.best_score_
 ```
 
----
-
 ## `best_estimator_` attribute
 
 If `refit = True` (the default) with `GridSearchCV()` then the `best_estimator_` attribute will be available which gives direct access to the "best" model or pipeline object. This model is constructed by using the parameter(s) that achieved the maximum score and refitting the model to the complete data set.
@@ -476,8 +452,6 @@ gs.best_estimator_.predict(X)
 ```
 
 
-
----
 
 ## `cv_results_` attribute
 
@@ -493,9 +467,8 @@ gs.cv_results_["mean_test_score"]
 gs.cv_results_["mean_fit_time"]
 ```
 
----
-
-.pull-left[ .small[
+:::: {.columns}
+::: {.column width='50%'} .small[
 ```{python ridge_se, eval=FALSE}
 alpha = np.array(gs.cv_results_["param_alpha"],dtype="float64")
 score = -gs.cv_results_["mean_test_score"]
@@ -516,14 +489,14 @@ plt.fill_between(
 
 plt.show()
 ```
-] ]
+:::
+:::: :::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python ref.label="ridge_se", echo=FALSE}
 ```
-]
-
----
+:::
+::::
 
 ## Ridge traceplot
 
@@ -545,8 +518,6 @@ res = pd.DataFrame(
 res
 ```
 
----
-
 ```{python out.width="66%"}
 g = sns.relplot(
   data = res.melt(id_vars="alpha", value_name="coef values", var_name="feature"),
@@ -555,8 +526,6 @@ g = sns.relplot(
 )
 g.set(xscale="log")
 ```
-
----
 
 ## Exercise 1
 
@@ -577,8 +546,6 @@ Our goal is to fit a Lasso model to these data and determine an optimal value of
 
 * Time permitting, construct a traceplot of coefficients from the lasso models as a function of `alpha`
 
----
-
 ## Dataset details
 
 .small[
@@ -586,4 +553,5 @@ Our goal is to fit a Lasso model to these data and determine an optimal value of
 datasets.load_diabetes()["feature_names"]
 print(datasets.load_diabetes()["DESCR"])
 ```
-]
+:::
+::::

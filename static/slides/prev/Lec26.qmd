@@ -1,19 +1,14 @@
 ---
-title: "Lec 26 - Docker"
-subtitle: "<br/> Statistical Computing and Computation"
-author: "Sta 663 | Spring 2022"
-date: "<br/> Dr. Colin Rundel"
-output:
-  xaringan::moon_reader:
-    css: ["slides.css"]
-    lib_dir: libs
-    nature:
-      highlightLines: true
-      highlightStyle: solarized-light
-      countIncrementalSlides: false
-      ratio: "16:9"
+title: "Docker"
+subtitle: "Lecture 26"
+author: "Dr. Colin Rundel"
+footer: "Sta 663 - Spring 2023"format:
+  revealjs:
+    theme: slides.scss
+    transition: fade
+    slide-number: true
+    self-contained: true
 ---
-exclude: true
 
 ```{r r_setup}
 knitr::opts_chunk$set(
@@ -22,27 +17,25 @@ knitr::opts_chunk$set(
 )
 ```
 
----
-
 ## Docker
 
 > Docker can package an application and its dependencies in a virtual container that can run on any Linux, Windows, or macOS computer. This enables the application to run in a variety of locations, such as on-premises, in the public or private cloud. When running on Linux, Docker uses the resource isolation features of the Linux kernel (such as cgroups and kernel namespaces) and a union-capable file system to allow containers to run within a single Linux instance, avoiding the overhead of starting and maintaining virtual machines. 
 >
 >From [Wikipedia](https://en.wikipedia.org/wiki/Docker_%28software%29)
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{r echo=FALSE, out.width="75%"}
 knitr::include_graphics("imgs/Lec26/docker1.webp")
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{r echo=FALSE, out.width="75%"}
 knitr::include_graphics("imgs/Lec26/docker2.webp")
 ```
-]
-
----
+:::
+::::
 
 ## Installation - Ubuntu / Debian
 
@@ -71,12 +64,13 @@ echo \
 sudo apt-get update
 sudo apt-get install docker-ce docker-ce-cli containerd.io
 ```
-]
+:::
+::::
 
 
-.footnote[See [docs](https://docs.docker.com/engine/install/ubuntu/)]
-
----
+::: {.aside}
+See [docs](https://docs.docker.com/engine/install/ubuntu/)
+:::
 
 ## Troubleshooting - daemon
 
@@ -86,7 +80,7 @@ docker: Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is t
 See 'docker run --help'.
 ```
 
---
+. . .
 
 This occurs when the docker daemon is not running, this can be fixed by enabling the docker service / daemon, 
 
@@ -98,7 +92,7 @@ $ sudo systemctl enable docker
 $ sudo systemctl start docker
 ```
 
---
+. . .
 
 ```shell
 $ sudo docker run hello-world
@@ -131,8 +125,6 @@ For more examples and ideas, visit:
 ```
 
 
----
-
 ## Troubleshoot - permissions
 
 .smaller[
@@ -143,13 +135,14 @@ unix:///var/run/docker.sock: Post http://%2Fvar%2Frun%2Fdocker.sock/v1.39/contai
 dial unix /var/run/docker.sock: connect: permission denied.
 See 'docker run --help'.
 ```
-]
+:::
+::::
 
---
+. . .
 
 You must either be root or be a member of the docker group to use docker. Currently, your VM may or may not have a docker group and your account is likely not a member. If you are tired of typing sudo + your password there is an easy fix,
 
---
+. . .
 
 .smaller[
 ```shell
@@ -163,9 +156,10 @@ $ sudo usermod -aG docker $USER
 $ groups
 # If docker is not listed you should log off and log back in
 ```
-]
+:::
+::::
 
---
+. . .
 
 ```shell
 $ docker run hello-world
@@ -203,8 +197,6 @@ background-image: url(imgs/Lec26/docker_sketch.png)
 background-position: center
 background-size: contain
 
----
-
 ## Getting images
 
 ```shell
@@ -219,7 +211,7 @@ Digest: sha256:868fd30a0e47b8d8ac485df174795b5e2fe8a6c8f056cc707b232d65b8a1ab68
 Status: Downloaded newer image for ubuntu:latest
 ```
 
---
+. . .
 
 ```shell
 $ docker images
@@ -232,8 +224,6 @@ ubuntu              latest              1d9c17228a9e        3 weeks ago         
 background-image: url(imgs/Lec26/dockerhub_ubuntu.png)
 background-position: center
 background-size: contain
-
----
 
 ## Tags (Versions)
 
@@ -262,13 +252,11 @@ ubuntu              18.04               1d9c17228a9e        3 weeks ago         
 ubuntu              latest              1d9c17228a9e        3 weeks ago         86.7MB
 ```
 
----
-
 ## Other sources
 
 DockerHub is not the only source of images - their are many other possible hosts and all you need to provide is a URL along with the image name.
 
---
+. . .
 
 ```{r echo=FALSE, fig.align="center", out.width="50%"}
 knitr::include_graphics("imgs/Lec26/github_docker.png")
@@ -277,9 +265,9 @@ knitr::include_graphics("imgs/Lec26/github_docker.png")
 
 
 
-.footnote[See on [GitHub](https://github.com/orgs/Sta663-Sp22/packages/container/package/sta663-base)]
-
----
+::: {.aside}
+See on [GitHub](https://github.com/orgs/Sta663-Sp22/packages/container/package/sta663-base)
+:::
 
 ```shell
 $ docker pull ghcr.io/sta663-sp22/sta663-base:main
@@ -304,7 +292,7 @@ Status: Downloaded newer image for ghcr.io/sta663-sp22/sta663-base:main
 ghcr.io/sta663-sp22/sta663-base:main
 ```
 
---
+. . .
 
 ```shell
 $ docker images
@@ -313,8 +301,6 @@ ubuntu                            latest    825d55fb6340   7 days ago    72.8MB
 ghcr.io/sta663-sp22/sta663-base   main      246d20145b5a   3 weeks ago   4.29GB
 ```
 
-
----
 
 ## Running something
 
@@ -335,7 +321,7 @@ VERSION_CODENAME=bionic
 UBUNTU_CODENAME=bionic
 ```
 
---
+. . .
 
 ```shell
 $ docker run --rm ubuntu:18.10 cat /etc/os-release
@@ -354,8 +340,6 @@ VERSION_CODENAME=cosmic
 UBUNTU_CODENAME=cosmic
 ```
 
-
----
 
 ```shell
 $ docker run --rm fedora cat /etc/os-release
@@ -393,8 +377,6 @@ class: middle
 
 # Demo
 
----
-
 ## docker run
 
 ```shell
@@ -412,9 +394,9 @@ $ docker run [OPTIONS] IMAGE[:TAG|@DIGEST] [COMMAND] [ARG...]
 | `-v host:cont` | Share filesystems                                                |
 | `-e "VAR=VAL"` | Define environmental variables                                   |
 
-.footnote[See https://docs.docker.com/engine/reference/run/ for more details]
-
----
+::: {.aside}
+See https://docs.docker.com/engine/reference/run/ for more details
+:::
 
 ## Other docker commands
 
@@ -431,8 +413,6 @@ $ docker run [OPTIONS] IMAGE[:TAG|@DIGEST] [COMMAND] [ARG...]
 | `docker commit CONTAINER REPO[:TAG]`| Create an image from a container             |
 | `docker rename CONTAINER NAME`      | Rename a container                           |
 
----
-
 ## rocker
 
 .center[
@@ -443,22 +423,26 @@ $ docker run [OPTIONS] IMAGE[:TAG|@DIGEST] [COMMAND] [ARG...]
 
 
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{r echo=FALSE}
 knitr::include_graphics("imgs/Lec26/rocker1.png")
 ```
-]
-.pull-right[
+:::
+
+::: {.column width='50%'}
 ```{r echo=FALSE}
 knitr::include_graphics("imgs/Lec26/rocker2.png")
 ```
-]
+:::
+::::
 
-<div>.small[
-.pull-left[
+<div>:::: {.columns .small}
+::: {.column width='50%'}
 https://github.com/rocker-org/rocker-versioned2
-]
-.pull-right[
+:::
+
+::: {.column width='50%'}
 https://github.com/rocker-org/rocker
 ]
 ]
@@ -468,8 +452,6 @@ https://github.com/rocker-org/rocker
 background-image: url(imgs/Lec26/rocker_ver_sketch.png)
 background-position: center
 background-size: contain
-
----
 
 ## rocker + rstudio
 
@@ -488,7 +470,7 @@ Digest: sha256:b9e6acea945ca28ec14b3de9925372bdd6c5e3828a8575b34d4247f619b66dd5
 Status: Downloaded newer image for rocker/rstudio:latest
 ```
 
---
+. . .
 
 ```shell
 $ docker run -e PASSWORD=SECRET --rm -p 8787:8787 rocker/rstudio
@@ -496,8 +478,6 @@ $ docker run -e PASSWORD=SECRET --rm -p 8787:8787 rocker/rstudio
 ```
 .center[ http://vcm-26406.vm.duke.edu:8787 ]
 
-
----
 
 ## rocker + rstudio + tidyverse + latex + sf
 
@@ -520,7 +500,7 @@ Status: Downloaded newer image for rocker/geospatial:latest34d4247f619b66dd5
 Status: Downloaded newer image for rocker/rstudio:latest
 ```
 
---
+. . .
 
 ```shell
 $ docker run -e PASSWORD=SECRET --rm -p 8787:8787 rocker/geospatial
@@ -533,8 +513,6 @@ $ docker run -e PASSWORD=SECRET --rm -p 8787:8787 rocker/geospatial
 class: middle
 
 # Dockerfile(s)
-
----
 
 ## Common commands
 
@@ -550,8 +528,6 @@ class: middle
 | `CMD`     | specify what (default) action should run when running the image |
 | ...       |
 
----
-
 ## A tidy example
 
 `tidy1/Dockerfile`:
@@ -566,8 +542,6 @@ RUN Rscript -e "install.packages('tibble')"
 
 CMD ["R"]
 ```
----
-
 ## Building
 
 ```shell
@@ -599,8 +573,6 @@ Successfully built 67b0f0ee7f5c
 Successfully tagged tidy1:latest
 ```
 
----
-
 ```shell
 *$ docker images
 REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
@@ -619,8 +591,6 @@ ubuntu              18.10               d4452947e3fa        3 weeks ago         
 ubuntu              latest              1d9c17228a9e        3 weeks ago         86.7MB
 ```
 
----
-
 ## A better tidy example
 
 `tidy2/Dockerfile`:
@@ -635,8 +605,6 @@ RUN apt update \
 
 CMD ["R"]
 ```
-
----
 
 ## Building
 
@@ -659,7 +627,7 @@ Successfully built be418f99be82
 Successfully tagged tidy2:latest
 ```
 
---
+. . .
 
 ```shell
 *$ docker images
@@ -676,8 +644,6 @@ ubuntu              18.10               d4452947e3fa        3 weeks ago         
 ubuntu              latest              1d9c17228a9e        3 weeks ago          86.7MB
 ```
 
----
-
 ## Dangling images
 
 ```shell
@@ -691,7 +657,7 @@ ubuntu              18.10               d4452947e3fa        3 weeks ago         
 ubuntu              latest              1d9c17228a9e        3 weeks ago         86.7MB
 ```
 
---
+. . .
 
 ```shell
 *$ docker image prune
@@ -709,7 +675,7 @@ deleted: sha256:cff3a89309ffcc08fe80a3558e1c6715574a4ec3ac926bbd49cd90519aa62241
 Total reclaimed space: 640.4MB
 ```
 
---
+. . .
 
 ```shell
 *$ docker images -a
@@ -717,8 +683,6 @@ REPOSITORY          TAG                 IMAGE ID            CREATED             
 ubuntu              18.10               d4452947e3fa        3 weeks ago         73.7MB
 ubuntu              latest              1d9c17228a9e        3 weeks ago         86.7MB
 ```
-
----
 
 ## Course docker image
 

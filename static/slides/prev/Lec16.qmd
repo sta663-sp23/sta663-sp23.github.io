@@ -1,19 +1,15 @@
 ---
-title: "Lec 16 - scikit-learn<br/>classification"
-subtitle: "<br/> Statistical Computing and Computation"
-author: "Sta 663 | Spring 2022"
-date: "<br/> Dr. Colin Rundel"
-output:
-  xaringan::moon_reader:
-    css: ["slides.css"]
-    lib_dir: libs
-    nature:
-      highlightLines: true
-      highlightStyle: solarized-light
-      countIncrementalSlides: false
-      ratio: "16:9"
+title: "scikit-learn<br/>classification"
+subtitle: "Lecture 16"
+author: "Dr. Colin Rundel"
+footer: "Sta 663 - Spring 2023"
+format:
+  revealjs:
+    theme: slides.scss
+    transition: fade
+    slide-number: true
+    self-contained: true
 ---
-exclude: true
 
 ```{python setup}
 import numpy as np
@@ -68,8 +64,6 @@ local({
 })
 ```
 
----
-
 ## OpenIntro - Spam
 
 We will start by looking at a data set on spam emails from the [OpenIntro project](https://www.openintro.org/). A full data dictionary can be found [here](https://www.openintro.org/data/index.php?data=email). To keep things simple this week we will restrict our exploration to including only the following columns: `spam`, `exclaim_mess`, `format`, `num_char`,  `line_breaks`, and `number`.
@@ -81,14 +75,12 @@ We will start by looking at a data set on spam emails from the [OpenIntro projec
 * `line_breaks` - The number of line breaks in the email (does not count text wrapping).
 * `number` - Factor variable saying whether there was no number, a small number (under 1 million), or a big number.
 
----
-
 ```{python}
 email = pd.read_csv('data/email.csv')[ ['spam', 'exclaim_mess', 'format', 'num_char', 'line_breaks', 'number'] ]
 email
 ```
 
---
+. . .
 
 Given that `number` is categorical, we will take care of the necessary dummy coding via `pd.get_dummies()`,
 ```{python}
@@ -96,13 +88,9 @@ email_dc = pd.get_dummies(email)
 email_dc
 ```
 
----
-
 ```{python out.width="55%", cache=TRUE}
 sns.pairplot(email, hue='spam')
 ```
-
----
 
 ## Model fitting
 
@@ -115,14 +103,12 @@ X = email_dc.drop('spam', axis=1)
 m = LogisticRegression(fit_intercept = False).fit(X, y)
 ```
 
---
+. . .
 
 ```{python}
 m.feature_names_in_
 m.coef_
 ```
-
----
 
 ## A quick comparison
 
@@ -131,18 +117,21 @@ d = read.csv("data/email.csv")
 d = dplyr::select(d, spam, exclaim_mess, format, num_char, line_breaks, number)
 ```
 
-.pull-left[.small[
+:::: {.columns}
+::: {.column width='50%'}.small[
 ```{r}
 glm(spam ~ . - 1, data = d, family=binomial) 
 ```
-] ]
+:::
+:::: :::
 
-.pull-right[ .small[
+::: {.column width='50%'} .small[
 ```{python}
 m.feature_names_in_
 m.coef_
 ```
-] ]
+:::
+:::: ]
 
 <br/>
 
@@ -150,15 +139,13 @@ m.coef_
 Why are these different?
 ]
 
---
+. . .
 
 > `sklearn.linear_model.LogisticRegression`
 >
 > ...
 > 
 > This class implements regularized logistic regression using the ‘liblinear’ library, ‘newton-cg’, ‘sag’, ‘saga’ and ‘lbfgs’ solvers. **Note that regularization is applied by default.** It can handle both dense and sparse input. Use C-ordered arrays or CSR matrices containing 64-bit floats for optimal performance; any other input format will be converted (and copied).
-
----
 
 ## Penalty parameter
 
@@ -170,15 +157,13 @@ $$
 
 <br/>
 
---
+. . .
 
 ```{python}
 m = LogisticRegression(fit_intercept = False, penalty="none").fit(X, y)
 m.feature_names_in_
 m.coef_
 ```
-
----
 
 ## Solver parameter
 
@@ -193,8 +178,6 @@ It is also possible specify the solver to use when fitting a logistic regression
 Also the can be issues with feature scales for some of these solvers:
 > **Note:** ‘sag’ and ‘saga’ fast convergence is only guaranteed on features with approximately the same scale. You can preprocess the data with a scaler from sklearn.preprocessing.
 
----
-
 ## Prediction
 
 Classification models have multiple prediction methods depending on what type of output you would like,
@@ -203,19 +186,19 @@ Classification models have multiple prediction methods depending on what type of
 m.predict(X)
 ```
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 m.predict_proba(X)
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python}
 m.predict_log_proba(X)
 ```
-]
-
----
+:::
+::::
 
 ## Scoring
 
@@ -231,21 +214,21 @@ Other scoring options are available via the [metrics](https://scikit-learn.org/s
 from sklearn.metrics import accuracy_score, roc_auc_score, f1_score, confusion_matrix
 ```
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 accuracy_score(y, m.predict(X))
 roc_auc_score(y, m.predict_proba(X)[:,1])
 f1_score(y, m.predict(X))
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python}
 confusion_matrix(y, m.predict(X), labels=m.classes_)
 ```
-]
-
----
+:::
+::::
 
 ## Scoring visualizations - confusion matrix
 
@@ -257,9 +240,8 @@ cm = confusion_matrix(y, m.predict(X), labels=m.classes_)
 disp = ConfusionMatrixDisplay(cm).plot()
 plt.show()
 ```
-]
-
----
+:::
+::::
 
 ## Scoring visualizations - ROC curve
 
@@ -273,10 +255,9 @@ disp = RocCurveDisplay(fpr=fpr, tpr=tpr, roc_auc=roc_auc,
                        estimator_name='Logistic Regression').plot()
 plt.show()
 ```
-]
+:::
+::::
 
-
----
 
 ## Scoring visualizations - Precision Recall
 
@@ -288,9 +269,8 @@ precision, recall, _ = precision_recall_curve(y, m.predict_proba(X)[:,1])
 disp = PrecisionRecallDisplay(precision=precision, recall=recall).plot()
 plt.show()
 ```
-]
-
----
+:::
+::::
 
 ## Another visualization
 
@@ -317,8 +297,6 @@ def confusion_plot(truth, probs, threshold=0.5):
     plt.show()
 ```
 
----
-
 .small[
 ```{python out.width='66%'}
 truth = pd.Categorical.from_codes(y, categories = ('not spam','spam'))
@@ -326,7 +304,8 @@ probs = m.predict_proba(X)[:,1]
 confusion_plot(truth, probs, 0.5)
 confusion_plot(truth, probs, 0.25)
 ```
-]
+:::
+::::
 
 ---
 class: center, middle
@@ -338,8 +317,6 @@ class: center, middle
 
 ## Demo 2 - SVC
 
----
-
 ## MNIST handwritten digits
 
 ```{python}
@@ -349,23 +326,24 @@ digits = load_digits(as_frame=True)
 ```
 
 
-.pull-left[ .small[
+:::: {.columns}
+::: {.column width='50%'} .small[
 ```{python}
 X = digits.data
 X
 ```
-] ]
+:::
+:::: :::
 
-.pull-right[ .small[ 
+::: {.column width='50%'} .small[ 
 ```{python}
 y = digits.target
 y
 ```
-] ]
+:::
+:::: ]
 
 
-
----
 
 ## digit description
 
@@ -373,9 +351,8 @@ y
 ```{python echo=FALSE}
 print(digits.DESCR)
 ```
-]
-
----
+:::
+::::
 
 ## Example digits
 
@@ -391,8 +368,6 @@ for ax, image, label in zip(axes2, digits.images, digits.target):
 plt.show()
 ```
 
----
-
 ## Doing things properly - train/test split
 
 To properly assess our modeling we will create a training and testing set of these data, only the training data will be used to learn model coefficients or hyperparameters, test data will only be used for final model scoring.
@@ -402,8 +377,6 @@ X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.33, shuffle=True, random_state=1234
 )
 ```
-
----
 
 ## Multiclass logistic regression
 
@@ -418,21 +391,19 @@ mc_log_cv = GridSearchCV(
 ).fit(X_train, y_train)
 ```
 
---
+. . .
 
 ```{python}
 mc_log_cv.best_estimator_
 mc_log_cv.best_score_
 ```
 
---
+. . .
 
 ```{python}
 for p, s in  zip(mc_log_cv.cv_results_["params"], mc_log_cv.cv_results_["mean_test_score"]):
   print(p,"Score:",s)
 ```
-
----
 
 ## Model coefficients
 
@@ -446,11 +417,10 @@ mc_log_cv.best_estimator_.coef_.shape
 mc_log_cv.best_estimator_.intercept_
 ```
 
----
-
 ## Confusion Matrix
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 **Within sample**
 ```{python}
 accuracy_score(
@@ -462,9 +432,9 @@ confusion_matrix(
   mc_log_cv.best_estimator_.predict(X_train)
 )
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 **Out of sample**
 ```{python}
 accuracy_score(
@@ -477,9 +447,8 @@ confusion_matrix(
   labels = digits.target_names
 )
 ```
-]
-
----
+:::
+::::
 
 ## Report
 
@@ -489,8 +458,6 @@ print( classification_report(
   mc_log_cv.best_estimator_.predict(X_test)
 ) )
 ```
-
----
 
 ## ROC & AUC?
 
@@ -502,9 +469,10 @@ roc_auc_score(
 )
 ```
 
---
+. . .
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python error=TRUE}
 roc_auc_score(
   y_test, mc_log_cv.best_estimator_.predict_proba(X_test),
@@ -516,9 +484,9 @@ roc_auc_score(
   multi_class = "ovo"
 )
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python error=TRUE}
 roc_auc_score(
   y_test, mc_log_cv.best_estimator_.predict_proba(X_test),
@@ -530,25 +498,25 @@ roc_auc_score(
   multi_class = "ovo", average = "weighted"
 )
 ```
-]
-
----
+:::
+::::
 
 ## Prediction
 
-.pull-left[ .small[
+:::: {.columns}
+::: {.column width='50%'} .small[
 ```{python}
 mc_log_cv.best_estimator_.predict(X_test)
 ```
-] ]
+:::
+:::: :::
 
-.pull-right[ .small[
+::: {.column width='50%'} .small[
 ```{python}
 mc_log_cv.best_estimator_.predict_proba(X_test),
 ```
-] ]
-
----
+:::
+:::: ]
 
 ## Exercise 1
 
@@ -567,8 +535,6 @@ X_train, X_test, y_train, y_test = train_test_split(
 )
 ```
 
----
-
 ## Examining the coefs
 
 
@@ -586,4 +552,5 @@ for ax, image, label in zip(axes2, coef_img, range(10)):
     
 plt.show()
 ```
-]
+:::
+::::

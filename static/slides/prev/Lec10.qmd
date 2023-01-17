@@ -1,18 +1,15 @@
 ---
-title: "Lec 10 - matplotlib"
-subtitle: "<br/> Statistical Computing and Computation"
-author: "Sta 663 | Spring 2022"
-date: "<br/> Dr. Colin Rundel"
-output:
-  xaringan::moon_reader:
-    css: ["slides.css"]
-    lib_dir: libs
-    nature:
-      highlightStyle: solarized-light
-      countIncrementalSlides: false
-      ratio: "16:9"
+title: "matplotlib"
+subtitle: "Lecture 10"
+author: "Dr. Colin Rundel"
+footer: "Sta 663 - Spring 2023"
+format:
+  revealjs:
+    theme: slides.scss
+    transition: fade
+    slide-number: true
+    self-contained: true
 ---
-exclude: true
 
 ```{python setup}
 import numpy as np
@@ -51,8 +48,6 @@ class: center, middle
 
 # matplotlib
 
----
-
 ## matplotlib vs. pyplot
 
 > matplotlib is a comprehensive library for creating static, animated, and interactive visualizations in Python.
@@ -62,27 +57,26 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 ```
 
---
+. . .
 
 Why do we usually import only pyplot then?
  
---
+. . .
 
 > Matplotlib is the whole package; matplotlib.pyplot is a module in matplotlib; and pylab is a module that gets installed alongside matplotlib.
 >
 > Pyplot provides the state-machine interface to the underlying object-oriented plotting library. The state-machine implicitly and automatically creates figures and axes to achieve the desired plot.
 
----
-
 ## Plot anatomy
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{r echo=FALSE, fig.align="center", out.width="95%"}
 knitr::include_graphics("imgs/matplotlib-anatomy.webp")
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 Other important terminology:
 
 * **Figure** - The entire plot (including subplots)
@@ -94,8 +88,6 @@ Other important terminology:
 * **Artist** - Everything visible on a figure: text, lines, axis, axes, etc.  
 
 ]
-
----
 
 ## Basic plot - OO style
 
@@ -112,8 +104,6 @@ ax.set_title("Simple Plot")
 ax.legend()
 ```
 
----
-
 ## Basic plot - pyplot style
 
 ```{python fig.align="center"}
@@ -127,8 +117,6 @@ plt.plot(x, y2, label="cos(x)")
 plt.title("Simple Plot")
 plt.legend()
 ```
-
----
 
 ## Subplots
 
@@ -148,8 +136,6 @@ ax1.legend()
 ax2.legend()
 ```
 
----
-
 ## More subplots
 
 ```{python fig.align="center"}
@@ -164,11 +150,10 @@ axs[1,1].plot(x, x**4, "c", label="quartic")
 fig.suptitle("More subplots")
 ```
 
----
-
 ## Fancy subplots (moscaic)
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python mosaic, eval=FALSE}
 x = np.linspace(-2, 2, 101)
 
@@ -183,14 +168,13 @@ axd['upleft'].set_title("Linear")
 axd['lowleft'].set_title("Quadratic")
 axd['right'].set_title("Cubic")
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python echo=FALSE, ref.label="mosaic"}
 ```
-]
-
----
+:::
+::::
 
 ## Format strings
 
@@ -238,9 +222,9 @@ For quick formating of plots (scatter and line) format strings are a useful shor
 
 ]
 
-.footnote[See Notes section of [pyplot.plot](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.plot.html) docs]
-
----
+::: {.aside}
+See Notes section of [pyplot.plot](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.plot.html) docs
+:::
 
 ## Plotting data
 
@@ -260,12 +244,13 @@ plt.scatter('x', 'y', c='color', s='size', data=d)
 plt.xlabel("x-axis")
 plt.ylabel("y-axis")
 ```
-]
+:::
+::::
 
 
-.footnote[Example from [Basic Usage](https://matplotlib.org/stable/tutorials/introductory/usage.html#types-of-inputs-to-plotting-functions) guide]
-
----
+::: {.aside}
+Example from [Basic Usage](https://matplotlib.org/stable/tutorials/introductory/usage.html#types-of-inputs-to-plotting-functions) guide
+:::
 
 ## Constrained layout
 
@@ -285,15 +270,15 @@ plt.scatter('x', 'y', c='color', s='size', data=d)
 plt.xlabel("x-axis")
 plt.ylabel("y-axis")
 ```
-]
-
----
+:::
+::::
 
 ## pyplot w/ pandas data
 
 Data can also come from DataFrame objects or series, 
 
-.pull-left[ .midi[
+:::: {.columns}
+::: {.column width='50%'} .midi[
 ```{python mpl_pandas, eval=FALSE}
 df = pd.DataFrame({
   "x": np.random.normal(size=10000)
@@ -307,20 +292,21 @@ ax.set_xlabel('x')
 ax.set_ylabel('y')
 ax.set_title("Bivariate normal ($\\rho=0.75$)")
 ```
-] ]
+:::
+:::: :::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python ref.label="mpl_pandas", echo=FALSE}
 ```
-]
-
----
+:::
+::::
 
 ## pyplot w/ pandas series
 
 Series objects can also be plotted directly, the index is used as the `x` axis values,
 
-.pull-left[ .midi[
+:::: {.columns}
+::: {.column width='50%'} .midi[
 ```{python, fig.align="center"}
 s = pd.Series(
   np.cumsum( np.random.normal(size=100) ),
@@ -333,11 +319,10 @@ plt.plot(s)
 
 plt.show()
 ```
-] ]
+:::
+:::: :::
 
---
-
-.pull-right[ .midi[
+::: {.column width='50%' .fragment} .midi[
 ```{python, fig.align="center", results="hide"}
 plt.figure(figsize=(3, 3), layout="constrained")
 
@@ -346,15 +331,15 @@ plt.xticks(rotation=45)
 
 plt.show()
 ```
-] ]
-
----
+:::
+:::: ]
 
 ## Scales
 
 Axis scales can be changed via `plt.xscale()`, `plt.yscale()`, `ax.set_xscale()`, or `ax.set_yscale()`, supported values are "linear", "log", "symlog", and "logit".
 
-.pull-left[ .midi[
+:::: {.columns}
+::: {.column width='50%'} .midi[
 ```{python scales, eval=FALSE}
 y = np.sort( np.random.sample(size=1000) )
 x = np.arange(len(y))
@@ -375,18 +360,19 @@ for i, scale in zip(range(4), scales):
 
 plt.show()
 ```
-] ]
+:::
+:::: :::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python ref.label="scales", out.width="66%", echo=FALSE}
 ```
-]
-
----
+:::
+::::
 
 ## Categorical data
 
-.pull-left[ .midi[
+:::: {.columns}
+::: {.column width='50%'} .midi[
 ```{python catdata, eval=FALSE}
 df = pd.DataFrame({
   "cat": ["A", "B", "C", "D", "E"],
@@ -412,18 +398,19 @@ plt.bar("value", "cat", data=df)
 
 plt.show()
 ```
-] ]
+:::
+:::: :::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python ref.label="catdata", echo=FALSE, results="hide", out.width="66%"}
 ```
-]
-
----
+:::
+::::
 
 ## Histograms
 
-.pull-left[ .midi[
+:::: {.columns}
+::: {.column width='50%'} .midi[
 ```{python hists, eval=FALSE}
 df = pd.DataFrame({
   "x1": np.random.normal(size=100),
@@ -444,14 +431,14 @@ plt.hist(df, stacked=True, alpha=0.5)
 
 plt.show()
 ```
-] ]
+:::
+:::: :::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python ref.label="hists", echo=FALSE, results="hide", fig.align="center"}
 ```
-]
-
----
+:::
+::::
 
 ## Boxplots
 
@@ -469,13 +456,13 @@ plt.boxplot("value", positions="variable", data=df)
 
 plt.boxplot(df.value, positions=df.variable)
 ```
-]
-
----
+:::
+::::
 
 ## Boxplots (cont.)
 
-.pull-left[ .midi[
+:::: {.columns}
+::: {.column width='50%'} .midi[
 ```{python boxplts, eval=FALSE}
 df = pd.DataFrame({
   "x1": np.random.normal(size=100),
@@ -494,14 +481,14 @@ plt.violinplot(df)
 
 plt.show()
 ```
-] ]
+:::
+:::: :::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python ref.label="boxplts", echo=FALSE, results="hide", fig.align="center"}
 ```
-]
-
----
+:::
+::::
 
 ## Other Plot Types
 
@@ -511,8 +498,6 @@ https://matplotlib.org/stable/plot_types/index.html
 </iframe>
 ]
 
----
-
 ## Exercise 1
 
 To the bets of your ability recreate the following plot,
@@ -521,14 +506,14 @@ To the bets of your ability recreate the following plot,
 knitr::include_graphics("imgs/pyplot_simple.webp")
 ```
 
-.footnote[From matplotlib [examples](https://matplotlib.org/stable/gallery/index.html)]
+::: {.aside}
+From matplotlib [examples](https://matplotlib.org/stable/gallery/index.html)
+:::
 
 ---
 class: center, middle
 
 # Plotting with pandas
-
----
 
 ## plot methods
 
@@ -545,8 +530,6 @@ s.plot()
 plt.show()
 ```
 
----
-
 ## DataFrame plot
 
 ```{python fig.align="center", out.width="50%"}
@@ -560,8 +543,6 @@ plt.figure(layout="constrained")
 df.plot(figsize=(5,3))
 plt.show()
 ```
-
----
 
 ## DataFrame line styles
 
@@ -579,11 +560,10 @@ df.plot(
 
 
 
----
-
 ## DataFrame plot - categorical
 
-.pull-left[ .midi[
+:::: {.columns}
+::: {.column width='50%'} .midi[
 ```{python fig.align="center", out.width="66%"}
 df = pd.DataFrame({
  "x": list("ABCD"),
@@ -592,11 +572,10 @@ df = pd.DataFrame({
 
 df.plot(figsize=(5,3), legend=False)
 ```
-] ]
+:::
+:::: :::
 
---
-
-.pull-right[ .midi[
+::: {.column width='50%' .fragment} .midi[
 ```{python fig.align="center", out.width="66%"}
 df.set_index("x").plot(figsize=(5,3),legend=False)
 ```
@@ -606,15 +585,15 @@ df.set_index("x").plot(
   figsize=(5,3), kind="bar", legend=False
 )
 ```
-] ]
-
----
+:::
+:::: ]
 
 ## Other plot types
 
 Plot types can be changed via the `kind` argument or using one of the `DataFrame.plot.<kind>` method,
 
-.pull-left[ .midi[  
+:::: {.columns}
+::: {.column width='50%'} .midi[  
 
 ```{python fig.align="center", out.width="66%"}
 df.set_index("x").plot.bar(
@@ -622,21 +601,21 @@ df.set_index("x").plot.bar(
 )
 ```
 
-] ]
+] :::
 
-.pull-right[ .midi[ 
+::: {.column width='50%'} .midi[ 
 ```{python fig.align="center", out.width="66%"}
 df.set_index("x").plot.barh(
   legend=False, figsize=(5,5)
 )
 ```
-] ]
-
----
+:::
+:::: ]
 
 ## Wide vs long - histograms
 
-.pull-left[ .midi[
+:::: {.columns}
+::: {.column width='50%'} .midi[
 ```{python out.width="66%"}
 df = pd.DataFrame({
   "x1": np.random.normal(size=100),
@@ -646,9 +625,10 @@ df = pd.DataFrame({
 
 df.plot.hist(figsize=(5,3), alpha=0.5, bins=15)
 ```
-] ]
+:::
+:::: :::
 
-.pull-right[ .midi[
+::: {.column width='50%'} .midi[
 ```{python out.width="66%"}
 df_wide = df.melt()
 df_wide.plot.hist(figsize=(5,3), alpha=0.5, bins=15)
@@ -659,19 +639,19 @@ df_wide.set_index("variable").plot.hist(
   figsize=(5,3), alpha=0.5, bins=15
 )
 ```
-] ]
-
----
+:::
+:::: ]
 
 ## plot and groupby
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 df_wide
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python out.width="66%"}
 plt.figure(figsize=(5,5))
 
@@ -684,15 +664,17 @@ _ = ( df_wide
 
 plt.show()
 ```
-]
+:::
+::::
 
-.footnote[Here we are plotting Series objects hence the need to use `plt.figure()` and `plt.show()`.]
-
----
+::: {.aside}
+Here we are plotting Series objects hence the need to use `plt.figure()` and `plt.show()`.
+:::
 
 ## pandas and subplots
 
-.pull-left[ .midi[
+:::: {.columns}
+::: {.column width='50%'} .midi[
 ```{python results="hide", out.width="66%"}
 plt.figure(figsize=(5,3))
 
@@ -704,11 +686,10 @@ df[["x2"]].plot.hist(bins=15, figsize=(5,3))
 
 plt.show()
 ```
-] ]
+:::
+:::: :::
 
---
-
-.pull-right[ .midi[
+::: {.column width='50%' .fragment} .midi[
 ```{python results="hide", out.width="66%"}
 fig, (ax1, ax2) = plt.subplots(2,1, figsize=(5,5))
 
@@ -717,9 +698,8 @@ df[["x2"]].plot.hist(ax = ax2, bins=15)
 
 plt.show()
 ```
-] ]
-
----
+:::
+:::: ]
 
 ## Using by
 
@@ -728,15 +708,16 @@ df_wide.plot.hist(bins=15, by="variable", legend=False, figsize=(5,5))
 plt.show()
 ```
 
-.footnote[Note the `by` argument is not common to most of the other plotting functions - only `box` also has it.]
-
----
+::: {.aside}
+Note the `by` argument is not common to most of the other plotting functions - only `box` also has it.
+:::
 
 ## Higher level plots - pair plot
 
 The pandas library also provides the `plotting` submodule with several useful higher level plots,
 
-.pull-left[ .midi[ 
+:::: {.columns}
+::: {.column width='50%'} .midi[ 
 ```{python}
 cov = np.identity(5)
 cov[1,2] = cov[2,1] = 0.5
@@ -750,20 +731,20 @@ df = pd.DataFrame(
 df
 ```
 
-] ]
+] :::
 
-.pull-right[ .midi[ 
+::: {.column width='50%'} .midi[ 
 ```{python out.width="75%", results="hide"}
 pd.plotting.scatter_matrix(df, alpha=0.2, diagonal="kde")
 plt.show()
 ```
-] ]
-
----
+:::
+:::: ]
 
 ## Autocorrelation plots
 
-.pull-left[ .midi[
+:::: {.columns}
+::: {.column width='50%'} .midi[
 ```{python out.width="66%", results="hide"}
 rw = pd.Series(
   np.cumsum( np.random.normal(size=100) ),
@@ -772,9 +753,10 @@ rw = pd.Series(
 pd.plotting.autocorrelation_plot(rw)
 plt.show()
 ```
-] ]
+:::
+:::: :::
 
-.pull-right[ .midi[
+::: {.column width='50%'} .midi[
 ```{python out.width="66%", results="hide"}
 wn = pd.Series(
   np.random.normal(size=100),
@@ -783,9 +765,8 @@ wn = pd.Series(
 pd.plotting.autocorrelation_plot(wn)
 plt.show()
 ```
-] ]
-
----
+:::
+:::: ]
 
 ## Other plots
 

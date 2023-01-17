@@ -10,7 +10,7 @@ schedule:
   day: 5
   lecture: "Welcome & Syllabus"
   slides: Lec01
-  screencast: 
+  screencast: https://youtu.be/Fez-BhXFuEE
   readings: 
   - text: ssh config for GitHub
     link: https://github.com/DukeStatSci/github_auth_guide
@@ -27,7 +27,7 @@ schedule:
 - week: 1
   day: 3
   lecture: "Basic types & sequence types"
-  slides: 
+  slides: Lec02
   screencast: 
   readings:
   - text: Python Built-in Types

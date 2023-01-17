@@ -1,18 +1,15 @@
 ---
-title: "Lec 03 - Control flow, list comprehensions<br/>and functions"
-subtitle: "<br/> Statistical Computing and Computation"
-author: "Sta 663 | Spring 2022"
-date: "<br/> Dr. Colin Rundel"
-output:
-  xaringan::moon_reader:
-    css: ["slides.css"]
-    lib_dir: libs
-    nature:
-      highlightStyle: solarized-light
-      countIncrementalSlides: false
-      ratio: "16:9"
+title: "Control flow, list comprehensions<br/>and functions"
+subtitle: "Lecture 03"
+author: "Dr. Colin Rundel"
+footer: "Sta 663 - Spring 2023"
+format:
+  revealjs:
+    theme: slides.scss
+    transition: fade
+    slide-number: true
+    self-contained: true
 ---
-exclude: true
 
 ```{r setup, message=FALSE, warning=FALSE, include=FALSE}
 options(
@@ -22,18 +19,15 @@ options(
 
 ```
 
----
-
 
 # Control Flow
-
----
 
 ## Conditionals
 
 Python supports tradition if / else style conditional expressions,
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 x = 42
 
@@ -44,9 +38,9 @@ elif x > 0:
 else:
     print("X is zero")
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python}
 x = 0
 
@@ -57,9 +51,8 @@ elif x > 0:
 else:
     print("X is zero")
 ```
-]
-
----
+:::
+::::
 
 ## Significant whitespace
 
@@ -67,15 +60,13 @@ This is a fairly unique feature of Python - expressions are grouped together via
 
 Indenting should be 2 or more spaces (4 is the preferred based on [PEP 8](https://www.python.org/dev/peps/pep-0008/)) or tab characters - generally your IDE will handle this for you.
 
---
+. . .
 
 If there are not multple expression then indenting is optional, e.g.
 
 ```{python}
 if x == 0: print("X is zero")
 ```
-
----
 
 ## Conditional scope
 
@@ -88,8 +79,6 @@ if True:
 
 s
 ```
-
----
 
 ## While loops
 
@@ -110,16 +99,17 @@ while i != 1:
 seq
 ```
 
-.footnote[Anyone recognize what this is an example of?]
-
----
+::: {.aside}
+Anyone recognize what this is an example of?
+:::
 
 ## For loops
 
 Iterates over the elements of a sequence
 
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 for w in ["Hello", "world!"]:
     print(w, len(w))
@@ -132,9 +122,9 @@ for v in (1,2,3,4):
     sum += v
 sum
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python}
 res = []
 for c in "abc123def567":
@@ -147,16 +137,16 @@ for i in range(0,10):
     res += [i]
 res
 ```
-]
-
----
+:::
+::::
 
 ## `break` and `continue`
 
 Allow early loop exit or step to next iteration respectively,
 
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 for i in range(10):
     if i == 5:
@@ -164,9 +154,9 @@ for i in range(10):
     print(i, end=" ")
 print()
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python}
 for i in range(10):
     if i % 2 == 0:
@@ -175,9 +165,8 @@ for i in range(10):
     print(i, end=" ")
 print()
 ```
-]
-
----
+:::
+::::
 
 ## loops and `else`?
 
@@ -194,8 +183,6 @@ for n in range(2, 10):
         print(n, 'is a prime number')
 ```
 
----
-
 ## `pass`
 
 This is a expression that does nothing, it can be used when an expression is needed syntaxtically.
@@ -211,32 +198,30 @@ elif x % 2 == 1:
     print("x is odd")
 ```
 
----
-
 
 # List comprehensions
-
----
 
 ## Basics
 
 List comprehensions provides a concise syntax for generating lists
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 res = []
 for x in range(10):
     res.append(x**2)
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python}
 [x**2 for x in range(10)]
 ```
-]
+:::
+::::
 
---
+. . .
 
 Since it uses the for loop syntax, any sequence is fair game:
 
@@ -248,8 +233,6 @@ Since it uses the for loop syntax, any sequence is fair game:
 [c.lower() for c in "Hello World!"]
 ```
 
----
-
 ## Using `if`
 
 List comprehensions can include a conditional clause,
@@ -260,7 +243,7 @@ List comprehensions can include a conditional clause,
 [x**2 for x in range(10) if x % 2 == 1]
 ```
 
---
+. . .
 
 The comprehension can include multiple `if` statements, 
 
@@ -270,21 +253,18 @@ The comprehension can include multiple `if` statements,
 [x**2 for x in range(10) if x % 2 == 0 and x % 3 ==0]
 ```
 
----
-
 ## Multiple `for`s
 
 Similarly, the comprehension can also contain multiple `for` statements,
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 [(x, y) for x in range(3) for y in range(3)]
 ```
-]
+:::
 
---
-
-.pull-right[
+::: {.column width='50%' .fragment}
 ```{python}
 res = []
 for x in range(3):
@@ -292,9 +272,8 @@ for x in range(3):
         res.append((x,y))
 res
 ```
-]
-
----
+:::
+::::
 
 ## `zip`
 
@@ -314,15 +293,13 @@ z
 list(z)
 ```
 
---
+. . .
 
 ```{python}
 [a**b for a,b in zip(x,y)]
 
 [b**a for a,b in zip(x,y)]
 ```
-
----
 
 ## `zip` and length mismatches
 
@@ -339,8 +316,6 @@ list(zip(x,z))
 list(zip(x,y,z))
 ```
 
----
-
 ## Exercise 1
 
 Using list comprehensions, complete the following tasks:
@@ -351,12 +326,8 @@ Using list comprehensions, complete the following tasks:
 
 * Count the number of points $x$ or $y$ is prime.
 
----
-
 
 # Functions
-
----
 
 ## Basic functions
 
@@ -367,46 +338,49 @@ def f(x, y=2, z=3):
     print(f"x={x}, y={y}, z={z}")
 ```
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 f(1)
 f(1,z=-1)
 f("abc", y=True)
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python error=TRUE}
 f(z=-1, x=0)
 f()
 ```
-]
-
----
+:::
+::::
 
 ## `return` statements
 
 Functions must explicitly include a `return` statement to return a value.
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 def f(x):
     x**2
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python}
 def g(x):
     return x**2
 ```
-]
+:::
+::::
 
---
+. . .
 
 <div>
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 f(2)
 ```
@@ -414,18 +388,19 @@ f(2)
 ```{python}
 type(f(2))
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 
 ```{python}
 g(2)
 type(g(2))
 ```
-]
+:::
+::::
 </div>
 
---
+. . .
 
 Functions can contain multiple `return` statements
 
@@ -437,8 +412,6 @@ def is_odd(x):
 is_odd(2)
 is_odd(3)
 ```
-
----
 
 ## Multiple return values
 
@@ -458,7 +431,7 @@ def g():
 g()
 ```
 
---
+. . .
 
 If multiple values are present and not in a sequence, then it will default to a tuple,
 
@@ -477,8 +450,6 @@ i()
 ```
 
 
----
-
 ## Doc strings
 
 A common practice in Python is to document a function (and other objects) using a doc string - this is a short concise summary of the objects purpose. Doc strings are specified by supplying a string as the very line in the function definition.
@@ -493,7 +464,7 @@ def f():
 f.__doc__
 ```
 
---
+. . .
 
 ```{python}
 def g():
@@ -506,8 +477,6 @@ def g():
 g.__doc__
 ```
 
----
-
 ## Variadic arguments
 
 If the number of arguments is unknown it is possible to define to define variadic functions
@@ -517,7 +486,7 @@ def paste(*args, sep=" "):
     return sep.join(args)
 ```
 
---
+. . .
 
 ```{python}
 paste("A")
@@ -525,8 +494,6 @@ paste("A","B","C")
 paste("1","2","3",sep=",")
 ```
 
-
----
 
 ## Positional and/or keyword arguments
 
@@ -539,13 +506,14 @@ def f(pos1, pos2, /, pos_or_kwd, *, kwd1, kwd2):
         |                                - Keyword only
          -- Positional only
 ```
-]
+:::
+::::
 
-.footnote[
+::: {.aside}
 Based on Python tutorial [Sec 4.8.3](https://docs.python.org/3/tutorial/controlflow.html#special-parameters)
-]
+:::
 
---
+. . .
 
 .small[
 For the following function `x` can only be passed by position and `z` only by name
@@ -554,37 +522,39 @@ For the following function `x` can only be passed by position and `z` only by na
 def f(x, /, y, *, z):
     print(f"x={x}, y={y}, z={z}")
 ```
-]
+:::
+::::
 
---
+. . .
 
 .small[
 ```{python error=TRUE}
 f(1,1,1)
 f(x=1,y=1,z=1)
 ```
-]
+:::
+::::
 
---
+. . .
 
 .small[
 ```{python}
 f(1,1,z=1)
 f(1,y=1,z=1)
 ```
-]
+:::
+::::
 
 
 
 
-
----
 
 ## Anonymous functions
 
 Can be defined using the `lambda` keyword, they are intended to be used for very short functions (syntactically limited to a single expression, and not return statement)
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 def f(x,y):
     return x**2 + y**2
@@ -592,9 +562,9 @@ def f(x,y):
 f(2,3)
 type(f)
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python}
 g = lambda x, y: x**2 + y**2
 
@@ -602,9 +572,8 @@ g = lambda x, y: x**2 + y**2
 g(2,3)
 type(g)
 ```
-]
-
----
+:::
+::::
 
 ## Function annotations (type hinting)
 
@@ -616,7 +585,7 @@ def f(x: str, y: str, z: str) -> str:
     return x + y + z
 ```
 
---
+. . .
 
 These annotations are stored in the `__annotations__` attribute
 
@@ -624,7 +593,7 @@ These annotations are stored in the `__annotations__` attribute
 f.__annotations__
 ```
 
---
+. . .
 
 But doesn't actually do anything at runtime: 
 
@@ -635,8 +604,6 @@ f("A","B","C")
 ```{python}
 f(1,2,3)
 ```
-
----
 
 ## Exercise 2
 

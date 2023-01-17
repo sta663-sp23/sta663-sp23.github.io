@@ -1,19 +1,15 @@
 ---
-title: "Lec 17 - classes + <br/> custom transformers"
-subtitle: "<br/> Statistical Computing and Computation"
-author: "Sta 663 | Spring 2022"
-date: "<br/> Dr. Colin Rundel"
-output:
-  xaringan::moon_reader:
-    css: ["slides.css"]
-    lib_dir: libs
-    nature:
-      highlightLines: true
-      highlightStyle: solarized-light
-      countIncrementalSlides: false
-      ratio: "16:9"
+title: "classes + <br/> custom transformers"
+subtitle: "Lecture 17"
+author: "Dr. Colin Rundel"
+footer: "Sta 663 - Spring 2023"
+format:
+  revealjs:
+    theme: slides.scss
+    transition: fade
+    slide-number: true
+    self-contained: true
 ---
-exclude: true
 
 ```{python setup}
 import numpy as np
@@ -73,14 +69,13 @@ class: center, middle
 
 ## Classes
 
----
-
 ## Basic syntax
 
 These are the basic component of Python's object oriented system - we've been using them regularly all over the place and will now look at how they are defined and used.
 
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 class rect:
   """An object representation of a rectangle"""
@@ -100,11 +95,9 @@ class rect:
   def set_p2(self, p2):
     self.p2 = p2
 ```
-]
+:::
 
---
-
-.pull-right[
+::: {.column width='50%' .fragment}
 ```{python}
 x = rect()
 x.area()
@@ -118,15 +111,15 @@ x.p2
 x.p2 = (0,0)
 x.area()
 ```
-]
-
----
+:::
+::::
 
 ## Instantiation (constructors)
 
 When instantiating a class object (e.g. `rect()`) we invoke the `__init__()` method if it is present in the classes' definition.
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 class rect:
   """An object representation of a rectangle"""
@@ -147,11 +140,9 @@ class rect:
   def set_p2(self, p2):
     self.p2 = p2
 ```
-]
+:::
 
---
-
-.pull-right[
+::: {.column width='50%' .fragment}
 ```{python}
 x = rect()
 x.area()
@@ -163,15 +154,15 @@ z = rect((-1,-1))
 z.p1
 z.p2
 ```
-]
-
----
+:::
+::::
 
 ## Method chaining
 
 We've seen a number of objects (i.e. Pandas DataFrames) that allow for method chaining to construct a pipeline of operations. We can achieve the same by having our class methods return `self`.
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 class rect:
   """An object representation of a rectangle"""
@@ -194,11 +185,9 @@ class rect:
     self.p2 = p2
     return self
 ```
-]
+:::
 
---
-
-.pull-right[
+::: {.column width='50%' .fragment}
 ```{python}
 rect().area()
 
@@ -206,27 +195,28 @@ rect().set_p1((-1,-1)).area()
 
 rect().set_p1((-1,-1)).set_p2((2,2)).area()
 ```
-]
-
----
+:::
+::::
 
 ## Class object string formating
 
 All class objects have a default print method / string conversion method, but the default behavior is not very useful,
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 print(rect())
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python}
 str(rect())
 ```
-]
+:::
+::::
 
---
+. . .
 
 Both of the above are handled by the `__str__()` method which is implicitly created for our class - we can override this,
 
@@ -237,15 +227,13 @@ def rect_str(self):
 rect.__str__ = rect_str
 ```
 
---
+. . .
 
 ```{python}
 rect()
 print(rect())
 str(rect())
 ```
-
----
 
 ## Class representation
 
@@ -258,14 +246,12 @@ def rect_repr(self):
 rect.__repr__ = rect_repr
 ```
 
---
+. . .
 
 ```{python}
 rect()
 repr(rect())
 ```
-
----
 
 ## Inheritance
 
@@ -282,11 +268,10 @@ square().area()
 square().set_p1((-1,-1)).area()
 ```
 
----
-
 ## Overriding methods
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 class square(rect):
     def __init__(self, p1=(0,0), l=1):
@@ -317,9 +302,9 @@ class square(rect):
     def __repr__(self):
       return f"square({self.p1}, {self.l})"
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python error=TRUE}
 square()
 square().area()
@@ -330,16 +315,16 @@ square((0,0), (1,1))
 square().set_l((0,0))
 square().set_p2((0,0))
 ```
-]
-
----
+:::
+::::
 
 ## Making an object iterable
 
 When using an object with a for loop, python looks for the `__iter__()` method which is expected to return an iterator object (e.g. `iter()` of a list, tuple, etc.).
 
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 class rect:
   """An object representation of a rectangle"""
@@ -362,23 +347,23 @@ class rect:
       (self.p2[0], self.p1[1])
     ] )
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python}
 for pt in rect():
   print(pt)
 ```
-]
+:::
+::::
 
-
----
 
 ## Fancier iteration
 
 A class itself can be made iterable by adding a `__next__()` method which is called until a `StopIteration` exception is encountered. In which case, `__iter__()` is still needed but should just `return self`.
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 class rect:
   def __init__(self, p1 = (0,0), p2 = (1,1)):
@@ -405,9 +390,9 @@ class rect:
     self.index += 1
     return v
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python}
 r = rect()
 for pt in r:
@@ -416,15 +401,15 @@ for pt in r:
 for pt in r:
   print(pt)
 ```
-]
-
----
+:::
+::::
 
 ## Generators
 
 There is a lot of bookkeeping in the implementation above - we can simplify this significantly by using a generator function with `__iter__()`. A generator is a function which using `yield` instead of `return` which allows the function to preserve state between `next()` calls.
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 class rect:
   """An object representation of a rectangle"""
@@ -446,9 +431,9 @@ class rect:
     for v in vertices:
       yield v
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python}
 r = rect()
 
@@ -458,9 +443,8 @@ for pt in r:
 for pt in r:
   print(pt)
 ```
-]
-
----
+:::
+::::
 
 ## Class attributes
 
@@ -470,13 +454,13 @@ We can examine all of a classes' methods and attributes using `dir()`,
 dir(rect)
 ```
 
---
+. . .
 
 .center[
 Where did `p1` and `p2` go?
 ]
 
---
+. . .
 
 ```{python}
 dir(rect())
@@ -488,8 +472,6 @@ class: center, middle
 
 ## Custom Transformers
 
----
-
 ## FunctionTransformer
 
 The simplest way to create a new transformer is to use `FunctionTransformer()` from the preprocessing submodule which allows for converting a Python function into a transformer.
@@ -500,7 +482,8 @@ from sklearn.preprocessing import FunctionTransformer
 X = pd.DataFrame({"x1": range(1,6), "x2": range(5, 0, -1)})
 ```
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 log_transform = FunctionTransformer(np.log)
 lt = log_transform.fit(X)
@@ -508,16 +491,15 @@ lt.transform(X)
 
 lt
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python}
 lt.get_params()
 dir(lt)
 ```
-]
-
----
+:::
+::::
 
 ## Input types
 
@@ -529,49 +511,54 @@ X = pd.DataFrame({"x1": range(1,6), "x2": range(5, 0, -1)})
 Z = np.array(X)
 ```
 
---
+. . .
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python, error=TRUE}
 FunctionTransformer(interact).fit_transform(X)
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python, error=TRUE}
 FunctionTransformer(interact).fit_transform(Z)
 ```
-]
+:::
+::::
 
---
+. . .
 
 <div>
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python, error=TRUE}
 FunctionTransformer(
   interact, validate=True
 ).fit_transform(X)
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python, error=TRUE}
 FunctionTransformer(
   interact, validate=True
 ).fit_transform(Z)
 ```
-]
+:::
+::::
 </div>
 
-.footnote[The `validate` argument both checks that `X` is 2d as well as converts it to a np.array]
-
----
+::: {.aside}
+The `validate` argument both checks that `X` is 2d as well as converts it to a np.array
+:::
 
 ## Build your own transformer
 
 For a more full features transformer, it is possible to construct it as a class that inherits from `BaseEstimator` and `TransformerMixin` classes from the base submodule.
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 from sklearn.base import BaseEstimator, TransformerMixin
 
@@ -586,11 +573,9 @@ class scaler(BaseEstimator, TransformerMixin):
   def transform(self, X, y=None):
     return X*self.m + self.b
 ```
-]
+:::
 
---
-
-.pull-right[
+::: {.column width='50%' .fragment}
 ```{python}
 X = pd.DataFrame({"x1": range(1,6), "x2": range(5, 0, -1)})
 
@@ -601,9 +586,8 @@ double.get_params()
 
 double.set_params(b=-3).fit_transform(X)
 ```
-]
-
----
+:::
+::::
 
 ## What else do we get?
 
@@ -618,8 +602,6 @@ class: center, middle
 
 ## Demo - Interaction Transformer
 
----
-
 ## Useful methods
 
 We employed a couple of special methods that are worth mentioning in a little more detail.
@@ -631,8 +613,6 @@ We employed a couple of special methods that are worth mentioning in a little mo
 * Later, in `tranform()` one or both will again be called with `reset=False` and the properties of `X` will be checked against the values in the attribute.
 
 * These are worth using as they promote an interface consistent with sklearn and also provide convenient error checking with useful warning and error messages.
-
----
 
 ## `check_is_fitted()`
 

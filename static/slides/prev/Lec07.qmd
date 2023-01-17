@@ -1,18 +1,15 @@
 ---
-title: "Lec 07 - SciPy"
-subtitle: "<br/> Statistical Computing and Computation"
-author: "Sta 663 | Spring 2022"
-date: "<br/> Dr. Colin Rundel"
-output:
-  xaringan::moon_reader:
-    css: ["slides.css"]
-    lib_dir: libs
-    nature:
-      highlightStyle: solarized-light
-      countIncrementalSlides: false
-      ratio: "16:9"
+title: "SciPy"
+subtitle: "Lecture 07"
+author: "Dr. Colin Rundel"
+footer: "Sta 663 - Spring 2023"
+format:
+  revealjs:
+    theme: slides.scss
+    transition: fade
+    slide-number: true
+    self-contained: true
 ---
-exclude: true
 
 ```{python setup}
 import scipy
@@ -21,8 +18,6 @@ import matplotlib.pyplot as plt
 
 np.set_printoptions(edgeitems=3, linewidth=180)
 ```
-
----
 
 ## What is SciPy
 
@@ -49,8 +44,6 @@ class: center, middle
 
 ## Example 1 - k-means clustering
 
----
-
 ## Data
 
 ```{python}
@@ -64,7 +57,7 @@ cl3 = rng.multivariate_normal([3,2], [[1,-0.7],[-0.7,1]], size=200)
 pts = np.concatenate((cl1,cl2,cl3))
 ```
 
---
+. . .
 
 ```{python fig.align="center", out.width="33%", echo=FALSE}
 plt.cla()
@@ -74,11 +67,10 @@ plt.scatter(cl3[:,0], cl3[:,1], c="c", marker = "D")
 plt.show()
 ```
 
----
-
 ## k-means clustering
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 from scipy.cluster.vq import kmeans
 
@@ -94,11 +86,9 @@ cl1.mean(axis=0)
 cl2.mean(axis=0)
 cl3.mean(axis=0)
 ```
-]
+:::
 
---
-
-.pull-right[
+::: {.column width='50%' .fragment}
 ```{python fig.align="center", out.width="90%", echo=FALSE}
 plt.cla()
 plt.scatter(cl1[:,0], cl1[:,1], c="r", marker = ".")
@@ -107,37 +97,36 @@ plt.scatter(cl3[:,0], cl3[:,1], c="c", marker = "D")
 plt.scatter(ctr[:,0], ctr[:,1], c="k", marker = "x", s = 200, linewidths=5)
 plt.show()
 ```
-]
-
----
+:::
+::::
 
 ## k-means distortion plot
 
 > The mean (non-squared) Euclidean distance between the observations passed and the centroids generated.
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 ks = range(1,6)
 dists = [kmeans(pts, k)[1] for k in ks]
 
 np.array(dists).reshape((-1,1))
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python echo=FALSE, out.width="90%"}
 plt.cla()
 p = plt.plot(ks, dists, "-ok")
 plt.show()
 ```
-]
+:::
+::::
 
 ---
 class: center, middle
 
 ## Example 2 - Numerical integration
-
----
 
 ## Basic functions
 
@@ -154,8 +143,6 @@ quad(np.sin, 0, 2*np.pi)
 quad(np.exp, 0, 1)
 ```
 
-
----
 
 ## Normal PDF
 
@@ -175,8 +162,6 @@ norm_pdf(np.Inf, 0, 1)
 norm_pdf(-np.Inf, 0, 1)
 ```
 
----
-
 ## Checking the DPF
 
 We can check that we've implemented a valid pdf by integrating the PDF from $-\inf$ to $\inf$,
@@ -185,19 +170,17 @@ We can check that we've implemented a valid pdf by integrating the PDF from $-\i
 quad(norm_pdf, -np.inf, np.inf)
 ```
 
---
+. . .
 
 ```{python error=TRUE}
 quad(lambda x: norm_pdf(x, 0, 1), -np.inf, np.inf)
 ```
 
---
+. . .
 
 ```{python error=TRUE}
 quad(lambda x: norm_pdf(x, 17, 12), -np.inf, np.inf)
 ```
-
----
 
 ## Truncated normals
 
@@ -218,8 +201,6 @@ def trunc_norm_pdf(x, μ=0, σ=1, a=-np.inf, b=np.inf):
   return full_pdf
 ```
 
----
-
 ## Testing trunc_norm_pdf
 
 
@@ -230,7 +211,7 @@ trunc_norm_pdf(-2, a=-1, b=1)
 trunc_norm_pdf([-2,1,0,1,2], a=-1, b=1)
 ```
 
---
+. . .
 
 ```{python}
 quad(lambda x: trunc_norm_pdf(x, a=-1, b=1), -np.inf, np.inf)
@@ -238,8 +219,6 @@ quad(lambda x: trunc_norm_pdf(x, a=-1, b=1), -np.inf, np.inf)
 quad(lambda x: trunc_norm_pdf(x, a=-3, b=3), -np.inf, np.inf)
 ```
 
-
----
 
 ## Fixing trunc_norm_pdf
 
@@ -257,32 +236,26 @@ def trunc_norm_pdf(x, μ=0, σ=1, a=-np.inf, b=np.inf):
   return full_pdf
 ```
 
---
+. . .
 
-.small[
-.pull-left[
+:::: {.columns .small}
+::: {.column width='50%'}
 ```{python}
 trunc_norm_pdf(0, a=-1, b=1)
 trunc_norm_pdf(2, a=-1, b=1)
 trunc_norm_pdf(-2, a=-1, b=1)
 trunc_norm_pdf([-2,1,0,1,2], a=-1, b=1)
 ```
-]
-]
+:::
 
---
-
-.small[
-.pull-right[
+::: {.column width='50%'}
 ```{python}
 quad(lambda x: trunc_norm_pdf(x, a=-1, b=1), -np.inf, np.inf)
 
 quad(lambda x: trunc_norm_pdf(x, a=-3, b=3), -np.inf, np.inf)
 ```
-]
-]
-
----
+:::
+::::
 
 ## Multivariate normal
 
@@ -298,23 +271,19 @@ def mv_norm(x, μ, Σ):
   return np.linalg.det(2*np.pi*Σ)**(-0.5) * np.exp(-0.5 * (x - μ).T @ np.linalg.solve(Σ, (x-μ)) )
 ```
 
---
+. . .
 
-.small[
-.pull-left[
+:::: {.columns .small}
+::: {.column width='50%'}
 ```{python}
 norm_pdf(0,0,1)
 mv_norm([0], [0], [[1]])
 mv_norm([0,0], [0,0], [[1,0],[0,1]])
 mv_norm([0,0,0], [0,0,0], [[1,0,0],[0,1,0],[0,0,1]])
 ```
-]
-]
+:::
 
---
-
-.small[
-.pull-right[
+::: {.column width='50%'}
 ```{python cache=TRUE}
 from scipy.integrate import dblquad, tplquad
 
@@ -327,8 +296,8 @@ tplquad(lambda z, y, x: mv_norm([x,y,z], [0,0,0], np.identity(3)),
         gfun=lambda x:   0, hfun=lambda x:   np.inf,
         qfun=lambda x,y: 0, rfun=lambda x,y: np.inf)
 ```
-]
-]
+:::
+::::
 
 
 ---
@@ -336,11 +305,10 @@ class: center, middle
 
 ## Example 3 - (Very) Basic optimization
 
----
-
 ## Scalar function minimization
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 def f(x):
     return x**4 + 3*(x-2)**3 - 15*(x)**2 + 1
@@ -351,11 +319,9 @@ x = np.linspace(-8, 5, 100)
 plt.plot(x, f(x))
 ```
 
-]
+:::
 
---
-
-.pull-right[
+::: {.column width='50%' .fragment}
 ```{python}
 from scipy.optimize import minimize_scalar
 
@@ -363,9 +329,8 @@ minimize_scalar(f, method="Brent")
 minimize_scalar(f, method="bounded", bounds=[0,6])
 minimize_scalar(f, method="bounded", bounds=[-8,6])
 ```
-]
-
----
+:::
+::::
 
 ## Results
 
@@ -379,8 +344,6 @@ res.success
 res.x
 ```
 
----
-
 ## More details
 
 .small[
@@ -388,13 +351,13 @@ res.x
 from scipy.optimize import show_options
 show_options(solver="minimize_scalar")
 ```
-]
-
----
+:::
+::::
 
 ## Local minima
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 def f(x):
   return -np.sinc(x-5)
@@ -407,11 +370,9 @@ plt.cla()
 p = plt.plot(x, f(x));
 plt.show()
 ```
-]
+:::
 
---
-
-.pull-right[
+::: {.column width='50%' .fragment}
 ```{python}
 res = minimize_scalar(f)
 res
@@ -425,13 +386,13 @@ p = plt.plot(x, f(x));
 plt.axvline(res.x, c='red')
 plt.show()
 ```
-]
-
----
+:::
+::::
 
 ## Random starts
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 rng = np.random.default_rng(seed=1234)
 
@@ -444,20 +405,17 @@ funs = [sol.fun for sol in sols]
 best = sols[np.argmin(funs)]
 best
 ```
-]
+:::
 
---
-
-.pull-right[
+::: {.column width='50%' .fragment}
 ```{python echo=FALSE, out.width="90%"}
 plt.cla()
 p = plt.plot(x, f(x));
 plt.axvline(best.x, c='red')
 plt.show()
 ```
-]
-
----
+:::
+::::
 
 ## Back to Rosenbrock's function
 
@@ -483,11 +441,10 @@ class: center, middle
 
 ## Example 4 - Spatial Tools
 
----
-
 ## Nearest Neighbors
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 rng = np.random.default_rng(seed=12345)
 pts = rng.multivariate_normal(
@@ -497,9 +454,9 @@ pts = rng.multivariate_normal(
 
 pts
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python echo=FALSE, out.width="90%"}
 plt.cla()
 plt.scatter(pts[:,0], pts[:,1], c='w')
@@ -509,13 +466,13 @@ for i in range(10):
 
 plt.show()
 ```
-]
-
----
+:::
+::::
 
 ## KD Trees
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 from scipy.spatial import KDTree
 
@@ -534,9 +491,9 @@ i
 dist, i = kd.query(pts[2,:], k=5)
 i
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python echo=FALSE, out.width="90%"}
 plt.cla()
 plt.scatter(pts[:,0], pts[:,1], c='w')
@@ -546,13 +503,13 @@ for i in range(10):
 
 plt.show()
 ```
-]
-
----
+:::
+::::
 
 ## Convex hulls
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 from scipy.spatial import ConvexHull
 
@@ -562,19 +519,19 @@ dir(hull)
 
 hull.simplices
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python out.width="90%"}
 scipy.spatial.convex_hull_plot_2d(hull)
 ```
-]
-
----
+:::
+::::
 
 ## Delaunay triangulations
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 from scipy.spatial import Delaunay
 
@@ -584,19 +541,19 @@ dir(tri)
 
 tri.simplices
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python out.width="90%"}
 scipy.spatial.delaunay_plot_2d(tri)
 ```
-]
-
----
+:::
+::::
 
 ## Voronoi diagrams
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 from scipy.spatial import Voronoi
 
@@ -606,22 +563,19 @@ dir(vor)
 
 vor.vertices
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python out.width="90%"}
 scipy.spatial.voronoi_plot_2d(vor)
 ```
-]
+:::
+::::
 
-
----
 
 class: center, middle
 
 ## Example 5 - stats
-
----
 
 ## Distributions 
 
@@ -643,8 +597,6 @@ Implements classes for 104 continuous and 19 discrete distributions,
 
 * `moment`: non-central moments of the distribution
 
----
-
 ## Basic usage
 
 ```{python}
@@ -661,13 +613,12 @@ gamma(a=1,scale=1).stats()
 norm().stats(moments="mvsk")
 ```
 
----
-
 ## Freezing
 
 Model parameters can be passed to any of the methods directory, or a distribution can be constructed using a specific set of parameters, which is known as freezing.
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 norm_rv = norm(loc=-1, scale=3)
 norm_rv.median()
@@ -678,11 +629,9 @@ unif_rv = uniform(loc=-1, scale=2)
 unif_rv.cdf([-2,-1,0,1,2])
 unif_rv.rvs(5)
 ```
-]
+:::
 
---
-
-.pull-right[
+::: {.column width='50%' .fragment}
 ```{python out.width="66%", fig.align="center"}
 g = gamma(a=2, loc=0, scale=1.2)
 
@@ -691,9 +640,8 @@ plt.plot(x, g.pdf(x), "k-")
 plt.axvline(x=g.mean(), c="r")
 plt.axvline(x=g.median(), c="b")
 ```
-]
-
----
+:::
+::::
 
 ## MLE
 
@@ -705,7 +653,7 @@ norm.fit(x)
 norm.fit(x, loc=2.5) # provide a guess for the parameter
 ```
 
---
+. . .
 
 ```{python}
 x = gamma.rvs(a=2.5, size=1000)

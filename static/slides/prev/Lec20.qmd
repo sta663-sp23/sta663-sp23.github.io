@@ -1,19 +1,15 @@
 ---
-title: "Lec 20 - More PyMC3"
-subtitle: "<br/> Statistical Computing and Computation"
-author: "Sta 663 | Spring 2022"
-date: "<br/> Dr. Colin Rundel"
-output:
-  xaringan::moon_reader:
-    css: ["slides.css"]
-    lib_dir: libs
-    nature:
-      highlightLines: true
-      highlightStyle: solarized-light
-      countIncrementalSlides: false
-      ratio: "16:9"
+title: "More PyMC3"
+subtitle: "Lecture 20"
+author: "Dr. Colin Rundel"
+footer: "Sta 663 - Spring 2023"
+format:
+  revealjs:
+    theme: slides.scss
+    transition: fade
+    slide-number: true
+    self-contained: true
 ---
-exclude: true
 
 ```{python setup}
 import numpy as np
@@ -82,8 +78,6 @@ local({
 })
 ```
 
----
-
 ## Demo 1 - Bayesian Lasso
 
 ```{python}
@@ -100,9 +94,9 @@ beta[[20,40,60,80]] = -10
 y = X @ beta + np.random.normal(size=n)
 ```
 
-.footnote[Based on [Bayesian Sparse Regression](https://betanalpha.github.io/assets/case_studies/bayes_sparse_regression.html) and [Lasso regression with block updating](https://docs.pymc.io/en/v3/pymc-examples/examples/pymc3_howto/lasso_block_update.html)]
-
----
+::: {.aside}
+Based on [Bayesian Sparse Regression](https://betanalpha.github.io/assets/case_studies/bayes_sparse_regression.html) and [Lasso regression with block updating](https://docs.pymc.io/en/v3/pymc-examples/examples/pymc3_howto/lasso_block_update.html)
+:::
 
 ## Naive Model
 
@@ -118,27 +112,21 @@ with pm.Model() as bayes_lasso:
 
 ```
 
----
-
 ```{python}
 az.summary(trace)
 ```
 
---
+. . .
 
 ```{python}
 az.summary(trace).iloc[[0,10,20,30,40,50,60,70,80,100]]
 ```
-
----
 
 ```{python out.width="40%"}
 ax = az.plot_forest(trace)
 plt.tight_layout()
 plt.show()
 ```
-
----
 
 ## Plot helper
 
@@ -157,14 +145,10 @@ def plot_slope(trace, prior="beta", chain=0):
   
 ```
 
----
-
 ```{python}
 plot_slope(trace)
 ```
 
-
----
 
 ## Weakly Informative Prior
 
@@ -181,21 +165,15 @@ with pm.Model() as bayes_weak:
 
 ```
 
----
-
 ```{python out.width="40%"}
 ax = az.plot_forest(trace)
 plt.tight_layout()
 plt.show()
 ```
 
----
-
 ```{python}
 plot_slope(trace)
 ```
-
----
 
 ## Demo 2 - Gaussian Process
 
@@ -220,8 +198,6 @@ y_true = np.random.multivariate_normal(
 y = y_true + nugget * np.random.randn(n)
 ```
 
----
-
 .small[
 ```{python}
 fig = plt.figure(figsize=(12, 5))
@@ -229,4 +205,5 @@ plt.plot(X, y_true, "-b", lw=3)
 plt.plot(X, y, "ok", ".")
 plt.show()
 ```
-]
+:::
+::::

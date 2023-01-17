@@ -1,19 +1,15 @@
 ---
-title: "Lec 14 - scikit-learn"
-subtitle: "<br/> Statistical Computing and Computation"
-author: "Sta 663 | Spring 2022"
-date: "<br/> Dr. Colin Rundel"
-output:
-  xaringan::moon_reader:
-    css: ["slides.css"]
-    lib_dir: libs
-    nature:
-      highlightLines: true
-      highlightStyle: solarized-light
-      countIncrementalSlides: false
-      ratio: "16:9"
+title: "scikit-learn"
+subtitle: "Lecture 14"
+author: "Dr. Colin Rundel"
+footer: "Sta 663 - Spring 2023"
+format:
+  revealjs:
+    theme: slides.scss
+    transition: fade
+    slide-number: true
+    self-contained: true
 ---
-exclude: true
 
 ```{python setup}
 import numpy as np
@@ -51,8 +47,6 @@ local({
 })
 ```
 
----
-
 ## scikit-learn
 
 > Scikit-learn is an open source machine learning library that supports supervised and unsupervised learning. It also provides various tools for model fitting, data preprocessing, model selection, model evaluation, and many other utilities.
@@ -65,17 +59,16 @@ local({
 > * Open source, commercially usable - BSD license
 
 
-.footnote[
+::: {.aside}
 This is one of several other "scikits" (e.g. scikit-image) which are scientific toolboxes built on top of scipy.
-]
-
----
+:::
 
 ## Submodules
 
 The `sklearn` package contains a large number of submodules which are specialized for different tasks / models,
 
-.pull-left[ .small[
+:::: {.columns}
+::: {.column width='50%'} .small[
 - `sklearn.base` - Base classes and utility functions
 - `sklearn.calibration` - Probability Calibration
 - `sklearn.cluster` - Clustering
@@ -95,9 +88,9 @@ The `sklearn` package contains a large number of submodules which are specialize
 - `sklearn.inspection` - Inspection
 - `sklearn.isotonic` - Isotonic regression
 - `sklearn.kernel_approximation` - Kernel Approximation
-] ]
+] :::
 
-.pull-right[ .small[
+::: {.column width='50%'} .small[
 - `sklearn.kernel_ridge` - Kernel Ridge Regression
 - `sklearn.linear_model` - Linear Models
 - `sklearn.manifold` - Manifold Learning
@@ -123,35 +116,33 @@ class: center, middle
 
 # Model Fitting
 
----
-
 ## Sample data
 
 To begin, we will examine a simple data set on the size and weight of a number of books. The goal is to model the weight of a book using some combination of the other features in the data. 
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 The included columns are:
 * `volume` - book volumes in cubic centimeters
 * `weight` - book weights in grams
 * `cover` - a categorical variable with levels `"hb"` hardback, `"pb"` paperback
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python}
 books = pd.read_csv("data/daag_books.csv")
 books
 ```
-]
+:::
+::::
 
-.footnote[These data come from the `allbacks` data set from the `DAAG` package in R]
-
----
+::: {.aside}
+These data come from the `allbacks` data set from the `DAAG` package in R
+:::
 
 ```{python out.width="50%"}
 sns.relplot(data=books, x="volume", y="weight", hue="cover")
 ```
-
----
 
 ## Linear regression
 
@@ -161,11 +152,12 @@ scikit-learn uses an object oriented system for implementing the various modelin
 from sklearn.linear_model import LinearRegression 
 ```
 
---
+. . .
 
 Each modeling class needs to be constructed (potentially with options) and then the resulting object will provide attributes and methods. 
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 lm = LinearRegression()
 
@@ -177,59 +169,58 @@ m = lm.fit(
 m.coef_
 m.intercept_
 ```
-]
+:::
 
---
-
-.pull-right[
+::: {.column width='50%' .fragment}
 Note `lm` and `m` are labels for the same object,
 
 ```{python}
 lm.coef_
 lm.intercept_
 ```
-]
-
----
+:::
+::::
 
 ## A couple of considerations
 
 When fitting a model, scikit-learn expects `X` to be a 2d array-like object (e.g. a `np.array` or `pd.DataFrame`) but will not accept a `pd.Series` or 1d `np.array`.
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python error=TRUE}
 lm.fit(
   X = books.volume,
   y = books.weight
 )
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python error=TRUE}
 lm.fit(
   X = np.array(books.volume),
   y = books.weight
 )
 ```
-]
+:::
+::::
 
---
+. . .
 
 <br/>
 
 <div>
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python error=TRUE}
 lm.fit(
   X = np.array(books.volume).reshape(-1,1),
   y = books.weight
 )
 ```
-]
+:::
+::::
 </div>
-
----
 
 ## Model parameters
 
@@ -239,21 +230,19 @@ Depending on the model being used, there will be a number of parameters that can
 lm.get_params()
 ```
 
---
+. . .
 
 ```{python}
 lm.set_params(fit_intercept = False)
 ```
 
---
+. . .
 
 ```{python}
 lm = lm.fit(X = books[["volume"]], y = books.weight)
 lm.intercept_
 lm.coef_
 ```
-
----
 
 ## Model prediction
 
@@ -268,16 +257,12 @@ books["weight_lm_pred"] = lm.predict(X = books[["volume"]])
 books
 ```
 
----
-
 ```{python out.width="50%"}
 plt.figure()
 sns.scatterplot(data=books, x="volume", y="weight", hue="cover")
 sns.lineplot(data=books, x="volume", y="weight_lm_pred", color="green")
 plt.show()
 ```
-
----
 
 ## Residuals?
 
@@ -292,8 +277,6 @@ ax.axhline(c="k", ls="--", lw=1)
 plt.show()
 ```
 
----
-
 ## Categorical variables?
 
 Scikit-learn expects that the model matrix be numeric before fitting,
@@ -305,15 +288,13 @@ lm = lm.fit(
 )
 ```
 
---
+. . .
 
 the obvious solution here is dummy coding the categorical variables - this can be done with pandas via `pd.get_dummies()` or with a scikit-learn preprocessor, we'll demo the former first.
 
 ```{python}
 pd.get_dummies(books[["volume", "cover"]])
 ```
-
----
 
 ```{python}
 lm = LinearRegression().fit(
@@ -326,9 +307,9 @@ lm.coef_
 ```
 
 
-.footnote[Do these results look reasonable? What went wrong?]
-
----
+::: {.aside}
+Do these results look reasonable? What went wrong?
+:::
 
 ## Quick comparison with R
 
@@ -340,11 +321,10 @@ d['cover_pb'] = ifelse(d$cover == "pb", 1, 0)
 summary(lm)
 ```
 
----
-
 ## Avoiding co-linearity
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 lm = LinearRegression(fit_intercept = False).fit(
   X = pd.get_dummies(books[["volume", "cover"]]),
@@ -355,9 +335,9 @@ lm.intercept_
 lm.coef_
 lm.feature_names_in_
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python}
 lm = LinearRegression().fit(
   X = pd.get_dummies(books[["volume", "cover"]], drop_first=True),
@@ -368,17 +348,14 @@ lm.intercept_
 lm.coef_
 lm.feature_names_in_
 ```
-]
-
----
+:::
+::::
 
 ## Preprocessors
 
 These are a set of transformer classes present in the `sklearn.preprocessing` submodule that are designed to help with the preparation of raw feature data into quantities more suitable for downstream modeling tools.
 
 Like the modeling classes, they have an object oriented design that shares a common interface (methods and attributes) for bringing in data, transforming it, and returning it.
-
----
 
 ## OneHotEncoder
 
@@ -388,22 +365,22 @@ For dummy coding we can use the `OneHotEncoder` preprocessor, the default is to 
 from sklearn.preprocessing import OneHotEncoder
 ```
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 enc = OneHotEncoder(sparse=False)
 enc.fit(X = books[["cover"]])
 enc.transform(X = books[["cover"]])
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python}
 enc = OneHotEncoder(sparse=False, drop="first")
 enc.fit_transform(X = books[["cover"]])
 ```
-]
-
----
+:::
+::::
 
 ## Other useful bits
 
@@ -417,8 +394,6 @@ enc.get_feature_names_out()
 f = enc.transform(X = books[["cover"]])
 enc.inverse_transform(f)
 ```
-
----
 
 ## A cautionary note
 
@@ -436,13 +411,13 @@ pd.DataFrame(
   columns = enc.get_feature_names_out()
 )
 ```
-]
-
----
+:::
+::::
 
 ## Putting it together
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 cover = OneHotEncoder(
   sparse=False
@@ -458,31 +433,32 @@ lm2 = LinearRegression(fit_intercept=False).fit(
 
 lm2.coef_
 ```
-]
+:::
 
---
-
-.pull-right[ .small[
+::: {.column width='50%' .fragment} .small[
 ```{python}
 books["weight_lm2_pred"] = lm2.predict(X=X)
 books.drop(["weight_lm_pred", "resid_lm_pred"], axis=1)
 ```
-] ]
+:::
+:::: ]
 
-.footnote[We'll see a more elegant way of doing this in the near future]
+::: {.aside}
+We'll see a more elegant way of doing this in the near future
+:::
 
----
-
-.pull-left[ .small[
+:::: {.columns}
+::: {.column width='50%'} .small[
 ```{python}
 plt.figure()
 sns.scatterplot(data=books, x="volume", y="weight", hue="cover")
 sns.lineplot(data=books, x="volume", y="weight_lm2_pred", hue="cover")
 plt.show()
 ```
-] ]
+:::
+:::: :::
 
-.pull-right[ .small[
+::: {.column width='50%'} .small[
 ```{python}
 books["resid_lm2_pred"] = books["weight"] - books["weight_lm2_pred"]
 
@@ -491,9 +467,8 @@ ax = sns.scatterplot(data=books, x="volume", y="resid_lm2_pred", hue="cover")
 ax.axhline(c="k", ls="--", lw=1)
 plt.show()
 ```
-] ]
-
----
+:::
+:::: ]
 
 ## Model performance
 
@@ -503,33 +478,33 @@ Scikit-learn comes with a number of builtin functions for measuring model perfor
 from sklearn.metrics import mean_squared_error, r2_score
 ```
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 r2_score(books.weight, books.weight_lm_pred)
 mean_squared_error(books.weight, books.weight_lm_pred) # MSE
 mean_squared_error(books.weight, books.weight_lm_pred, squared=False) # RMSE
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python}
 r2_score(books.weight, books.weight_lm2_pred)
 mean_squared_error(books.weight, books.weight_lm2_pred) # MSE
 mean_squared_error(books.weight, books.weight_lm2_pred, squared=False) # RMSE
 ```
-]
+:::
+::::
 
-.footnote[See [API Docs](https://scikit-learn.org/stable/modules/classes.html#module-sklearn.metrics) for a list of available metrics]
-
----
+::: {.aside}
+See [API Docs](https://scikit-learn.org/stable/modules/classes.html#module-sklearn.metrics) for a list of available metrics
+:::
 
 ## Exercise 1
 
 Create and fit a model for the `books` data that includes an interaction effect between `volume` and `cover`. 
 
 You will need to do this manually with `pd.getdummies()` or `OneHotEncoder()`.
-
----
 
 ## Polynomial regression
 
@@ -540,13 +515,12 @@ df = pd.read_csv("data/gp.csv")
 sns.relplot(data=df, x="x", y="y")
 ```
 
----
-
 ## By hand
 
 It is certainly possible to construct the necessary model matrix by hand (or even use a function to automate the process), but this is less then desirable generally - particularly if we want to do anything fancy (e.g. cross validation)
 
-.pull-left[ .small[
+:::: {.columns}
+::: {.column width='50%'} .small[
 ```{python}
 X = np.c_[
     np.ones(df.shape[0]),
@@ -559,11 +533,10 @@ plm = LinearRegression(fit_intercept = False).fit(X=X, y=df.y)
 
 plm.coef_
 ```
-] ]
+:::
+:::: :::
 
---
-
-.pull-right[ .small[
+::: {.column width='50%' .fragment} .small[
 ```{python out.width="66%"}
 df["y_pred"] = plm.predict(X=X)
 plt.figure(layout="constrained")
@@ -571,9 +544,8 @@ sns.scatterplot(data=df, x="x", y="y")
 sns.lineplot(data=df, x="x", y="y_pred", color="k")
 plt.show()
 ```
-] ]
-
----
+:::
+:::: ]
 
 ## PolynomialFeatures
 
@@ -584,32 +556,31 @@ from sklearn.preprocessing import PolynomialFeatures
 X = np.array(range(6)).reshape(-1,1)
 ```
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 pf = PolynomialFeatures(degree=3)
 pf.fit(X)
 pf.transform(X)
 pf.get_feature_names_out()
 ```
-]
+:::
 
---
-
-.pull-right[
+::: {.column width='50%' .fragment}
 ```{python}
 pf = PolynomialFeatures(degree=2, include_bias=False)
 pf.fit_transform(X)
 pf.get_feature_names_out()
 ```
-]
-
----
+:::
+::::
 
 ## Interactions
 
 If the feature matrix `X` has more than one column then `PolynomialFeatures` transformer will include interaction terms with total degree up to `degree`.
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 X.reshape(-1, 2)
 
@@ -617,9 +588,9 @@ pf = PolynomialFeatures(degree=3, include_bias=False)
 pf.fit_transform(X.reshape(-1, 2))
 pf.get_feature_names_out()
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python}
 X.reshape(-1, 3)
 
@@ -627,13 +598,13 @@ pf = PolynomialFeatures(degree=2, include_bias=False)
 pf.fit_transform(X.reshape(-1, 3))
 pf.get_feature_names_out()
 ```
-]
-
----
+:::
+::::
 
 ## Modeling with PolynomialFeatures
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 def poly_model(X, y, degree):
   X  = PolynomialFeatures(
@@ -647,20 +618,17 @@ def poly_model(X, y, degree):
 poly_model(X = df[["x"]], y = df.y, degree = 2)
 poly_model(X = df[["x"]], y = df.y, degree = 3)
 ```
-]
+:::
 
---
-
-.pull-right[
+::: {.column width='50%' .fragment}
 ```{python out.width="66%"}
 degrees = range(1,11)
 rmses = [poly_model(X=df[["x"]], y=df.y, degree=d) 
          for d in degrees]
 sns.relplot(x=degrees, y=rmses)
 ```
-]
-
----
+:::
+::::
 
 ```{python echo=FALSE, out.width="60%", cache=TRUE}
 res = df.copy().drop("y_pred", axis=1)
@@ -681,8 +649,6 @@ g = sns.relplot(
 [ ax.scatter(res.x, res.y, alpha=0.3)  for ax in g.axes ]
 ```
 
----
-
 ## Pipelines
 
 You may have noticed that `PolynomialFeatures` takes a model matrix as input and returns a new model matrix as output which is then used as the input for `LinearRegression`. This is not an accident, and by structuring the library in this way sklearn is designed to enable the connection of these steps together, into what sklearn calls a *pipeline*.
@@ -698,8 +664,6 @@ p = make_pipeline(
 p
 ```
 
----
-
 ## Using Pipelines
 
 Once constructed, this object can be used just like our previous `LinearRegression` model (i.e. fit to our data and then used for prediction)
@@ -709,13 +673,11 @@ p = p.fit(X = df[["x"]], y = df.y)
 p
 ```
 
---
+. . .
 
 ```{python}
 p.predict(X = df[["x"]])
 ```
-
----
 
 ```{python out.width="40%"}
 plt.figure(layout="constrained")
@@ -723,8 +685,6 @@ sns.scatterplot(data=df, x="x", y="y")
 sns.lineplot(x=df.x, y=p.predict(X = df[["x"]]), color="k")
 plt.show()
 ```
-
----
 
 ## Model coefficients (or other attributes)
 
@@ -734,7 +694,7 @@ The attributes of steps are not directly accessible, but can be accessed via `st
 p.coef_
 ```
 
---
+. . .
 
 ```{python}
 p.named_steps["linearregression"].intercept_
@@ -742,15 +702,15 @@ p.steps[1][1].coef_
 p.steps
 ```
 
---
+. . .
 
 ```{python}
 p.steps[0][1].get_feature_names_out()
 ```
 
-.footnote[Anyone notice a problem?]
-
----
+::: {.aside}
+Anyone notice a problem?
+:::
 
 ## What about step parameters?
 
@@ -761,15 +721,13 @@ p.named_steps["linearregression"].get_params()
 p.named_steps["linearregression"].set_params(fit_intercept=False)
 ```
 
---
+. . .
 
 ```{python}
 p.fit(X = df[["x"]], y = df.y)
 p.named_steps["linearregression"].intercept_
 p.named_steps["linearregression"].coef_
 ```
-
----
 
 These parameters can also be directly accessed at the pipeline level, note how the names are constructed:
 
@@ -778,15 +736,13 @@ p.get_params()
 p.set_params(linearregression__fit_intercept=True, polynomialfeatures__include_bias=False)
 ```
 
---
+. . .
 
 ```{python}
 p.fit(X = df[["x"]], y = df.y)
 p.named_steps["linearregression"].intercept_
 p.named_steps["linearregression"].coef_
 ```
-
----
 
 ## Tuning parameters
 
@@ -810,9 +766,9 @@ grid_search = GridSearchCV(
 grid_search
 ```
 
-.footnote[Much more detail on this next time - including the proper way to do cross-validation]
-
----
+::: {.aside}
+Much more detail on this next time - including the proper way to do cross-validation
+:::
 
 ## Preview - Performing a grid search
 
@@ -820,15 +776,13 @@ grid_search
 grid_search.fit(X = df[["x"]], y = df.y)
 ```
 
---
+. . .
 
 ```{python}
 grid_search.best_index_
 grid_search.best_params_
 grid_search.best_score_
 ```
-
----
 
 ## `cv_results_`
 

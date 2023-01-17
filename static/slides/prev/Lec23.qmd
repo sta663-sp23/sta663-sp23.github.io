@@ -1,19 +1,15 @@
 ---
-title: "Lec 23 - pytorch - optim & nn"
-subtitle: "<br/> Statistical Computing and Computation"
-author: "Sta 663 | Spring 2022"
-date: "<br/> Dr. Colin Rundel"
-output:
-  xaringan::moon_reader:
-    css: ["slides.css"]
-    lib_dir: libs
-    nature:
-      highlightLines: true
-      highlightStyle: solarized-light
-      countIncrementalSlides: false
-      ratio: "16:9"
+title: "pytorch - optim & nn"
+subtitle: "Lecture 23"
+author: "Dr. Colin Rundel"
+footer: "Sta 663 - Spring 2023"
+format:
+  revealjs:
+    theme: slides.scss
+    transition: fade
+    slide-number: true
+    self-contained: true
 ---
-exclude: true
 
 ```{python setup}
 import numpy as np
@@ -92,8 +88,6 @@ class: center, middle
 
 # Demo 2 - Using a model
 
----
-
 ## A sample model
 
 ```{python}
@@ -129,11 +123,10 @@ class Model(torch.nn.Module):
 ```
 
 
----
-
 ## Fitting
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 x = torch.linspace(-math.pi, math.pi, 200)
 y = torch.sin(x)
@@ -151,21 +144,21 @@ losses = m.fit(opt, n=10000)
 
 m.beta.detach()
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python}
 plt.figure(figsize=(8,6), layout="constrained")
 plt.plot(losses)
 plt.show()
 ```
-]
-
----
+:::
+::::
 
 ## Learning rate and convergence
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python lr_plot, eval=FALSE}
 plt.figure(figsize=(8,6), layout="constrained")
 
@@ -179,19 +172,19 @@ for lr in [1e-3, 1e-4, 1e-5, 1e-6]:
 plt.legend()
 plt.show()
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python echo=FALSE}
 <<lr_plot>>
 ```
-]
-
----
+:::
+::::
 
 ## Momentum and convergence
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python moment_plot, eval=FALSE}
 plt.figure(figsize=(8,6), layout="constrained")
 
@@ -205,19 +198,19 @@ for mt in [0, 0.1, 0.25, 0.5, 0.75, 0.9, 0.99]:
 plt.legend()
 plt.show()
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python echo=FALSE}
 <<moment_plot>>
 ```
-]
-
----
+:::
+::::
 
 ## Optimizers and convergence
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python opt_plot, eval=FALSE}
 plt.figure(figsize=(8,6), layout="constrained")
 
@@ -235,20 +228,19 @@ for opt_fn in opts:
 plt.legend()
 plt.show()
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python echo=FALSE}
 <<opt_plot>>
 ```
-]
+:::
+::::
 
 ---
 class: center, middle
 
 ## MNIST & Logistic models
-
----
 
 ## MNIST handwritten digits - simplified
 
@@ -259,23 +251,24 @@ digits = load_digits()
 ```
 
 
-.pull-left[ .small[
+:::: {.columns}
+::: {.column width='50%'} .small[
 ```{python}
 X = digits.data
 X.shape
 X[0:3]
 ```
-] ]
+:::
+:::: :::
 
-.pull-right[ .small[ 
+::: {.column width='50%'} .small[ 
 ```{python}
 y = digits.target
 y.shape
 y[0:10]
 ```
-] ]
-
----
+:::
+:::: ]
 
 ## Example digits
 
@@ -291,8 +284,6 @@ for ax, image, label in zip(axes2, digits.images, digits.target):
 plt.show()
 ```
 
----
-
 ## Test train split
 
 ```{python}
@@ -303,7 +294,8 @@ X_train, X_test, y_train, y_test = train_test_split(
 )
 ```
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 X_train.shape
 y_train.shape
@@ -311,11 +303,9 @@ y_train.shape
 X_test.shape
 y_test.shape
 ```
-]
+:::
 
---
-
-.pull-right[
+::: {.column width='50%' .fragment}
 ```{python}
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
@@ -325,24 +315,24 @@ lr = LogisticRegression(penalty='none').fit(X_train, y_train)
 accuracy_score(y_train, lr.predict(X_train))
 accuracy_score(y_test, lr.predict(X_test))
 ```
-]
+:::
+::::
 
 
-
----
 
 ## As Tensors
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 X_train = torch.from_numpy(X_train).float()
 y_train = torch.from_numpy(y_train)
 X_test = torch.from_numpy(X_test).float()
 y_test = torch.from_numpy(y_test)
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python}
 X_train.shape
 y_train.shape
@@ -350,9 +340,8 @@ y_train.shape
 X_test.shape
 y_test.shape
 ```
-]
-
----
+:::
+::::
 
 ## PyTorch Model
 
@@ -386,8 +375,6 @@ class mnist_model(torch.nn.Module):
       return losses
 ```
 
----
-
 ## Cross entropy loss
 
 ```{python}
@@ -401,11 +388,10 @@ plt.plot(l)
 plt.show()
 ```
 
----
-
 ## Out of sample accuracy
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 m(X_test)
 val, index = torch.max(m(X_test), dim=1)
@@ -414,17 +400,16 @@ val, index = torch.max(m(X_test), dim=1)
 ```{python}
 index
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python}
 (index == y_test).sum()
 (index == y_test).sum() / len(y_test)
 ```
-]
+:::
+::::
 
-
----
 
 ## Calculating Accuracy
 
@@ -464,9 +449,8 @@ class mnist_model(torch.nn.Module):
             
       return (losses, train_acc, test_acc)
 ```
-]
-
----
+:::
+::::
 
 ## Performance
 
@@ -482,8 +466,6 @@ plt.plot(test_acc, label="test accuracy")
 plt.legend()
 plt.show()
 ```
-
----
 
 ## NN Layers
 
@@ -517,8 +499,6 @@ class mnist_nn_model(torch.nn.Module):
       return (losses, train_acc, test_acc)
 ```
 
----
-
 ## Linear layer parameters
 
 ```{python}
@@ -531,13 +511,11 @@ list(m.parameters())[0].shape
 list(m.parameters())[1].shape
 ```
 
---
+. . .
 
 Applies a linear transform to the incoming data:
 $$y = x A^T+b$$
 
-
----
 
 ## Performance
 
@@ -563,8 +541,6 @@ plt.show()
 class: center, middle
 
 ## Feedforward Neural Network
-
----
 
 ## FNN Model
 
@@ -604,9 +580,8 @@ class mnist_fnn_model(torch.nn.Module):
             
       return (losses, train_acc, test_acc)
 ```
-]
-
----
+:::
+::::
 
 ## Model parameters
 
@@ -618,8 +593,6 @@ len(list(m.parameters()))
 for i, p in enumerate(m.parameters()):
   print("Param", i, p.shape)
 ```
-
----
 
 ## Performance - ReLU
 
@@ -644,11 +617,10 @@ plt.legend()
 plt.show()
 ```
 
----
-
 ## Non-linear activation functions
 
-.pull-left[ .small[
+:::: {.columns}
+::: {.column width='50%'} .small[
 $$\text{Tanh}(x) = \frac{\exp(x)-\exp(-x)}{\exp(x) + \exp(-x)}$$
 
 ```{r echo=FALSE, out.width="55%"}
@@ -659,16 +631,16 @@ $$\text{Sigmoid}(x) = \frac{1}{1+\exp(-x)}$$
 ```{r echo=FALSE, out.width="55%"}
 knitr::include_graphics("imgs/torch_Sigmoid.png")
 ```
-] ]
+:::
+:::: :::
 
-.pull-right[ .small[
+::: {.column width='50%'} .small[
 $$\text{ReLU}(x) = \max(0,x)$$
 ```{r echo=FALSE, out.width="55%"}
 knitr::include_graphics("imgs/torch_ReLU.png")
 ```
-] ]
-
----
+:::
+:::: ]
 
 ## Performance - tanh
 
@@ -693,8 +665,6 @@ plt.legend()
 plt.show()
 ```
 
----
-
 ## Performance - Sigmoid
 
 ```{python}
@@ -717,8 +687,6 @@ plt.legend()
 
 plt.show()
 ```
-
----
 
 ## Multilayer FNN Model
 
@@ -763,9 +731,8 @@ class mnist_fnn2_model(torch.nn.Module):
             
       return (losses, train_acc, test_acc)
 ```
-]
-
----
+:::
+::::
 
 ## Performance
 
@@ -795,27 +762,25 @@ class: center, middle
 
 ## Convolutional NN
 
----
-
 ## 2d convolutions
 
-.footnote[[Source](https://towardsdatascience.com/intuitively-understanding-convolutions-for-deep-learning-1f6f42faee1)]
+::: {.aside}
+[Source](https://towardsdatascience.com/intuitively-understanding-convolutions-for-deep-learning-1f6f42faee1)
+:::
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{r echo=FALSE}
 knitr::include_graphics("imgs/tds_2dconv.gif")
 ```
-]
+:::
 
---
-
-.pull-right[
+::: {.column width='50%' .fragment}
 ```{r echo=FALSE}
 knitr::include_graphics("imgs/tds_2dconv2.gif")
 ```
-]
-
----
+:::
+::::
 
 ## `nn.Conv2d()`
 
@@ -827,13 +792,11 @@ cv = torch.nn.Conv2d(
 )
 ```
 
---
+. . .
 
 ```{python}
 list(cv.parameters())
 ```
-
----
 
 ## Applying `Conv2d()`
 
@@ -842,19 +805,17 @@ X_train[[0]]
 X_train[[0]].shape
 ```
 
---
+. . .
 
 ```{python, error=TRUE}
 cv(X_train[[0]])
 ```
 
---
+. . .
 
 ```{python, error=TRUE}
 cv(X_train[[0]].view(1,8,8))
 ```
-
----
 
 ## Pooling
 
@@ -869,7 +830,8 @@ x = torch.tensor(
 x.shape
 ```
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 p = torch.nn.MaxPool2d(kernel_size=2, stride=1)
 p(x)
@@ -877,9 +839,9 @@ p(x)
 p = torch.nn.MaxPool2d(kernel_size=3, stride=1, padding=1)
 p(x)
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python}
 p = torch.nn.AvgPool2d(kernel_size=2)
 p(x)
@@ -887,9 +849,8 @@ p(x)
 p = torch.nn.AvgPool2d(kernel_size=2, padding=1)
 p(x)
 ```
-]
-
----
+:::
+::::
 
 ## Convolutional model
 
@@ -933,8 +894,6 @@ class mnist_conv_model(torch.nn.Module):
             
       return (losses, train_acc, test_acc)
 ```
-
----
 
 ## Performance
 

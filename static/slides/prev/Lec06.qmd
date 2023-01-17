@@ -1,18 +1,15 @@
 ---
-title: "Lec 06 - Advanced indexing & Broadcasting"
-subtitle: "<br/> Statistical Computing and Computation"
-author: "Sta 663 | Spring 2022"
-date: "<br/> Dr. Colin Rundel"
-output:
-  xaringan::moon_reader:
-    css: ["slides.css"]
-    lib_dir: libs
-    nature:
-      highlightStyle: solarized-light
-      countIncrementalSlides: false
-      ratio: "16:9"
+title: "Advanced indexing & Broadcasting"
+subtitle: "Lecture 06"
+author: "Dr. Colin Rundel"
+footer: "Sta 663 - Spring 2023"
+format:
+  revealjs:
+    theme: slides.scss
+    transition: fade
+    slide-number: true
+    self-contained: true
 ---
-exclude: true
 
 ```{python setup}
 import numpy as np
@@ -20,20 +17,17 @@ import numpy as np
 np.set_printoptions(edgeitems=3, linewidth=180)
 ```
 
----
-
 
 
 # NumPy - Advanced Indexing
-
----
 
 ## From last time: subsetting with tuples
 
 Unlike lists, an ndarray can be subset by a tuple containing integers,
 
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python error=TRUE}
 x = np.arange(6)
 x
@@ -42,9 +36,9 @@ x[(0,1,3),]
 x[(0,1,3)]
 x[0,1,3]
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python}
 x = np.arange(16).reshape((4,4))
 x
@@ -53,21 +47,20 @@ x[(0,1,3), :]
 x[:, (0,1,3)]
 x[(0,1,3), (0,1,3)]
 ```
-]
+:::
+::::
 
 
-.footnote[
+::: {.aside}
 More next time on why `x[(0,1,3)]` does not work.
-]
-
----
+:::
 
 ## Integer array subsetting (lists)
 
 Lists of integers can be used to subset in the same way:
 
-.small[
-.pull-left[
+:::: {.columns .small}
+::: {.column width='50%'}
 ```{python error=TRUE}
 x = np.arange(6)
 x
@@ -77,9 +70,9 @@ x[[0,1,3]]
 
 x[[1.,3.]]
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python}
 x = np.arange(16).reshape((4,4))
 x
@@ -89,21 +82,19 @@ x[[1,3], ]
 x[:, [1,3]]
 x[[1,3], [1,3]]
 ```
-]
-]
+:::
+::::
 
-.footnote[
+::: {.aside}
 Note that the `,` is now optional
-]
-
----
+:::
 
 ## Integer array subsetting (ndarrays)
 
 Similarly we can also us integer ndarrays:
 
-.small[
-.pull-left[
+:::: {.columns .small}
+::: {.column width='50%'}
 ```{python error=TRUE}
 x = np.arange(6)
 y = np.array([0,1,3])
@@ -114,9 +105,9 @@ x[y]
 
 x[z]
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python}
 x = np.arange(16).reshape((4,4))
 x
@@ -127,14 +118,12 @@ x[y, ]
 x[:, y]
 x[y, y]
 ```
-]
-]
+:::
+::::
 
-.footnote[
+::: {.aside}
 Again the `,` is now optional
-]
-
----
+:::
 
 ## Exercise 1
 
@@ -146,8 +135,6 @@ x
 ```
 
 write an expression to obtaint the center 2x2 values (i.e. 5, 6, 9, 10 as a matrix).
-
----
 
 ## Boolean indexing
 
@@ -163,12 +150,14 @@ x
 x[[True, False, True, False, True, False]]
 x[np.array([True, True, False, False, True, False])]
 ```
-]
+:::
+::::
 
---
+. . .
 
 the utility comes from vectorized comparison operations,
-.small[.pull-left[
+.small[:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 x > 3
 x[x>3]
@@ -176,17 +165,16 @@ x[x>3]
 x % 2 == 1
 x[x % 2 == 1]
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python}
 y = np.arange(9).reshape((3,3))
 y % 2 == 0
 y[y % 2 == 0]
 ```
-] ]
-
----
+:::
+:::: ]
 
 ## NumPy and Boolean operators
 
@@ -206,8 +194,6 @@ y & (x > 3)
 y | (x > 3)
 ```
 
----
-
 ## meshgrid
 
 One other useful function in NumPy is `meshgrid()` which generates all possible combinations between the input vectors,
@@ -221,8 +207,6 @@ y
 np.sqrt(x**2 + y**2)
 ```
 
----
-
 ## Exercise 2
 
 We will now use this to attempt a simple brute force approach to numerical optimization, define a grid of points using `meshgrid()` to approximate the minima the following function:
@@ -232,8 +216,6 @@ f(x,y) = (1-x)^2 + 100(y-x^2)^2
 $$ 
 Considering values of $x,y \in (-1,3)$, which values of $x,y$ minimize this function?
 
-
----
 
 ```{r echo=FALSE, message=FALSE, out.width="60%", fig.align="center"}
 library(tidyverse)
@@ -251,13 +233,9 @@ expand.grid(
         coord_fixed()
 ```
 
----
-
 
 
 # NumPy - Broadcasting
-
----
 
 ## Broadcasting
 
@@ -273,8 +251,6 @@ x * np.array([2,2,2])
 
 In the first example `2` is equivalent to the array `np.array([2])` which is being broadcast across the longer array `x`.
 
----
-
 ## Efficiancy
 
 Using broadcasts can be much more efficient as it does not copy the underlying data,
@@ -287,18 +263,14 @@ y = np.array([2]).repeat(1e5)
 ```python
 %timeit x * 2
 ```
-```
 31.3 µs ± 1.3 µs per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
 ```
 
 ```python
 %timeit x * y
 ```
-```
 70.5 µs ± 2.93 µs per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
 ```
-
----
 
 ## General Broadcasting
 
@@ -309,29 +281,27 @@ y = np.array([2]).repeat(1e5)
 > 
 > If these conditions are not met, a `ValueError: operands could not be broadcast together` exception is thrown, indicating that the arrays have incompatible shapes. The size of the resulting array is the size that is not 1 along each axis of the inputs.
 
---
+. . .
 
-.small[
-.pull-left[
+:::: {.columns .small}
+::: {.column width='50%'}
 ```{python}
 x = np.arange(12).reshape((4,3))
 x
 
 x + np.array([1,2,3])
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python error=TRUE}
 x = np.arange(12).reshape((3,4))
 x
 
 x + np.array([1,2,3])
 ```
-]
-]
-
----
+:::
+::::
 
 ## A quick fix
 
@@ -343,11 +313,10 @@ x + np.array([1,2,3])
 x + np.array([1,2,3]).reshape(3,1)
 ```
 
----
-
 ## Mechanics
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 x = np.arange(12).reshape((4,3))
 y = 1
@@ -377,11 +346,9 @@ y    (1d array):     3
 ----------------------
 x+y  (2d array): 4 x 3
 ```
-]
+:::
 
---
-
-.pull-right[
+::: {.column width='50%' .fragment}
 ```{python error=TRUE}
 x = np.arange(12).reshape((3,4))
 y = np.array([1,2,3])
@@ -414,12 +381,10 @@ x+y  (2d array): 3 x 4
 
 ]
 
----
-
 ## Another example
 
-.small[
-.pull-left[
+:::: {.columns .small}
+::: {.column width='50%'}
 ```{python}
 a = np.array([0,10,20,30]).reshape((4,1))
 b = np.array([1,2,3])
@@ -427,9 +392,9 @@ b = np.array([1,2,3])
 a
 b
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 
 ```{python}
 a+b
@@ -442,20 +407,18 @@ b    (1d array):     3
 ----------------------
 x+y  (2d array): 4 x 3
 ```
-]
-]
+:::
+::::
 
---
+. . .
 
 ```{r out.width="60%", fig.align="center", echo=FALSE}
 knitr::include_graphics("imgs/numpy_broadcasting.png")
 ```
 
-.footnote[
+::: {.aside}
 From NumPy user guide - [Broadcasting](https://numpy.org/doc/stable/user/basics.broadcasting.html)
-]
-
----
+:::
 
 ## Example - Standardizing
 
@@ -473,8 +436,6 @@ Use broadcasting to standardize all three columns to have mean 0 and standard de
 
 Check the new data set using `mean()` and `std()`.
 
----
-
 ## Exercise 3
 
 For each of the following combinations determine what the resulting dimension will be:
@@ -489,8 +450,6 @@ For each of the following combinations determine what the resulting dimension wi
 
 * A (3) + B (4)
 
----
-
 ## Broadcasting and assignment
 
 In addition to arithmetic operators, broadcasting can be used with assignment via array indexing,
@@ -501,30 +460,28 @@ y = -np.arange(4)
 z = -np.arange(3)
 ```
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 x[:] = y
 x
 x[...] = y
 x
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python error=TRUE}
 x[:] = z
 x[:] = z.reshape((3,1))
 x
 ```
-]
-
----
+:::
+::::
 
 
 
 # NumPy - Basic file IO
-
----
 
 ## Reading and writing arrays
 
@@ -543,8 +500,6 @@ np.all(x == new_x)
 ```
 
 Additional functions for saving (`savez()`, `savez_compressed()`, `savetxt()`) exist for saving multiple arrays or saving a text representation of an array.
-
----
 
 ## Reading delimited data
 

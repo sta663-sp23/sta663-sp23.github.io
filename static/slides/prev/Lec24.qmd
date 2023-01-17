@@ -1,19 +1,15 @@
 ---
-title: "Lec 24 - pytorch - GPU"
-subtitle: "<br/> Statistical Computing and Computation"
-author: "Sta 663 | Spring 2022"
-date: "<br/> Dr. Colin Rundel"
-output:
-  xaringan::moon_reader:
-    css: ["slides.css"]
-    lib_dir: libs
-    nature:
-      highlightLines: true
-      highlightStyle: solarized-light
-      countIncrementalSlides: false
-      ratio: "16:9"
+title: "pytorch - GPU"
+subtitle: "Lecture 24"
+author: "Dr. Colin Rundel"
+footer: "Sta 663 - Spring 2023"
+format:
+  revealjs:
+    theme: slides.scss
+    transition: fade
+    slide-number: true
+    self-contained: true
 ---
-exclude: true
 
 ```{python setup}
 import numpy as np
@@ -88,8 +84,6 @@ local({
 })
 ```
 
----
-
 ## CUDA
 
 > CUDA (or Compute Unified Device Architecture) is a parallel computing platform and application programming interface (API) that allows software to use certain types of graphics processing unit (GPU) for general purpose processing, an approach called general-purpose computing on GPUs (GPGPU). CUDA is a software layer that gives direct access to the GPU's virtual instruction set and parallel computational elements, for the execution of compute kernels.
@@ -116,10 +110,10 @@ Core libraries:
 
 
 
-.footnote[[Source](https://en.wikipedia.org/wiki/CUDA)]
+::: {.aside}
+[Source](https://en.wikipedia.org/wiki/CUDA)
+:::
 
-
----
 
 ## CUDA Kernels
 
@@ -163,15 +157,11 @@ class: center, middle
 knitr::include_graphics("imgs/gpu_bench2.png")
 ```
 
----
-
 ## GPU Status
 
 ```{bash}
 nvidia-smi
 ```
-
----
 
 ## Torch GPU Information
 
@@ -187,13 +177,12 @@ torch.cuda.get_device_properties(0)
 torch.cuda.get_device_properties(1)
 ```
 
----
-
 ## GPU Tensors
 
 Usage of the GPU is governed by the location of the Tensors - to use the GPU we allocate them on the GPU device.
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 cpu = torch.device('cpu')
 cuda0 = torch.device('cuda:0')
@@ -202,25 +191,21 @@ cuda1 = torch.device('cuda:1')
 x = torch.linspace(0,1,5, device=cuda0)
 y = torch.randn(5,2, device=cuda0)
 z = torch.rand(2,3, device=cpu)
-```
 ```{python}
 x
 y
 z
 ```
-]
+:::
 
---
-
-.pull-right[
+::: {.column width='50%' .fragment}
 ```{python error=TRUE}
 x @ y
 y @ z
 y @ z.to(cuda0)
 ```
-]
-
----
+:::
+::::
 
 ## NN Layers + GPU
 
@@ -231,20 +216,18 @@ nn = torch.nn.Linear(5,5)
 X = torch.randn(10,5).cuda()
 ```
 
---
+. . .
 
 ```{python error=TRUE}
 nn(X)
 ```
 
---
+. . .
 
 ```{python}
 nn.cuda()(X)
 nn.to(device="cuda")(X)
 ```
-
----
 
 ## Back to MNIST
 
@@ -267,7 +250,7 @@ X_test = torch.from_numpy(X_test).float()
 y_test = torch.from_numpy(y_test)
 ```
 
---
+. . .
 
 To use the GPU for computation we need to copy these tensors to the GPU,
 
@@ -277,8 +260,6 @@ y_train_cuda = y_train.to(device=cuda0)
 X_test_cuda = X_test.to(device=cuda0)
 y_test_cuda = y_test.to(device=cuda0)
 ```
-
----
 
 ## Convolutional NN
 
@@ -319,29 +300,27 @@ class mnist_conv_model(torch.nn.Module):
       return( (pred == y).sum() / len(y) )
 ```
 
----
-
 ## CPU vs Cuda
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 m = mnist_conv_model(device="cpu")
 loss = m.fit(X_train, y_train, n=1000)
 loss[-5:]
 m.accuracy(X_test, y_test)
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python}
 m_cuda = mnist_conv_model(device="cuda")
 loss = m_cuda.fit(X_train_cuda, y_train_cuda, n=1000)
 loss[-5:]
 m_cuda.accuracy(X_test_cuda, y_test_cuda)
 ```
-]
-
----
+:::
+::::
 
 ```{python}
 m_cuda = mnist_conv_model(device="cuda")
@@ -372,8 +351,6 @@ print(start.elapsed_time(end))
 ```
 
 
-
----
 
 ## CPU vs GPU Profiles
 
@@ -387,9 +364,10 @@ with torch.autograd.profiler.profile(with_stack=True) as prof_cuda:
 ```{python, wrap=FALSE}
 print(prof_cuda.key_averages().table(sort_by='self_cpu_time_total', row_limit=5))
 ```
-]
+:::
+::::
 
---
+. . .
 
 .small[
 ```{python}
@@ -401,7 +379,8 @@ with torch.autograd.profiler.profile(with_stack=True, profile_memory=True) as pr
 ```{python, wrap=FALSE}
 print(prof_cpu.key_averages().table(sort_by='self_cpu_time_total', row_limit=5))
 ```
-]
+:::
+::::
 
 ---
 class: middle
@@ -410,9 +389,9 @@ class: middle
 ## CIFAR10
 ]
 
-.footnote[[homepage](https://www.cs.toronto.edu/~kriz/cifar.html)]
-
----
+::: {.aside}
+[homepage](https://www.cs.toronto.edu/~kriz/cifar.html)
+:::
 
 ## Loading the data
 
@@ -434,8 +413,6 @@ test_data = torchvision.datasets.CIFAR10(
 )
 ```
 
----
-
 ## CIFAR10 data
 
 ```{python}
@@ -443,14 +420,12 @@ training_data.classes
 training_data.data.shape
 test_data.data.shape
 ```
---
+. . .
 
 ```{python}
 training_data[0]
 ```
 
-
----
 
 ```{python echo=FALSE, out.width="85%"}
 fig, axes = plt.subplots(nrows=4, ncols=6, figsize=(10, 6), layout="constrained")
@@ -464,8 +439,6 @@ for i, ax in enumerate([ax for row in axes for ax in row]):
     
 plt.show()
 ```
-
----
 
 ## Data Loaders
 
@@ -489,21 +462,19 @@ test_loader = torch.utils.data.DataLoader(
 )
 ```
 
---
+. . .
 
 ```{python}
 training_loader
 ```
 
---
+. . .
 
 ```{python}
 X, y = next(iter(training_loader))
 X.shape
 y.shape
 ```
-
----
 
 .small[
 ```{python}
@@ -547,11 +518,12 @@ class cifar_conv_model(torch.nn.Module):
                     print(f'[Epoch {epoch + 1}, Minibatch {i + 1:4d}] loss: {running_loss / n_report:.3f}')
                     running_loss = 0.0
 ```
-]
+:::
+::::
 
-.footnote[Based on [source](https://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html)]
-
----
+::: {.aside}
+Based on [source](https://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html)
+:::
 
 ## Forward step performance
 
@@ -567,9 +539,10 @@ with torch.autograd.profiler.profile(with_stack=True) as prof_cuda:
 ```{python, wrap=FALSE}
 print(prof_cuda.key_averages().table(sort_by='self_cpu_time_total', row_limit=5))
 ```
-]
+:::
+::::
 
---
+. . .
 
 .small[
 ```{python}
@@ -582,9 +555,8 @@ with torch.autograd.profiler.profile(with_stack=True) as prof_cpu:
 ```{python, wrap=FALSE}
 print(prof_cpu.key_averages().table(sort_by='self_cpu_time_total', row_limit=5))
 ```
-]
-
----
+:::
+::::
 
 ## Fit - 1 epoch
 
@@ -598,9 +570,10 @@ with torch.autograd.profiler.profile(with_stack=True) as prof_cuda:
 ```{python, wrap=FALSE}
 print(prof_cuda.key_averages().table(sort_by='self_cpu_time_total', row_limit=5))
 ```
-]
+:::
+::::
 
---
+. . .
 
 .small[
 ```{python}
@@ -612,9 +585,8 @@ with torch.autograd.profiler.profile(with_stack=True) as prof_cpu:
 ```{python, wrap=FALSE}
 print(prof_cpu.key_averages().table(sort_by='self_cpu_time_total', row_limit=5))
 ```
-]
-
----
+:::
+::::
 
 ## Fit - 2 epochs
 
@@ -628,9 +600,10 @@ with torch.autograd.profiler.profile(with_stack=True) as prof_cuda:
 ```{python, wrap=FALSE}
 print(prof_cuda.key_averages().table(sort_by='self_cpu_time_total', row_limit=5))
 ```
-]
+:::
+::::
 
---
+. . .
 
 .small[
 ```{python}
@@ -642,9 +615,8 @@ with torch.autograd.profiler.profile(with_stack=True) as prof_cpu:
 ```{python, wrap=FALSE}
 print(prof_cpu.key_averages().table(sort_by='self_cpu_time_total', row_limit=5))
 ```
-]
-
----
+:::
+::::
 
 ## Loaders & Accuracy
 
@@ -662,8 +634,6 @@ def accuracy(model, loader, device):
             
     return correct / total
 ```
-
----
 
 ## Model fitting
 
@@ -691,8 +661,6 @@ accuracy(m, test_loader, "cuda")
 ## 0.572
 ```
 
----
-
 ## More epochs
 
 If we use fit with the existing model we continue fitting,
@@ -719,8 +687,6 @@ accuracy(m, test_loader, "cuda")
 ## 0.624
 ```
 
----
-
 ## More epochs (again)
 
 ```{python eval=FALSE}
@@ -744,8 +710,6 @@ accuracy(m, training_loader, "cuda")
 accuracy(m, test_loader, "cuda")
 ## 0.6217
 ```
-
----
 
 ## The VGG16 model
 
@@ -781,17 +745,16 @@ class VGG16(torch.nn.Module):
 
 ```
 
-.footnote[Based on code from [pytorch-cifar](https://github.com/kuangliu/pytorch-cifar), original [paper](https://arxiv.org/abs/1409.1556)]
-
----
+::: {.aside}
+Based on code from [pytorch-cifar](https://github.com/kuangliu/pytorch-cifar), original [paper](https://arxiv.org/abs/1409.1556)
+:::
 
 .small[
 ```{python}
 VGG16("cuda").model
 ```
-]
-
----
+:::
+::::
 
 ## Minibatch performance
 
@@ -807,9 +770,10 @@ with torch.autograd.profiler.profile(with_stack=True) as prof_cuda:
 ```{python, wrap=FALSE}
 print(prof_cuda.key_averages().table(sort_by='self_cpu_time_total', row_limit=5))
 ```
-]
+:::
+::::
 
---
+. . .
 
 .small[
 ```{python}
@@ -822,9 +786,8 @@ with torch.autograd.profiler.profile(with_stack=True) as prof_cpu:
 ```{python, wrap=FALSE}
 print(prof_cpu.key_averages().table(sort_by='self_cpu_time_total', row_limit=5))
 ```
-]
-
----
+:::
+::::
 
 ## Fitting
 
@@ -847,8 +810,6 @@ def fit(model, loader, epochs=10, n_report=250, lr = 0.01):
                 running_loss = 0.0
 ```
 
----
-
 ## `lr = 0.01`
 
 ```{python eval=FALSE}
@@ -866,7 +827,7 @@ fit(m, training_loader, epochs=10, n_report=500, lr=0.01)
 ## [Epoch 9, Minibatch  500] loss: 0.127
 ## [Epoch 10, Minibatch  500] loss: 0.103
 ```
---
+. . .
 
 ```{python eval=FALSE}
 accuracy(model=m, loader=training_loader, device="cuda")
@@ -875,8 +836,6 @@ accuracy(model=m, loader=test_loader, device="cuda")
 ## 0.8318
 ```
 
-
----
 
 ## `lr = 0.001`
 
@@ -896,7 +855,7 @@ fit(m, training_loader, epochs=10, n_report=500, lr=0.001)
 ## [Epoch 10, Minibatch  500] loss: 0.063
 ```
 
---
+. . .
 
 ```{python eval=FALSE}
 accuracy(model=m, loader=training_loader, device="cuda")
@@ -904,8 +863,6 @@ accuracy(model=m, loader=training_loader, device="cuda")
 accuracy(model=m, loader=test_loader, device="cuda")
 ## 0.7816
 ```
-
----
 
 ## Report
 
@@ -925,8 +882,6 @@ def report(model, loader, device):
 
     return classification_report(y_true, y_pred, target_names=loader.dataset.classes)
 ```
-
----
 
 ```{python eval=FALSE}
 print(report(model=m, loader=test_loader, device="cuda"))

@@ -1,19 +1,15 @@
 ---
-title: "Lec 25 - Basic linux system administration"
-subtitle: "<br/> Statistical Computing and Computation"
-author: "Sta 663 | Spring 2022"
-date: "<br/> Dr. Colin Rundel"
-output:
-  xaringan::moon_reader:
-    css: ["slides.css"]
-    lib_dir: libs
-    nature:
-      highlightLines: true
-      highlightStyle: solarized-light
-      countIncrementalSlides: false
-      ratio: "16:9"
+title: "Basic linux system administration"
+subtitle: "Lecture 25"
+author: "Dr. Colin Rundel"
+footer: "Sta 663 - Spring 2023"
+format:
+  revealjs:
+    theme: slides.scss
+    transition: fade
+    slide-number: true
+    self-contained: true
 ---
-exclude: true
 
 ```{r r_setup}
 knitr::opts_chunk$set(
@@ -60,15 +56,13 @@ count: false
 
 # Getting Started
 
----
-
 ## Connecting
 
 ```shell
 rundel@tbBook [~]$ ssh cr173@vcm-26406.vm.duke.edu
 ```
 
---
+. . .
 
 ```shell
 The authenticity of host 'vcm-26406.vm.duke.edu (67.159.94.29)' can't be established.
@@ -80,7 +74,7 @@ Warning: Permanently added 'vcm-26406.vm.duke.edu' (ED25519) to the list of know
 cr173@vcm-26406.vm.duke.edu's password:
 ```
 
---
+. . .
 
 ```shell
 Welcome to Ubuntu 20.04.4 LTS (GNU/Linux 5.4.0-107-generic x86_64)
@@ -96,8 +90,6 @@ cr173@vcm-26406:~$
 ```
 
 
----
-
 ## Determining Distribution
 
 This does not work 100% of the time but is generally pretty reliable,
@@ -106,9 +98,10 @@ This does not work 100% of the time but is generally pretty reliable,
 cat /etc/*-release
 ```
 
---
+. . .
 
-.small[ .pull-left[
+.small[ :::: {.columns}
+::: {.column width='50%'}
 
 .ubuntu[
 ```
@@ -136,9 +129,10 @@ PRIVACY_POLICY_URL="https://www.ubuntu.com/legal/terms-and-policies/privacy-poli
 VERSION_CODENAME=bionic
 UBUNTU_CODENAME=bionic
 ```
-] ]
+:::
+:::: :::
 
-.pull-right[ .fedora[
+::: {.column width='50%'} .fedora[
 ```
 *cr173@algebra2 [~]$ ls -l /etc/*-release
 lrwxrwxrwx 1 root root 25 Nov 25 02:36 /etc/fedora-release -> ../usr/lib/fedora-release
@@ -171,7 +165,8 @@ PRIVACY_POLICY_URL="https://fedoraproject.org/wiki/Legal:PrivacyPolicy"
 VARIANT="MATE-Compiz"
 VARIANT_ID=matecompiz
 ```
-]
+:::
+::::
 ] ]
 
 ---
@@ -186,13 +181,14 @@ count: false
 
 # System Details
 
----
-
 ## Filesystem Hierarchy Standard - `/`
 
-.footnote[https://en.wikipedia.org/wiki/Filesystem_Hierarchy_Standard]
+::: {.aside}
+https://en.wikipedia.org/wiki/Filesystem_Hierarchy_Standard
+:::
 
-.tiny[ .pull-left[
+.tiny[ :::: {.columns}
+::: {.column width='50%'}
 
 .ubuntu[ 
 ```
@@ -218,9 +214,10 @@ cr173@vcm-26406:~$ tree -d -L 1 /
 *├── usr
 *└── var
 ```
-] ]
+:::
+:::: :::
 
-.pull-right[ .fedora[ 
+::: {.column width='50%'} .fedora[ 
 ```
 cr173@algebra2 [~]$ tree -d -L 1 /
 /
@@ -258,18 +255,18 @@ cr173@algebra2 [~]$ tree -d -L 1 /
 ├── web
 └── xdvi
 ```
-] ]
+:::
+:::: ]
 ]
 
-
----
 
 ## Secondary, Tertiarty, etc.
 
 
 .small[ 
 
-.pull-left[ .fedora[
+:::: {.columns}
+::: {.column width='50%'} .fedora[
 ```
 *cr173@algebra2 [~]$ tree -d -L 1 /usr
 /usr
@@ -286,9 +283,10 @@ cr173@algebra2 [~]$ tree -d -L 1 /
 ├── src
 └── tmp -> ../var/tmp
 ```
-] ]
+:::
+:::: :::
 
-.pull-right[ .fedora[
+::: {.column width='50%'} .fedora[
 ```
 *cr173@algebra2 [~]$ tree -d -L 1 /usr/local
 /usr/local
@@ -303,7 +301,8 @@ cr173@algebra2 [~]$ tree -d -L 1 /
 ├── share
 └── src
 ```
-] ]
+:::
+:::: ]
 ]
 
 
@@ -312,8 +311,6 @@ cr173@algebra2 [~]$ tree -d -L 1 /
 class: middle center
 
 # Installing packages with `apt`
-
----
 
 ## Update the package list
 
@@ -325,9 +322,10 @@ E: Could not open lock file /var/lib/apt/lists/lock - open (13: Permission denie
 E: Unable to lock directory /var/lib/apt/lists/
 W: Problem unlinking the file /var/cache/apt/pkgcache.bin - RemoveCaches (13: Permission denied)
 W: Problem unlinking the file /var/cache/apt/srcpkgcache.bin - RemoveCaches (13: Permission denied)```
-] ]
+:::
+:::: ]
 
---
+. . .
 
 <br/>
 
@@ -335,8 +333,6 @@ W: Problem unlinking the file /var/cache/apt/srcpkgcache.bin - RemoveCaches (13:
 ![](https://imgs.xkcd.com/comics/sandwich.png) <br/>
 [xkcd 149 - Sandwich](https://xkcd.com/149/)
 ]
-
----
 
 ## Update the package list
 
@@ -372,10 +368,9 @@ Building dependency tree
 Reading state information... Done
 1 package can be upgraded. Run 'apt list --upgradable' to see it.
 ```
-] ]
+:::
+:::: ]
 
-
----
 
 ## Installing R
 
@@ -433,9 +428,8 @@ Need to get 158 MB of archives.
 After this operation, 914 MB of additional disk space will be used.
 Do you want to continue? [Y/n]
 ```
-]]
-
----
+:::
+::::]
 
 ## Removing R
 
@@ -463,9 +457,10 @@ The following packages will be REMOVED:
 0 upgraded, 0 newly installed, 1 to remove and 1 not upgraded.
 After this operation, 62.5 kB disk space will be freed.
 ```
-] ]
+:::
+:::: ]
 
---
+. . .
 
 .small[ and all of its dependencies, ]
 
@@ -491,9 +486,8 @@ The following packages will be REMOVED:
 After this operation, 749 MB disk space will be freed.
 Do you want to continue? [Y/n]
 ```
-] ]
-
----
+:::
+:::: ]
 
 ## Updating & Upgrading
 
@@ -510,9 +504,10 @@ Building dependency tree
 Reading state information... Done
 1 package can be upgraded. Run 'apt list --upgradable' to see it.
 ```
-] ] 
+:::
+:::: ] 
 
---
+. . .
 
 <br/>
 
@@ -531,9 +526,8 @@ Need to get 24.2 kB of archives.
 After this operation, 0 B of additional disk space will be used.
 Do you want to continue? [Y/n]
 ```
-] ]
-
----
+:::
+:::: ]
 
 ## Aside - Conflicts
 
@@ -564,9 +558,8 @@ Setting up initramfs-tools (0.130ubuntu3.6) ...
 
 ...
 ```
-] ]
-
----
+:::
+:::: ]
 
 ## Package Contents & Details
 
@@ -597,9 +590,10 @@ Description: GNU R statistical computation and graphics system
  stored in script files.
 ...
 ```
-] ]
+:::
+:::: ]
 
---
+. . .
 
 .small[ .ubuntu[
 ```
@@ -613,10 +607,9 @@ Description: GNU R statistical computation and graphics system
 /usr/share/doc/r-base/copyright
 /usr/share/doc/r-base/changelog.Debian.gz
 ```
-] ]
+:::
+:::: ]
 
-
----
 
 ## File -> Package
 
@@ -626,9 +619,10 @@ Description: GNU R statistical computation and graphics system
 *cr173@vcm-26406:~$ dpkg -S /usr/bin/R
 r-base-core: /usr/bin/R
 ```
-] ]
+:::
+:::: ]
 
---
+. . .
 
 .small[ .ubuntu[
 ```
@@ -662,10 +656,9 @@ r-base-core: /usr/bin/R
 /usr/lib/R/bin/Rdiff
 ...
 ```
-] ]
+:::
+:::: ]
 
-
----
 
 ## Package Manager Comparison
 
@@ -687,8 +680,6 @@ r-base-core: /usr/bin/R
 
 ]
 
----
-
 ## Upgrading R
 
 The R project maintains separate package repositories with the latest version of R - see distribution specific instructions here: https://cran.r-project.org/bin/linux/
@@ -700,9 +691,10 @@ sudo apt install --no-install-recommends -y software-properties-common dirmngr
 wget -qO- https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | sudo tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc
 sudo add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/"
 ```
-] ]
+:::
+:::: ]
 
---
+. . .
 
 .small[ .ubuntu[
 ```
@@ -712,9 +704,10 @@ sudo add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_
 deb https://cloud.r-project.org/bin/linux/ubuntu focal-cran40/
 # deb-src https://cloud.r-project.org/bin/linux/ubuntu focal-cran40/
 ```
-] ]
+:::
+:::: ]
 
---
+. . .
 
 .small[ .ubuntu[
 ```
@@ -733,9 +726,8 @@ Building dependency tree
 Reading state information... Done
 22 packages can be upgraded. Run 'apt list --upgradable' to see them.
 ```
-] ]
-
----
+:::
+:::: ]
 
 .small[ .ubuntu[
 ```
@@ -776,14 +768,11 @@ Get:21 https://cloud.r-project.org/bin/linux/ubuntu focal-cran40/ r-base-html 4.
 Get:22 https://cloud.r-project.org/bin/linux/ubuntu focal-cran40/ r-doc-html 4.1.3-1.2004.0 [582 kB]
 ...
 ```
-] ]
-
----
+:::
+:::: ]
 
 
 # System dependencies
-
----
 
 .small[
 
@@ -832,10 +821,9 @@ Platform: x86_64-pc-linux-gnu (64-bit)
   * removing ‘/home/cr173/R/x86_64-pc-linux-gnu-library/4.1/curl’
 
 ```
-] ]
+:::
+:::: ]
 
-
----
 
 ## Installing libcurl4-openssl-dev
 
@@ -861,9 +849,8 @@ Unpacking libcurl4-openssl-dev:amd64 (7.68.0-1ubuntu2.7) ...
 Setting up libcurl4-openssl-dev:amd64 (7.68.0-1ubuntu2.7) ...
 Processing triggers for man-db (2.9.1-1) ...
 ```
-] ]
-
----
+:::
+:::: ]
 
 .tiny[ .ubuntu[
 ```
@@ -921,9 +908,8 @@ cr173@vcm-26406:~$ R
  ** testing if installed package keeps a record of temporary installation path
  * DONE (curl)
 ```
-] ]
-
----
+:::
+:::: ]
 
 ## What is `libcurl4-openssl-dev`?
 
@@ -967,9 +953,8 @@ APT-Sources: http://archive.linux.duke.edu/ubuntu focal-updates/main amd64 Packa
  .
  SSL support is provided by OpenSSL.
 ```
-] ]
-
----
+:::
+:::: ]
 
 ## What is in `libcurl4-openssl-dev`?
 
@@ -1011,9 +996,8 @@ APT-Sources: http://archive.linux.duke.edu/ubuntu focal-updates/main amd64 Packa
 /usr/share/doc/libcurl4-openssl-dev/NEWS.Debian.gz
 /usr/share/doc/libcurl4-openssl-dev/changelog.Debian.gz
 ```
-] ]
-
----
+:::
+:::: ]
 
 ## Lets try `sf`
 
@@ -1046,22 +1030,23 @@ APT-Sources: http://archive.linux.duke.edu/ubuntu focal-updates/main amd64 Packa
  In install.packages("sf") :
    installation of package ‘sf’ had non-zero exit status
 ```
-] ]
+:::
+:::: ]
 
---
+. . .
 
 <br/>
 
 .center[.large[What next?]]
 
-.footnote[https://packagemanager.rstudio.com/]
+::: {.aside}
+https://packagemanager.rstudio.com/
+:::
 
 ---
 class: middle center
 
 # A bit about libraries
-
----
 
 ## System libraries
 
@@ -1076,8 +1061,6 @@ These are shared common components that are used by a variety of software on a l
 * Installed in `/lib`, `/usr/lib`, `/usr/local/lib`, etc.
 
 * Two flavors: static (`.a`) and dynamic (`.so`)
-
----
 
 ## `libcurl`
 
@@ -1094,7 +1077,8 @@ lrwxrwxrwx 1 root root      16 Oct 29 08:10 /usr/lib/x86_64-linux-gnu/libcurl.so
 lrwxrwxrwx 1 root root      16 Oct 29 08:10 /usr/lib/x86_64-linux-gnu/libcurl.so.4 -> libcurl.so.4.5.0
 -rw-r--r-- 1 root root  518600 Oct 29 08:10 /usr/lib/x86_64-linux-gnu/libcurl.so.4.5.0
 ```
-]
+:::
+::::
 
 .rhel[
 ```
@@ -1103,11 +1087,10 @@ lrwxrwxrwx. 1 root root     16 Jan 14 12:05 /usr/lib64/libcurl.so -> libcurl.so.
 lrwxrwxrwx. 1 root root     16 Jan 10 07:45 /usr/lib64/libcurl.so.4 -> libcurl.so.4.3.0
 -rwxr-xr-x. 1 root root 435176 Aug  8 09:28 /usr/lib64/libcurl.so.4.3.0
 ```
-]
+:::
+::::
 
 ]
-
----
 
 ## Getting what you want
 
@@ -1123,8 +1106,6 @@ These are the names that would then be used with something like `apt install` or
 | Headers               | `lib{name}-dev` | `{name}-devel`  |
 | Static library (.a)   | `lib{name}-dev` | `{name}-static` |
 | Documentation         | `lib{name}-doc` | `{name}-devel`  | 
-
----
 
 ## Troubleshooting dynamic libraries
 
@@ -1174,9 +1155,8 @@ These are the names that would then be used with something like `apt install` or
 	libcrypt.so.1 => /lib/x86_64-linux-gnu/libcrypt.so.1 (0x00007f1e3806a000)
 	libm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f1e37ccc000)
 ```
-] ]
-
----
+:::
+:::: ]
 
 ## Python management
 
@@ -1189,9 +1169,10 @@ Command 'pip' not found, but can be installed with:
 apt install python3-pip
 Please ask your administrator.
 ```
-]
+:::
+::::
 
---
+. . .
 
 .ubuntu[
 ```
@@ -1209,9 +1190,8 @@ Need to get 6,651 kB of archives.
 After this operation, 25.0 MB of additional disk space will be used.
 Do you want to continue? [Y/n]
 ```
-]
-
----
+:::
+::::
 
 ## Package manager vs pip
 
@@ -1225,9 +1205,10 @@ python3-numpy is already the newest version (1:1.17.4-5ubuntu3).
 python3-numpy set to manually installed.
 0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
 ```
-] ]
+:::
+:::: ]
 
---
+. . .
 
 .small[ .ubuntu[
 ```
@@ -1242,9 +1223,10 @@ Installing collected packages: numpy
     Can't uninstall 'numpy'. No files were found to uninstall.
 Successfully installed numpy-1.22.3
 ```
-] ]
+:::
+:::: ]
 
---
+. . .
 
 .small[ .ubuntu[
 ```
@@ -1254,9 +1236,8 @@ Collecting numpy
 Installing collected packages: numpy
 Successfully installed numpy-1.22.3
 ```
-] ]
-
----
+:::
+:::: ]
 
 ## Outdated python libraries
 
@@ -1299,4 +1280,5 @@ pywinrm             0.3.0       0.4.2     wheel
 PyYAML              5.3.1       6.0       wheel
 ...
 ```
-] ]
+:::
+:::: ]

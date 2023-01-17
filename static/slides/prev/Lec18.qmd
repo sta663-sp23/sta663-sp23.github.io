@@ -1,19 +1,15 @@
 ---
-title: "Lec 18 - patsy + <br/> statsmodels"
-subtitle: "<br/> Statistical Computing and Computation"
-author: "Sta 663 | Spring 2022"
-date: "<br/> Dr. Colin Rundel"
-output:
-  xaringan::moon_reader:
-    css: ["slides.css"]
-    lib_dir: libs
-    nature:
-      highlightLines: true
-      highlightStyle: solarized-light
-      countIncrementalSlides: false
-      ratio: "16:9"
+title: "patsy + <br/> statsmodels"
+subtitle: "Lecture 18"
+author: "Dr. Colin Rundel"
+footer: "Sta 663 - Spring 2023"
+format:
+  revealjs:
+    theme: slides.scss
+    transition: fade
+    slide-number: true
+    self-contained: true
 ---
-exclude: true
 
 ```{python setup}
 import numpy as np
@@ -75,8 +71,6 @@ class: center, middle
 
 ## patsy
 
----
-
 ## patsy
 
 > `patsy` is a Python package for describing statistical models (especially linear models, or models that have a linear component) and building design matrices. It is closely inspired by and compatible with the formula mini-language used in R and S.
@@ -84,8 +78,6 @@ class: center, middle
 > ...
 >
 > Patsy’s goal is to become the standard high-level interface to describing statistical models in Python, regardless of what particular model or library is being used underneath.
-
----
 
 ## Formulas
 
@@ -96,32 +88,32 @@ ModelDesc.from_formula("y ~ a + a:b + np.log(x)")
 ModelDesc.from_formula("y ~ a*b + np.log(x) - 1")
 ```
 
----
-
 ## Model matrix
 
 ```{python}
 from patsy import demo_data, dmatrix, dmatrices
 ```
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 data = demo_data("y", "a", "b", "x1", "x2")
 data
 pd.DataFrame(data)
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python}
 dmatrix("a + a:b + np.exp(x1)", data)
 ```
-]
+:::
+::::
 
-.footnote[Note the `T.` in `a[T.a2]` is there to indicate treatment coding (i.e. typical dummy coding)]
+::: {.aside}
+Note the `T.` in `a[T.a2]` is there to indicate treatment coding (i.e. typical dummy coding)
+:::
 
-
----
 
 ## Model matrices
 
@@ -129,20 +121,21 @@ dmatrix("a + a:b + np.exp(x1)", data)
 y, x  = dmatrices("y ~ a + a:b + np.exp(x1)", data)
 ```
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 y
 ```
-]
+:::
+::::
 
 
 .pull-right[
 ```{python}
 x
 ```
-]
-
----
+:::
+::::
 
 ## as DataFrames
 
@@ -150,8 +143,6 @@ x
 dmatrix("a + a:b + np.exp(x1)", data, return_type='dataframe')
 ```
 
-
----
 
 ## Formula Syntax
 
@@ -168,45 +159,45 @@ dmatrix("a + a:b + np.exp(x1)", data, return_type='dataframe')
 | `Q()`    | used to quote column names, e.g. columns with spaces or symbols | `Q('bad name!')` |
 | `C()`    | used for categorical data coding                  |  `C(a, Treatment('a2'))` |
 
----
-
 ## Examples
 
-.pull-left[.small[ 
+:::: {.columns}
+::: {.column width='50%'}.small[ 
 ```{python}
 dmatrix("x:y", demo_data("x","y","z"))
 dmatrix("x*y", demo_data("x","y","z"))
 ```
-] ]
+:::
+:::: :::
 
-.pull-right[.small[ 
+::: {.column width='50%'}.small[ 
 ```{python}
 dmatrix("x/y", demo_data("x","y","z"))
 dmatrix("x*(y+z)", demo_data("x","y","z"))
 ```
-] ]
-
----
+:::
+:::: ]
 
 ## Intercept Examples
 
-.pull-left[.small[ 
+:::: {.columns}
+::: {.column width='50%'}.small[ 
 ```{python}
 dmatrix("x", demo_data("x","y","z"))
 dmatrix("x-1", demo_data("x","y","z"))
 dmatrix("-1 + x", demo_data("x","y","z"))
 ```
-] ]
+:::
+:::: :::
 
-.pull-right[.small[ 
+::: {.column width='50%'}.small[ 
 ```{python}
 dmatrix("x+0", demo_data("x","y","z"))
 dmatrix("x-0", demo_data("x","y","z"))
 dmatrix("x - (-0)", demo_data("x","y","z"))
 ```
-] ]
-
----
+:::
+:::: ]
 
 ## Design Info
 
@@ -219,8 +210,6 @@ d.design_info
 ```
 
 
----
-
 ## Stateful transforms
 
 ```{python}
@@ -228,23 +217,23 @@ data = {"x1": np.random.normal(size=10)}
 new_data = {"x1": np.random.normal(size=10)}
 ```
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 d = dmatrix("scale(x1)", data)
 d
 np.mean(d, axis=0)
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python}
 pred = dmatrix(d.design_info, new_data)
 pred
 np.mean(pred, axis=0)
 ```
-]
-
----
+:::
+::::
 
 ## scikit-lego PatsyTransformer
 
@@ -262,28 +251,26 @@ df = pd.DataFrame({
 X, y = df[["x", "a"]], df[["y"]].values
 ```
 
---
+. . .
 
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 pt = PatsyTransformer("x*a + np.log(x)")
 pt.fit_transform(X)
 ```
-]
+:::
 
---
-
-.pull-right[
+::: {.column width='50%' .fragment}
 ```{python}
 make_pipeline(
   PatsyTransformer("x*a + np.log(x)"),
   StandardScaler()
 ).fit_transform(X)
 ```
-]
-
----
+:::
+::::
 
 ## Exercise 1
 
@@ -294,28 +281,26 @@ books = pd.read_csv("https://sta663-sp22.github.io/slides/data/daag_books.csv")
 ```
 
 
----
-
 ## B-splines
 
 Patsy also has support for B-splines and other related models.
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python out.width="66%"}
 d = pd.read_csv("data/d1.csv")
 
 sns.relplot(x="x", y="y", data=d)
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python}
 y, X = dmatrices("y ~ bs(x, df=6)", data=d)
 X
 ```
-]
-
----
+:::
+::::
 
 ## What is `bs(x)[i]`?
 
@@ -330,8 +315,6 @@ bs_df = (
 sns.relplot(x="x", y="value", hue="variable", kind="line", data = bs_df, aspect=1.5)
 ```
 
----
-
 ## Fitting a model
 
 ```{python}
@@ -340,7 +323,7 @@ lm = LinearRegression(fit_intercept=False).fit(X,y)
 lm.coef_
 ```
 
---
+. . .
 
 ```{python out.width="33%"}
 plt.figure(layout="constrained")
@@ -349,11 +332,10 @@ sns.scatterplot(x="x", y="y", data=d)
 plt.show()
 ```
 
----
-
 ## sklearn SplineTransformer
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 from sklearn.preprocessing import SplineTransformer
 
@@ -368,7 +350,8 @@ p = make_pipeline(
   d[["x"]], d["y"]
 )
 ```
-]
+:::
+::::
 
 
 .pull-right[
@@ -378,9 +361,8 @@ sns.lineplot(x=d["x"], y=p.predict(d[["x"]]).ravel(), color="k")
 sns.scatterplot(x="x", y="y", data=d)
 plt.show()
 ```
-]
-
----
+:::
+::::
 
 ## Why different?
 
@@ -394,8 +376,6 @@ sns.lineplot(x=d["x"], y=p.predict(d[["x"]]).ravel(), color="k")
 sns.scatterplot(x="x", y="y", data=d)
 plt.show()
 ```
-
----
 
 but that is not the whole story, if we examine the bases we also see they differ slightly between implementations:
 
@@ -419,8 +399,6 @@ class: center, middle
 
 ## statsmodels
 
----
-
 ## statsmodels
 
 > statsmodels is a Python module that provides classes and functions for the estimation of many different statistical models, as well as for conducting statistical tests, and statistical data exploration. An extensive list of result statistics are available for each estimator. The results are tested against existing statistical packages to ensure that they are correct.
@@ -431,13 +409,11 @@ import statsmodels.formula.api as smf
 import statsmodels.tsa.api as tsa
 ```
 
---
+. . .
 
 `statsmodels` uses slightly different terminology for refering to `y` / dependent / response and `x` / independent / explanatory variables. Specificially it uses `endog` to refer to the `y` and `exog` to refer to the `x` variable(s).
 
 This is particularly important when using the main API, less so when using the formula API.
-
----
 
 ## OpenIntro Loans data
 
@@ -453,16 +429,13 @@ loans = pd.read_csv("data/openintro_loans.csv")
 loans
 print(loans.columns)
 ```
-]
-
----
+:::
+::::
 
 ```{python echo=FALSE, out.width="66%"}
 sns.pairplot(data = loans[["loan_amount","homeownership", "annual_income", "debt_to_income", "interest_rate", "public_record_bankrupt"]], hue="homeownership", corner=True)
 ```
 
-
----
 
 ## OLS
 
@@ -479,7 +452,7 @@ model = sm.OLS(endog=y, exog=X)
 
 <br/>
 
---
+. . .
 
 The error occurs because `X` contains mixed types - specifically we have categorical data columns which cannot be directly converted to a numeric dtype so we need to take care of the dummy coding for statsmodels (with this interface).
 
@@ -488,8 +461,6 @@ X_dc = pd.get_dummies(X)
 model = sm.OLS(endog=y, exog=X_dc)
 ```
 
----
-
 ## Fitting and summary
 
 .small[
@@ -497,9 +468,8 @@ model = sm.OLS(endog=y, exog=X_dc)
 res = model.fit()
 print(res.summary())
 ```
-]
-
----
+:::
+::::
 
 ## Formula interface
 
@@ -514,52 +484,51 @@ model = smf.ols(
 res = model.fit()
 print(res.summary())
 ```
-]
-
----
+:::
+::::
 
 ## Result values and model parameters
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 res.params
 res.bse
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python}
 res.rsquared
 res.aic
 res.bic
 res.predict()
 ```
-]
-
----
+:::
+::::
 
 ## Diagnostic plots
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 *QQ Plot*
 ```{python out.width="80%"}
 plt.figure()
 sm.graphics.qqplot(res.resid, line="s")
 plt.show()
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 *Leverage plot*
 ```{python out.width="80%"}
 plt.figure()
 sm.graphics.plot_leverage_resid2(res)
 plt.show()
 ```
-]
+:::
+::::
 
-
----
 
 ## Alternative model
 
@@ -571,27 +540,26 @@ res = smf.ols(
 ).fit()
 print(res.summary())
 ```
-]
+:::
+::::
 
----
-
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python out.width="80%"}
 plt.figure()
 sm.graphics.qqplot(res.resid, line="s")
 plt.show()
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python out.width="80%"}
 plt.figure()
 sm.graphics.plot_leverage_resid2(res)
 plt.show()
 ```
-]
-
----
+:::
+::::
 
 ## Bushtail Possums
 
@@ -604,16 +572,16 @@ plt.show()
 possum = pd.read_csv("data/possum.csv")
 possum
 ```
-]
+:::
+::::
 
 
 .pull-right-narrow[
 ```{r echo=FALSE, out.width="75%"}
 knitr::include_graphics("imgs/possum.jpg")
 ```
-]
-
----
+:::
+::::
 
 ## Logistic regression models (GLM)
 
@@ -624,15 +592,13 @@ X = pd.get_dummies( possum.drop(["site","pop"], axis=1) )
 model = sm.GLM(y, X, family = sm.families.Binomial())
 ```
 
---
+. . .
 
 Behavior for dealing with missing data can be handled via `missing`, possible values are `"none"`, `"drop"`, and `"raise"`. 
 
 ```{python}
 model = sm.GLM(y, X, family = sm.families.Binomial(), missing="drop")
 ```
-
----
 
 ## Fit and summary
 
@@ -641,9 +607,8 @@ model = sm.GLM(y, X, family = sm.families.Binomial(), missing="drop")
 res = model.fit()
 print(res.summary())
 ```
-]
-
----
+:::
+::::
 
 ## Success vs failure
 
@@ -657,9 +622,8 @@ X = pd.get_dummies( possum.drop(["site","pop"], axis=1) )
 res = sm.GLM(y, X, family = sm.families.Binomial(), missing="drop").fit()
 print(res.summary())
 ```
-]
-
----
+:::
+::::
 
 ## Fit and summary
 
@@ -669,8 +633,6 @@ print(res.summary())
 ```
 
 
-
----
 
 ## Formula interface
 
@@ -685,8 +647,6 @@ print(res.summary())
 ```
 
 
----
-
 ## sleepstudy data
 
 > These data are from the study described in Belenky et al. (2003), for the most sleep-deprived group (3 hours time-in-bed) and for the first 10 days of the study, up to the recovery period. The original study analyzed speed (1/(reaction time)) and treated day as a categorical rather than a continuous predictor.
@@ -700,19 +660,18 @@ sleep
 ```
 
 
-.footnote[These data come from the `sleepstudy` dataset in the `lme4` R package]
-
----
+::: {.aside}
+These data come from the `sleepstudy` dataset in the `lme4` R package
+:::
 
 ```{python}
 sns.relplot(x="Days", y="Reaction", col="Subject", col_wrap=6, data=sleep)
 ```
 
----
-
 ## Random intercept model
 
-.pull-left[ .small[
+:::: {.columns}
+::: {.column width='50%'} .small[
 ```{python}
 me_rand_int = smf.mixedlm(
   "Reaction ~ Days", data=sleep, groups=sleep["Subject"], 
@@ -721,19 +680,17 @@ me_rand_int = smf.mixedlm(
 res_rand_int = me_rand_int.fit(method=["lbfgs"])
 print(res_rand_int.summary())
 ```
-] ]
+:::
+:::: :::
 
---
-
-.pull-right[ .small[
+::: {.column width='50%' .fragment} .small[
 ```{r}
 summary(
   lmer(Reaction ~ Days + (1|Subject), data=sleepstudy)
 )
 ```
-] ]
-
----
+:::
+:::: ]
 
 ## Predictions
 
@@ -744,11 +701,11 @@ g = g.map(sns.scatterplot, "Days", "Reaction")
 g = g.map(sns.lineplot, "Days", "pred")
 plt.show()
 ```
---
+. . .
 
-.footnote[The prediction is only taking into account the fixed effects here, not the group random effects.]
-
----
+::: {.aside}
+The prediction is only taking into account the fixed effects here, not the group random effects.
+:::
 
 ## Recovering random effects for prediction
 
@@ -764,9 +721,9 @@ rex = np.concatenate(rex)
 y_hat = res_rand_int.predict() + rex
 ```
 
-.footnote[Based on code provide on [stack overflow](https://stats.stackexchange.com/questions/467543/including-random-effects-in-prediction-with-linear-mixed-model).]
-
----
+::: {.aside}
+Based on code provide on [stack overflow](https://stats.stackexchange.com/questions/467543/including-random-effects-in-prediction-with-linear-mixed-model).
+:::
 
 ```{python echo=FALSE, out.width="90%"}
 pred = sleep.assign(pred = y_hat)
@@ -776,11 +733,10 @@ g = g.map(sns.lineplot, "Days", "pred")
 plt.show()
 ```
 
----
-
 ## Random intercept and slope model
 
-.pull-left[ .small[
+:::: {.columns}
+::: {.column width='50%'} .small[
 ```{python}
 me_rand_sl= smf.mixedlm(
   "Reaction ~ Days", data=sleep, groups=sleep["Subject"], 
@@ -790,20 +746,18 @@ me_rand_sl= smf.mixedlm(
 res_rand_sl = me_rand_sl.fit(method=["lbfgs"])
 print(res_rand_sl.summary())
 ```
-] ]
+:::
+:::: :::
 
---
-
-.pull-right[ .small[
+::: {.column width='50%' .fragment} .small[
 ```{r}
 summary(
   lmer(Reaction ~ Days + (Days|Subject), data=sleepstudy)
 )
 ```
-] ]
+:::
+:::: ]
 
-
----
 
 ## Prediction
 
@@ -825,10 +779,10 @@ g = g.map(sns.lineplot, "Days", "pred")
 plt.show()
 ```
 
-.footnote[We are using the same approach described previously to obtain the RE estimates and use them in the predictions.]
+::: {.aside}
+We are using the same approach described previously to obtain the RE estimates and use them in the predictions.
+:::
 
-
----
 
 ## t-test and z-test for equality of means
 
@@ -843,9 +797,8 @@ print(cm.summary())
 print(cm.summary(use_t=False))
 print(cm.summary(usevar="unequal"))
 ```
-]
-
----
+:::
+::::
 
 ## Contigency tables
 

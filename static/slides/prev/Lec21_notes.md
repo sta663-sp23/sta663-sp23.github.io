@@ -42,7 +42,7 @@ sum(seats)
 Run Time: real 0.148 user 0.139176 sys 0.007804
 ```
 
---
+. . .
 
 Join and select:
 

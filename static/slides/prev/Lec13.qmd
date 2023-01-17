@@ -1,19 +1,15 @@
 ---
-title: "Lec 13 - Numerical optimization (cont.)"
-subtitle: "<br/> Statistical Computing and Computation"
-author: "Sta 663 | Spring 2022"
-date: "<br/> Dr. Colin Rundel"
-output:
-  xaringan::moon_reader:
-    css: ["slides.css"]
-    lib_dir: libs
-    nature:
-      highlightLines: true
-      highlightStyle: solarized-light
-      countIncrementalSlides: false
-      ratio: "16:9"
+title: "Numerical optimization (cont.)"
+subtitle: "Lecture 13"
+author: "Dr. Colin Rundel"
+footer: "Sta 663 - Spring 2023"
+format:
+  revealjs:
+    theme: slides.scss
+    transition: fade
+    slide-number: true
+    self-contained: true
 ---
-exclude: true
 
 ```{python setup}
 import numpy as np
@@ -246,8 +242,6 @@ def conjugate_gradient(x0, f, grad, hess, max_iter=200, tol=1e-8):
 ```
 
 
----
-
 ## Method Summary
 
 <br/>
@@ -263,8 +257,6 @@ def conjugate_gradient(x0, f, grad, hess, max_iter=200, tol=1e-8):
 | Nelder-Mead  | Nelder-Mead simplex reflection method                          |    ✗     |    ✗     |
 | 
 
-
----
 
 ## Methods collection
 
@@ -283,8 +275,6 @@ def define_methods(x0, f, grad, hess, tol=1e-8):
   }
 ```
 
----
-
 ## Method Timings
 ```{python}
 x0 = (1.6, 1.1)
@@ -298,8 +288,6 @@ df = pd.DataFrame({
 df
 ```
 
----
-
 ```{python out.width="75%"}
 g = sns.catplot(data=df.melt(), y="variable", x="value", aspect=2)
 g.ax.set_xlabel("Time (100 iter)")
@@ -307,11 +295,10 @@ g.ax.set_ylabel("")
 plt.show()
 ```
 
----
-
 ## Timings across cost functions
 
-.pull-left[ .small[
+:::: {.columns}
+::: {.column width='50%'} .small[
 ```{python}
 def time_cost_func(x0, name, cost_func, *args):
   x0 = (1.6, 1.1)  
@@ -331,15 +318,15 @@ df = pd.concat([
   time_cost_func(x0, "Rosenbrock", mk_rosenbrock)
 ])
 ```
-] ]
+:::
+:::: :::
 
-.pull-right[.small[
+::: {.column width='50%'}.small[
 ```{python}
 df
 ```
-] ]
-
----
+:::
+:::: ]
 
 ```{python}
 g = sns.catplot(data=df, y="variable", x="value", hue="cost_func", alpha=0.5, aspect=2)
@@ -348,8 +335,6 @@ g.ax.set_ylabel("")
 plt.show()
 ```
 
-
----
 
 ## Profiling - BFGS
 
@@ -365,9 +350,8 @@ def run():
 
 cProfile.run('run()', sort="tottime")
 ```
-]
-
----
+:::
+::::
 
 ## Profiling - Nelder-Mead
 
@@ -379,9 +363,8 @@ def run():
 
 cProfile.run('run()', sort="tottime")
 ```
-]
-
----
+:::
+::::
 
 ## `optimize.minimize()` output
 
@@ -389,24 +372,26 @@ cProfile.run('run()', sort="tottime")
 f, grad, hess = mk_quad(0.7)
 ```
 
-.pull-left[ .small[
+:::: {.columns}
+::: {.column width='50%'} .small[
 ```{python}
 optimize.minimize(fun = f, x0 = (1.6, 1.1), jac=grad, method="BFGS")
 ```
-] ]
+:::
+:::: :::
 
-.pull-right[ .small[
+::: {.column width='50%'} .small[
 ```{python}
 optimize.minimize(fun = f, x0 = (1.6, 1.1), jac=grad, hess=hess, method="Newton-CG")
 ```
-] ]
+:::
+:::: ]
 
-
----
 
 ## Collect
 
-.pull-left[ .small[
+:::: {.columns}
+::: {.column width='50%'} .small[
 ```{python}
 def run_collect(name, x0, cost_func, *args, tol=1e-8, skip=[]):
   f, grad, hess = cost_func(*args)
@@ -442,15 +427,15 @@ df = pd.concat([
   )
 ])
 ```
-] ]
+:::
+:::: :::
 
-.pull-right[ .small[
+::: {.column width='50%'} .small[
 ```{python}
 df.drop(["message"], axis=1)
 ```
-] ]
-
----
+:::
+:::: ]
 
 ```{python}
 sns.catplot(
@@ -458,8 +443,6 @@ sns.catplot(
   data = df.melt(id_vars=["name","method"], value_vars=["nit", "nfev", "njev", "nhev"]).astype({"value": "float64"})
 )
 ```
-
----
 
 ## Exercise 1
 
@@ -475,11 +458,10 @@ f = lambda x: np.exp(x[0]-1) + np.exp(-x[1]+1) + (x[0]-x[1])**2
 plot_2d_traj((-2,3), (-2,3), f)
 ```
 
----
-
 ## Random starting locations
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 rng = np.random.default_rng(seed=1234)
 x0s = rng.uniform(-2,2, (100,2))
@@ -494,15 +476,14 @@ df = pd.concat([
   for x0 in x0s
 ])
 ```
-]
+:::
 
-.pull-right[.small[
+::: {.column width='50%'}.small[
 ```{python}
 df.drop(["message"], axis=1)
 ```
-] ]
-
----
+:::
+:::: ]
 
 ## Performance (random start)
 
@@ -515,11 +496,10 @@ sns.catplot(
 )
 ```
 
----
-
 ## MVN Cost Function
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 
 For an $n$-dimensional multivariate normal we define <br/>
 the $n \times 1$ vectors $x$ and $\mu$ and the $n \times n$ <br/>
@@ -537,9 +517,9 @@ f(x) &= \frac{1}{\sqrt{\det(2\pi\Sigma)}} \exp \left[-\frac{1}{2} (x-\mu)^T \Sig
 \nabla^2 f(x) &= f(x) \left( \Sigma^{-1}(x-\mu)(x-\mu)^T\Sigma^{-1} - \Sigma^{-1}\right) \\
 \end{align}
 $$
-] ]
+] :::
 
-.pull-right[ .small[
+::: {.column width='50%'} .small[
 
 ```{python}
 def mk_mvn(mu, Sigma):
@@ -562,18 +542,20 @@ def mk_mvn(mu, Sigma):
   
   return f, grad, hess
 ```
-] ]
+:::
+:::: ]
 
-.footnote[From Section 8.1.1 of the [Matrix Cookbook](https://www.math.uwaterloo.ca/~hwolkowi/matrixcookbook.pdf)]
+::: {.aside}
+From Section 8.1.1 of the [Matrix Cookbook](https://www.math.uwaterloo.ca/~hwolkowi/matrixcookbook.pdf)
+:::
 
-
----
 
 ## Gradient checking
 
 One of the most common issues when implementing an optimizer is to get the gradient calculation wrong which can produce problematic results. It is possible to numerically check the gradient function by comparing results between the gradient function and finite differences from the objective function via `optimize.check_grad()`.
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 # 2d
 f, grad, hess = mk_mvn(np.zeros(2), np.eye(2,2))
@@ -587,9 +569,9 @@ f, grad, hess = mk_mvn(np.zeros(4), np.eye(4,4))
 optimize.check_grad(f, grad, [0,0,0,0])
 optimize.check_grad(f, grad, [1,1,1,1])
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python}
 # 20d
 f, grad, hess = mk_mvn(np.zeros(20), np.eye(20))
@@ -603,19 +585,20 @@ f, grad, hess = mk_mvn(np.zeros(50), np.eye(50))
 optimize.check_grad(f, grad, np.zeros(50))
 optimize.check_grad(f, grad, np.ones(50))
 ```
-]
-
----
+:::
+::::
 
 ## Testing optimizers
 
-.pull-left[ .small[
+:::: {.columns}
+::: {.column width='50%'} .small[
 ```{python}
 f, grad, hess = mk_mvn(np.zeros(4), np.eye(4,4))
 optimize.minimize(fun=f, x0=[1,1,1,1], jac=grad, method="CG", tol=1e-11)
 optimize.minimize(fun=f, x0=[1,1,1,1], jac=grad, method="BFGS", tol=1e-11)
 ```
-] ] 
+:::
+:::: ] 
 
 .pull-right[ .small[
 ```{python}
@@ -623,13 +606,13 @@ n = 20
 f, grad, hess = mk_mvn(np.zeros(n), np.eye(n,n))
 optimize.minimize(fun=f, x0=np.ones(n), jac=grad, method="CG", tol=1e-11)
 ```
-] ]
-
----
+:::
+:::: ]
 
 ## Unit MVNs
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 df = pd.concat([
   run_collect(
@@ -644,19 +627,19 @@ df = pd.concat([
   )
 ])
 ```
-]
+:::
 
-.pull-right[ .small[
+::: {.column width='50%'} .small[
 ```{python}
 df.drop(["message"], axis=1)
 ```
-] ]
-
----
+:::
+:::: ]
 
 ## Adding correlation
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 def build_Sigma(n):
   S = np.full((n,n), 0.5)
@@ -676,15 +659,14 @@ df = pd.concat([
   )
 ])
 ```
-]
+:::
 
-.pull-right[ .small[
+::: {.column width='50%'} .small[
 ```{python}
 df.drop(["message"], axis=1)
 ```
-] ]
-
----
+:::
+:::: ]
 
 ```{python include=FALSE}
 pd.set_option('display.max_columns', 500)
@@ -695,8 +677,6 @@ pd.set_option('display.width', 1000)
 df
 ```
 
----
-
 ## What's going on?
 
 ```{python}
@@ -704,20 +684,21 @@ n = 50
 f, grad, hess = mk_mvn(np.zeros(n), build_Sigma(n))
 ```
 
-.pull-left[ .small[
+:::: {.columns}
+::: {.column width='50%'} .small[
 ```{python}
 optimize.minimize(f, np.ones(n), jac=grad, method="CG", tol=1e-10)
 optimize.minimize(f, np.ones(n), jac=grad, method="CG", tol=1e-8)
 ```
-] ]
+:::
+:::: :::
 
-.pull-right[ .small[
+::: {.column width='50%'} .small[
 ```{python}
 optimize.minimize(f, np.ones(n), jac=grad, method="BFGS", tol=1e-10)
 ```
-] ]
-
----
+:::
+:::: ]
 
 ```{python warning=FALSE}
 sns.catplot(
@@ -734,8 +715,6 @@ sns.catplot(
 )
 ```
 
-
----
 
 ## Some general advice
 

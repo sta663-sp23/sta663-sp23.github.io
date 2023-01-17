@@ -1,19 +1,15 @@
 ---
-title: "Lec 19 - PyMC3 + ArviZ"
-subtitle: "<br/> Statistical Computing and Computation"
-author: "Sta 663 | Spring 2022"
-date: "<br/> Dr. Colin Rundel"
-output:
-  xaringan::moon_reader:
-    css: ["slides.css"]
-    lib_dir: libs
-    nature:
-      highlightLines: true
-      highlightStyle: solarized-light
-      countIncrementalSlides: false
-      ratio: "16:9"
+title: "PyMC3 + ArviZ"
+subtitle: "Lecture 19"
+author: "Dr. Colin Rundel"
+footer: "Sta 663 - Spring 2023"
+format:
+  revealjs:
+    theme: slides.scss
+    transition: fade
+    slide-number: true
+    self-contained: true
 ---
-exclude: true
 
 ```{python setup}
 import numpy as np
@@ -89,8 +85,6 @@ local({
 })
 ```
 
----
-
 ## pymc3 + ArviZ
 
 > PyMC3 is a probabilistic programming package for Python that allows users to fit Bayesian models using a variety of numerical methods, most notably Markov chain Monte Carlo (MCMC) and variational inference (VI). Its flexibility and extensibility make it applicable to a large suite of problems. Along with core model specification and fitting functionality, PyMC3 includes functionality for summarizing output and for model diagnostics.
@@ -103,8 +97,6 @@ local({
 import pymc3 as pm
 import arviz as az
 ```
-
----
 
 ## Model basics
 
@@ -119,7 +111,7 @@ with pm.Model() as norm:
 x = pm.Normal("x", mu=0, sigma=1)
 ```
 
---
+. . .
 
 <br/>
 
@@ -135,13 +127,12 @@ with norm:
 norm.vars
 ```
 
----
-
 ## Random Variables
 
 `pm.Normal()` is an example of a PyMC distribution, which are used to construct models, these are implemented using the `FreeRV` class which is used for all of the builtin distributions (and can be used to create custom distributions). Some useful methods and attributes,
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 norm.x.dshape
 norm.x.dsize
@@ -150,9 +141,9 @@ norm.x.init_value
 norm.model
 norm
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python}
 norm.x.random()
 norm.y.random()
@@ -160,9 +151,8 @@ norm.x.logp({"x": 0, "y": [0,0,0]})
 norm.y.logp({"x": 0, "y": [0,0,0]})
 norm.logp({"x": 0, "y": [0,0,0]})
 ```
-]
-
----
+:::
+::::
 
 ## Variable heirarchy
 
@@ -172,7 +162,7 @@ Note that we defined $y|x \sim \mathcal{N}(x, 1)$, so what is happening when we 
 norm.y.random()
 ```
 
---
+. . .
 
 ```{python}
 obs = norm.y.random(size=1000)
@@ -181,11 +171,9 @@ np.var(obs)
 np.std(obs)
 ```
 
---
+. . .
 
 Each time we ask for a draw from `y`, PyMC is first drawing from `x`for us.
-
----
 
 ## Beta-Binomial model
 
@@ -197,7 +185,7 @@ with pm.Model() as beta_binom:
   x = pm.Binomial("x", n=20, p=p, observed=5)
 ```
 
---
+. . .
 
 <br/>
 
@@ -208,21 +196,14 @@ with beta_binom:
   trace = pm.sample(return_inferencedata=True, random_seed=1234)
 ```
 
----
-
 ```{python}
 ax = az.plot_trace(trace, figsize=(6,4))
 plt.show()
 ```
 
----
-
 ```{python out.width="40%"}
 ax = az.plot_posterior(trace, ref_val=[15/40])
 plt.show()
-```
----
-
 ```{python out.width="40%"}
 p = np.linspace(0, 1, 100)
 post_beta = scipy.stats.beta.pdf(p,15,25)
@@ -234,8 +215,6 @@ plt.show()
 ```
 
 
----
-
 ## InferenceData results
 
 ```{python}
@@ -243,7 +222,7 @@ print(trace)
 print(type(trace))
 ```
 
---
+. . .
 
 <br/>
 
@@ -259,8 +238,6 @@ Xarray is inspired by and borrows heavily from pandas, the popular data analysis
 See [here](https://arviz-devs.github.io/arviz/getting_started/XarrayforArviZ.html) for more details on xarray + InferenceData
 ]
 
----
-
 ```{python result="asis"}
 print(trace.posterior)
 print(trace.posterior["p"].shape)
@@ -268,25 +245,23 @@ print(trace.sel(chain=0).posterior["p"].shape)
 print(trace.sel(draw=slice(500, None, 10)).posterior["p"].shape)
 ```
 
----
-
 ## As DataFrame
 
 Posterior values, or subsets, can be converted to DataFrames via the `to_dataframe()` method
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 trace.posterior.to_dataframe()
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python}
 trace.posterior["p"][0,:].to_dataframe()
 ```
-]
-
----
+:::
+::::
 
 ## MultiTrace results
 
@@ -295,29 +270,23 @@ with beta_binom:
   mt = pm.sample(random_seed=1234)
 ```
 
---
+. . .
 
 ```{python}
 mt
 type(mt)
 ```
 
----
-
 ```{python}
 ax = az.plot_trace(mt, figsize=(6,4))
 plt.show()
 ```
-
----
 
 ```{python}
 with beta_binom:
   ax = az.plot_trace(mt, figsize=(6,4))
 plt.show()
 ```
-
----
 
 ## Working with MultiTrace
 
@@ -328,8 +297,6 @@ mt['p', 500:].shape
 mt.get_values(varname="p", burn=500, thin=10, chains=[0,1]).shape
 ```
 
----
-
 ## Autocorrelation plots
 
 ```{python out.width="100%"}
@@ -337,16 +304,12 @@ ax = az.plot_autocorr(trace)
 plt.show()
 ```
 
----
-
 ## Forrst plots
 
 ```{python out.width="40%"}
 ax = az.plot_forest(trace)
 plt.show()
 ```
-
----
 
 ## Other useful diagnostics
 
@@ -356,26 +319,26 @@ Standard MCMC diagnostic statistics are available via `summary()` from ArviZ
 az.summary(trace)
 ```
 
---
+. . .
 
 individual methods are available for each statistics,
 
-.pull-left[
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 print(az.ess(trace, method="bulk"))
 print(az.ess(trace, method="tail"))
 ```
-]
+:::
 
-.pull-right[
+::: {.column width='50%'}
 ```{python}
 print(az.rhat(trace))
 print(az.mcse(trace))
 ```
-]
+:::
+::::
 
-
----
 
 ## Demo 1 - Linear regression
 
@@ -390,8 +353,6 @@ x = np.linspace(0, 1, n)
 y = m*x + b + np.random.randn(n)
 ```
 
----
-
 ## Model
 
 ```{python}
@@ -405,28 +366,22 @@ with pm.Model() as lm:
   trace = pm.sample(return_inferencedata=True, random_seed=1234)
 ```
 
---
+. . .
 
 ```{python}
 az.summary(trace)
 ```
 
 
----
-
 ```{python out.width="80%"}
 ax = az.plot_trace(trace)
 plt.show()
 ```
 
----
-
 ```{python}
 ax = az.plot_posterior(trace, ref_val=[6,2,1])
 plt.show()
 ```
-
----
 
 .small[
 ```{python out.width="50%"}
@@ -443,9 +398,8 @@ plt.plot(x, 6*x + 2, label='true regression line', lw=3., c='red')
 plt.legend(loc='best')
 plt.show()
 ```
-]
-
----
+:::
+::::
 
 ## Posterior Predictive
 
@@ -456,16 +410,12 @@ with lm:
 pp['y'].shape
 ```
 
----
-
 ```{python out.width="40%"}
 plt.figure(layout="constrained")
 plt.plot(x, pp['y'].T, c="grey", alpha=0.1)
 plt.scatter(x, y, s=30, label='data')
 plt.show()
 ```
-
----
 
 ## Model revision
 
@@ -483,8 +433,6 @@ with pm.Model() as lm2:
   pp = pm.sample_posterior_predictive(trace, var_names=["y_est"], samples=200)
 ```
 
----
-
 ```{python out.width="66%"}
 plt.figure(layout="constrained")
 ax = az.plot_trace(trace, compact=False, figsize=(6,12))
@@ -501,9 +449,8 @@ plt.plot(x, pp['y_est'].T, c="grey", alpha=0.1)
 plt.scatter(x, y, s=30, label='data')
 plt.show()
 ```
-]
-
----
+:::
+::::
 
 ## Demo 2 - Bayesian Lasso
 
@@ -521,9 +468,9 @@ beta[[20,40,60,80]] = -10
 y = X @ beta + np.random.normal(size=n)
 ```
 
-.footnote[Based on [Bayesian Sparse Regression](https://betanalpha.github.io/assets/case_studies/bayes_sparse_regression.html) and [Lasso regression with block updating](https://docs.pymc.io/en/v3/pymc-examples/examples/pymc3_howto/lasso_block_update.html)]
-
----
+::: {.aside}
+Based on [Bayesian Sparse Regression](https://betanalpha.github.io/assets/case_studies/bayes_sparse_regression.html) and [Lasso regression with block updating](https://docs.pymc.io/en/v3/pymc-examples/examples/pymc3_howto/lasso_block_update.html)
+:::
 
 ## Naive Model
 
@@ -539,27 +486,21 @@ with pm.Model() as bayes_lasso:
 
 ```
 
----
-
 ```{python}
 az.summary(trace)
 ```
 
---
+. . .
 
 ```{python}
 az.summary(trace).iloc[[0,10,20,30,40,50,60,70,80,100]]
 ```
-
----
 
 ```{python out.width="40%"}
 ax = az.plot_forest(trace)
 plt.tight_layout()
 plt.show()
 ```
-
----
 
 ## Plot helper
 
@@ -578,14 +519,10 @@ def plot_slope(trace, prior="beta", chain=0):
   
 ```
 
----
-
 ```{python}
 plot_slope(trace)
 ```
 
-
----
 
 ## Weakly Informative Prior
 
@@ -602,15 +539,11 @@ with pm.Model() as bayes_weak:
 
 ```
 
----
-
 ```{python out.width="40%"}
 ax = az.plot_forest(trace)
 plt.tight_layout()
 plt.show()
 ```
-
----
 
 ```{python}
 plot_slope(trace)
