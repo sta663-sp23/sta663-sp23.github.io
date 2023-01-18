@@ -15,10 +15,19 @@ execute:
 
 ```{r setup, message=FALSE, warning=FALSE, include=FALSE}
 options(
-  htmltools.dir.version = FALSE, # for blogdown
   width=80
 )
+```
 
+```{r hooks}
+local({
+  hook_old <- knitr::knit_hooks$get("error")  # save the old hook
+  knitr::knit_hooks$set(error = function(x, options) {
+    x = sub("## \n## Detailed traceback:\n.*$", "", x)
+    x = sub("Error in py_call_impl\\(.*?\\)\\: ", "", x)
+    hook_old(x, options)
+  })
+})
 ```
 
 
@@ -206,24 +215,83 @@ Python variable names can be of any length, and must only contain letters, numbe
 
 ## string literals
 
-Strings can be defined using a couple of different ways,
+Strings can be defined using a couple of different approaches,
 
+::: {.small}
 ```{python}
 'allows embedded "double" quotes'
 "allows embedded 'single' quotes"
 ```
+:::
+
+. . .
 
 strings can also be triple quoted, using single or double quotes, which allows the string to span multiple lines.
 
+::: {.small}
 ```{python}
 """line one
 line two
 line three"""
 ```
+:::
+
+. . .
+
+a `\` can also be used to span a long string over multiple lines without including the newline
+
+::: {.small}
+```{python}
+"line one \
+not line two \
+not line three"
+```
+:::
+
+## f strings
+
+As of Python 3.6 you can use f strings for string interpolation formatting (as opposed to `%`-formatting and the `format()` method).
+
+```{python}
+x = [0,1,2,3,4]
+f"{x[::2]}"
+f'{x[0]}, {x[1]}, ...'
+f"From {min(x)} to {max(x)}"
+f"{x} has {len(x)} elements"
+```
+
+::: {.aside}
+See [PEP 498](https://peps.python.org/pep-0498/)
+:::
+
+
+## raw strings
+
+One other special type of string literal you will come across are raw strings (prefixed with `r`) - these are like regular strings except that `\` is treated as a literal character rather than an escape character.
+
+:::: {.columns}
+::: {.column width='50%'}
+```{python}
+print("ab\\cd")
+print("ab\ncd")
+print("ab\tcd")
+```
+:::
+
+::: {.column width='50%'}
+```{python}
+print(r"ab\\cd")
+print(r"ab\ncd")
+print(r"ab\tcd")
+```
+:::
+::::
+
+
 
 ## Special values
 
-By default Python does not support missing values and non-finite floating point values are available but somewhat awkward to use. There is a `None` type which is similar in spirit and functionality to `NULL` in R.
+By default Python does not support missing values and non-finite floating point values are available but somewhat awkward to use. There is also a `None` type which is similar in spirit and functionality to `NULL` in R.
 
 :::: {.columns .small}
 ::: {.column width='50%'}
@@ -235,7 +303,7 @@ float("-inf")
 ```
 :::
 
-::: {.column width='50%'}
+::: {.column width='50%' .fragment}
 ```{python}
 5 > float("inf")
 5 > float("-inf")
@@ -247,7 +315,7 @@ type(None)
 
 
 ::: {.aside}
-We will not be using these values much currently, but they will be relevant when discussing pandas down the road
+We will not be using these values much currently, but they will be relevant when discussing pandas in a couple of weeks
 :::
 
 
@@ -257,14 +325,17 @@ We will not be using these values much currently, but they will be relevant when
 
 Python lists are a *heterogenous*, *ordered*, *mutable* containers of objects (they behave very similarly to lists in R).
 
+::: {.small}
 ```{python}
 [0,1,1,0]
 [0, True, "abc"]
 [0, [1,2], [3,[4]]]
 ```
+:::
 
 . . .
 
+::: {.small}
 ```{python}
 x = [0,1,1,0]
 type(x)
@@ -272,6 +343,12 @@ type(x)
 y = [0, True, "abc"]
 type(y)
 ```
+:::
+
+
+::: {.aside}
+More on the underlying data structure and its properties next time
+:::
 
 ## Common operations
 
@@ -287,7 +364,7 @@ x * 2
 ```
 :::
 
-::: {.column width='50%'}
+::: {.column width='50%' .fragment}
 ```{python}
 len(x)
 max(x)
@@ -298,12 +375,12 @@ x.count("1")
 ::::
 
 ::: {.aside}
-See [here](https://docs.python.org/3/library/stdtypes.html#common-sequence-operations) and [here](https://docs.python.org/3/library/stdtypes.html#mutable-sequence-types) for a more complete listings.
+See [here](https://docs.python.org/3/library/stdtypes.html#common-sequence-operations) and [here](https://docs.python.org/3/library/stdtypes.html#mutable-sequence-types) for a more complete listing of functions and methods.
 :::
 
 ## list subsetting 
 
-Elements of a list can be accessed using the `[]` method, element position is indicated using 0-based indexing, and ranges of values can be specified using a slice (`start:stop:step`).
+Elements of a list can be accessed using the `[]` method, element position is indicated using 0-based indexing, and ranges of values can be specified using slices (`start:stop:step`).
 
 ::: {}
 ```{python}
@@ -363,17 +440,34 @@ x[::-1]
 :::
 ::::
 
+## Exercise 1
+
+Come up with a slice that will subset the following list to obtain the elements requested:
+
+```{python}
+d = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+```
+
+* Select only the odd values in this list
+
+* Select every 3rd value starting from the 2nd element.
+
+* Select every other value, in reverse order, starting from the 9th element.
+
+* Select the 3rd element, the 5th element, and the 10th element
+
+
 
 ## mutability
 
 Since lists are mutable the stored values can be changed,
 
-:::: {.columns}
-::: {.column width='50%'}
 ```{python}
 x = [1,2,3,4,5]
 ```
 
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 x[0] = -1
 x
@@ -449,21 +543,6 @@ y
 More on `.copy()` and `.deepcopy()` methods later on in the course.
 :::
 
-## Exercise 1
-
-Come up with a slice that will subset the following list to obtain the elements requested:
-
-```{python}
-d = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-```
-
-* Select only the odd values in this list
-
-* Select every 3rd value starting from the 2nd element.
-
-* Select every other value, in reverse order, starting from the 9th element.
-
-* Select the 3rd element, the 5th element, and the 10th element
 
 ## Value unpacking
 
@@ -511,7 +590,7 @@ y
 ```
 :::
 
-::: {.column width='50%'}
+::: {.column width='50%' .fragment}
 ```{python error=TRUE}
 *x, y = [1,2,3]
 x
@@ -580,7 +659,7 @@ list(tuple(x)) == x
 
 ## Ranges
 
-These are the last sequence type and are a bit special - ranges are a *homogenous*, *ordered*, *immutable* "containers" of **integers**.
+These are the last common sequence type and are a bit special - ranges are a *homogenous*, *ordered*, *immutable* "containers" of **integers**.
 
 :::: {.columns}
 ::: {.column width='50%'}
@@ -592,7 +671,7 @@ range(10,0,-1)
 ```
 :::
 
-::: {.column width='50%'}
+::: {.column width='50%' .fragment}
 ```{python}
 list(range(10))
 list(range(0,10))
@@ -602,19 +681,20 @@ list(range(10,0,-1))
 :::
 ::::
 
+. . .
 
-
-::: {.aside}
 What makes ranges special is that `range(1000000)` does not store 1 million integers in memory but rather just three 3$^*$.
-:::
+
 
 ## Strings as sequences
 
-In most of the ways that count we can actually think about Python strings as being ordered, immutable, containers of unicode characters and so much of the functionality we just saw can be applied to them.
+In most of the ways that count we can think about Python strings as being ordered, immutable, containers of unicode characters and so much of the functionality we just saw can be applied to them.
 
+::: {.small}
 ```{python}
 x = "abc"
 ```
+:::
 
 :::: {.columns .small}
 ::: {.column width='50%'}
@@ -646,11 +726,13 @@ x[2] = "c"
 
 ## String Methods
 
-Because string processing is a common and important programming task, the class implements a number of specific methods for these tasks.
+Because string processing is a common and important programming task, the class implements a number of specific methods for these tasks. Review the page linked on the previous slide for help.
 
 ```{python}
 x = "Hello world! 1234"
 ```
+
+. . .
 
 :::: {.columns}
 ::: {.column width='50%'}
@@ -694,50 +776,6 @@ String processing - take the string given below and apply the necessary methods 
 ::: {.aside}
 Hardcoding w/ magic numbers is perfectly acceptable here.
 :::
-
-
-## f strings
-
-As of Python 3.6 you can use f strings for string interpolation formatting (as opposed to `%`-formatting and the `format()` method).
-
-```{python}
-x = [0,1,2,3,4]
-f"{x[::2]}"
-f'{x[0]}, {x[1]}, ...'
-f"From {min(x)} to {max(x)}"
-f"{x} has {len(x)} elements"
-```
-
-::: {.aside}
-See [PEP 498](https://peps.python.org/pep-0498/)
-:::
-
-
-## raw strings
-
-One other special type of string literal you will come across are raw strings (prefixed with `r`) - these are like regular strings except that `\` is treated as a literal character rather than an escape character.
-
-:::: {.columns}
-::: {.column width='50%'}
-```{python}
-print("ab\\cd")
-print("ab\ncd")
-print("ab\tcd")
-```
-:::
-
-::: {.column width='50%'}
-```{python}
-print(r"ab\\cd")
-print(r"ab\ncd")
-print(r"ab\tcd")
-```
-:::
-::::
-
-
-
-
 
 
 ## Set and Mapping types
