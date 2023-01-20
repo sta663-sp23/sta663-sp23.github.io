@@ -28,7 +28,7 @@ schedule:
   day: 3
   lecture: "Basic types & sequence types"
   slides: Lec02
-  screencast: 
+  screencast: https://youtu.be/acwh-3MBat8
   readings:
   - text: Python Built-in Types
     link: https://docs.python.org/3/library/stdtypes.html
@@ -39,7 +39,7 @@ schedule:
 - week: 1
   day: 5
   lecture: "Control flow, list comprehensions<br/>and functions"
-  slides: 
+  slides: Lec03
   screencast: 
   readings:
   - text: Control flow

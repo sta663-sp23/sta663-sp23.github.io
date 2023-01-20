@@ -19,7 +19,7 @@ options(
 )
 ```
 
-```{r hooks}
+```{r hooks, include=FALSE}
 local({
   hook_old <- knitr::knit_hooks$get("error")  # save the old hook
   knitr::knit_hooks$set(error = function(x, options) {
