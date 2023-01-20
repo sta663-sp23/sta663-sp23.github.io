@@ -67,35 +67,38 @@ else:
 
 This is a fairly unique feature of Python - expressions are grouped together via *indenting*. This is relevant for control flow (`if`, `for`, `while`, etc.) as well as function and class definitions and many other aspects of the language.
 
-Indenting should be 2 or more spaces (4 is generally preferred based on [PEP 8](https://www.python.org/dev/peps/pep-0008/)) or tab characters - generally your IDE will handle this for you.
+Indents should be 2 or more spaces (4 is generally preferred based on [PEP 8](https://www.python.org/dev/peps/pep-0008/)) or tab character(s) - generally your IDE will handle this for you.
 
 . . .
 
 <br/>
 
-If there are not multple expression then indenting is optional, e.g.
+If there are not multiple expressions then indenting is optional, e.g.
 
 ```{python}
 if x == 0: print("X is zero")
 ```
 
+
 ## Conditional scope
 
-Conditional expressions do not have their own scope, so variables defined within will be accessible outside of the conditional. 
+Conditional expressions do not have their own scope, so variables defined within will be accessible / modified outside of the conditional. 
 
 This is also true for other control flow constructs (e.g. `for`, `while`, etc.)
 
 ```{python}
 s = 0
+s
+
 if True:
     s = 3
 
 s
 ```
 
-## While loops
+## `while` loops
 
-Repeat until the given condition evaluates to `False`,
+will repeat until the provided condition evaluates to `False`,
 
 ```{python}
 i = 17
@@ -112,19 +115,20 @@ while i != 1:
 seq
 ```
 
-## for loops
+## `for` loops
 
-Iterates over the elements of a sequence
+iterate over the elements of a *sequence*,
 
 :::: {.columns}
 ::: {.column width='50%'}
 ```{python}
 for w in ["Hello", "world!"]:
-    print(w, len(w))
+    print(w, ":", len(w))
 ```
 
-```{python}
+<br/>
 
+```{python}
 sum = 0
 for v in (1,2,3,4):
     sum += v
@@ -139,7 +143,11 @@ for c in "abc123def567":
     if (c.isnumeric()):
         res.append(int(c))
 res
+```
 
+<br/>
+
+```{python}
 res = []
 for i in range(0,10):
     res += [i]
@@ -150,14 +158,14 @@ res
 
 ## `break` and `continue`
 
-Allow early loop exit or step to next iteration respectively,
+allow for either an early loop exit or a step to the next iteration respectively,
 
 
 :::: {.columns}
 ::: {.column width='50%'}
 ```{python}
-for i in range(10):
-    if i % 2 == 0:
+for i in range(1,10):
+    if i % 3 == 0:
         continue
     
     print(i, end=" ")
@@ -166,8 +174,8 @@ for i in range(10):
 
 ::: {.column width='50%'}
 ```{python}
-for i in range(10):
-    if i % 2 == 0:
+for i in range(1,10):
+    if i % 3 == 0:
         break
     
     print(i, end=" ")
@@ -177,11 +185,10 @@ for i in range(10):
 
 ## loops and `else`
 
-Both `for` and `while` loops can also include an `else` clauses which execute when the loop is terminated after fully iterating (`for`) or meetings the `while` condition, i.e. when `break` is not used.
+Both `for` and `while` loops can also include an `else` clauses which execute when the loop is completes by either fully iterating (`for`) or meetings the `while` condition, i.e. when `break` is not used.
 
 ::: {.small}
 ```{python}
-# From python tutorial - Section 4.4
 for n in range(2, 10):
     for x in range(2, n):
         if n % x == 0:
@@ -192,9 +199,14 @@ for n in range(2, 10):
 ```
 :::
 
+::: {.aside}
+Example based on Python Tutorial - Section 4.4
+:::
+
+
 ## `pass`
 
-Is a placeholder expression that does nothing, it can be used when an expression is needed syntactically.
+is a placeholder expression that does nothing, it can be used when an expression is needed syntactically.
 
 ```{python}
 x = -3
@@ -212,7 +224,7 @@ elif x % 2 == 1:
 
 ## Basics
 
-List comprehensions provides a concise syntax for generating lists (or other sequences) via iteration over other lists (or other sequences).
+List comprehensions provides a concise syntax for generating lists (or other sequences) via iteration over another list (or sequences).
 
 :::: {.columns}
 ::: {.column width='50%'}
@@ -220,6 +232,7 @@ List comprehensions provides a concise syntax for generating lists (or other seq
 res = []
 for x in range(10):
     res.append(x**2)
+res
 ```
 :::
 
@@ -232,7 +245,7 @@ for x in range(10):
 
 . . .
 
-Since it uses the for loop syntax, any sequence is fair game:
+Since it uses the for loop syntax, any sequence / iterable object is fair game:
 
 ```{python}
 [x**2 for x in [1,2,3]]
@@ -242,9 +255,10 @@ Since it uses the for loop syntax, any sequence is fair game:
 [c.lower() for c in "Hello World!"]
 ```
 
+
 ## Using `if`
 
-List comprehensions can include a conditional clause
+List comprehensions can include a conditional clause(s) to filter the input list / object,
 
 ```{python}
 [x**2 for x in range(10) if x % 2 == 0]
@@ -264,7 +278,7 @@ The comprehension can include multiple `if` statements (which are combined via `
 
 ## Multiple `for` keywords
 
-Similarly, the comprehension can also contain multiple `for` statements,
+Similarly, the comprehension can also contain multiple `for` statements which is the equivalent of nested `for` loops,
 
 ```{python}
 res = []
@@ -285,29 +299,31 @@ res
 
 ## `zip`
 
-Is a useful function for "joining" the elements of multiple sequences (usually so they can be jointly iterated over),
+Is a useful function for "joining" the elements of multiple sequences (so they can be jointly iterated over),
 
+::: {.medium}
 ```{python}
 x = [1,2,3]
 y = [3,2,1]
-```
-
-```{python}
 z = zip(x, y)
 z
-```
-
-```{python}
 list(z)
 ```
+:::
 
 . . .
 
+::: {.medium}
 ```{python}
 [a**b for a,b in zip(x,y)]
-
 [b**a for a,b in zip(x,y)]
 ```
+:::
+
+::: {.aside}
+The zip object is an example of a [generator](https://wiki.python.org/moin/Generators) which we will talk more about later on.
+:::
+
 
 ## `zip` and length mismatches
 
@@ -323,6 +339,8 @@ list(zip(x,z))
 
 list(zip(x,y,z))
 ```
+
+
 
 ## Exercise 1
 
@@ -362,6 +380,11 @@ f()
 ```
 :::
 ::::
+
+::: {.aside}
+Arguments with defaults *must* must follow the argument(s) without defaults
+:::
+
 
 ## `return` statements
 
@@ -450,12 +473,14 @@ i()
 
 ## Docstrings
 
-A common practice in Python is to document functions (and other objects) using a doc string - this is a short concise summary of the objects purpose. Doc strings are specified by supplying a string as the very line in the function definition.
+A common practice in Python is to document functions (and other objects) using a doc string - this is a short concise summary of the objects purpose. Docstrings are specified by supplying a string as the very line in the function definition.
 
-::: {.small}
+:::: {.columns .small}
+::: {.column width='50%'}
 ```{python}
 def f():
-    "Hello, I am the function f() and I don't do anything"
+    "Hello, I am the function f() \
+and I don't do anything"
     
     pass
 
@@ -463,20 +488,20 @@ f.__doc__
 ```
 :::
 
-. . .
-
-::: {.small}
+::: {.column width='50%' .fragment}
 ```{python}
 def g():
     """This function also 
-    does absolutely nothing.
-    """
+does absolutely nothing.
+"""
     
     pass
 
 g.__doc__
 ```
 :::
+::::
+
 
 ## Using docstrings
 
@@ -490,22 +515,7 @@ print("".lower.__doc__)
 
 
 
-## Variadic arguments
 
-If the number of arguments is unknown it is possible to define variadic functions using `*`,
-
-```{python}
-def paste(*args, sep=" "):
-    return sep.join(args)
-```
-
-. . .
-
-```{python}
-paste("A")
-paste("A","B","C")
-paste("1","2","3",sep=",")
-```
 
 
 ## Argument order
@@ -601,7 +611,22 @@ f(x=1,y=1,z=1)
 :::
 
 
+## Variadic arguments
 
+If the number of arguments is unknown / variable it is possible to define variadic functions using `*` or `**`. The former is for unnamed arguments which will be treated as a `tuple`, the latter is for named arguments which will be treated as a `dict`.
+
+```{python}
+def paste(*x, sep=" "):
+    return sep.join(x)
+```
+
+. . .
+
+```{python}
+paste("A")
+paste("A","B","C")
+paste("1","2","3",sep=",")
+```
 
 ## Anonymous functions
 
