@@ -40,7 +40,7 @@ schedule:
   day: 5
   lecture: "Control flow, list comprehensions<br/>and functions"
   slides: Lec03
-  screencast: 
+  screencast: https://youtu.be/FbTHGIKOwXQ
   readings:
   - text: Control flow
     link: https://docs.python.org/3/tutorial/controlflow.html
@@ -51,7 +51,7 @@ schedule:
 - week: 2
   day: 3
   lecture: "Data structures"
-  slides: 
+  slides: Lec04
   screencast: 
   readings:
   - text: Sets and Dicts
