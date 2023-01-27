@@ -52,7 +52,7 @@ schedule:
   day: 3
   lecture: "Data structures"
   slides: Lec04
-  screencast: 
+  screencast: https://youtu.be/316P7IwcAhI
   readings:
   - text: Sets and Dicts
     link: https://docs.python.org/3/tutorial/datastructures.html#sets
@@ -63,7 +63,7 @@ schedule:
 - week: 2
   day: 5
   lecture: "NumPy Basics"
-  slides: 
+  slides: Lec05
   screencast: 
   readings:
   - text: NumPy quickstart
