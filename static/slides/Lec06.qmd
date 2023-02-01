@@ -472,7 +472,7 @@ For each of the following combinations determine what the resulting dimension wi
 * A [3] + B [4]
 
 
-## Example 1 - Standardization
+## Demo 1 - Standardization
 
 Below we generate a data set with 3 columns of random normal values. Each column has a different mean and standard deviation which we can check with `mean()` and `std()`.
 

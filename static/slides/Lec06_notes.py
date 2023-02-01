@@ -1,4 +1,13 @@
-import matplotlib.pyplot as plt
+## Exercise 1
+
+x = np.arange(16).reshape((4,4)); x
+
+x[1:3, 1:3]
+
+x[[1,2], [1,2]] # incorrect
+
+
+## Exercise 2
 
 pts = np.linspace(-1,3, 5000)
 x, y = np.meshgrid(pts, pts)
@@ -15,7 +24,49 @@ x.reshape(-1)[min_i]
 y.reshape(-1)[min_i]
 
 
-##
+## Exercise 3
+
+#   A (128 x 128 x 3) + B (3):
+#
+#   A    128 x 128 x 3
+#   B                3
+#   ------------------
+#   A+B  128 x 128 x 3 
+
+
+#   A (8 x 1 x 6 x 1) + B (7 x 1 x 5)
+#
+#   A    8 x 1 x 6 x 1
+#   B        7 x 1 x 5
+#   ------------------
+#   A+B  8 x 7 x 6 x 5
+
+
+#   A (2 x 1) + B (8 x 4 x 3)
+#
+#   A            2 x 1
+#   B        8 x 4 x 3
+#   ------------------
+#   A+B         Error
+
+
+#   A (3 x 1) + B (15 x 3 x 5)
+#
+#   A            3 x 1
+#   B       15 x 3 x 5
+#   ------------------
+#   A+B     15   3   5
+
+
+#   A (3) + B (4)
+#
+#   A       3
+#   B       4
+#   --------------
+#   A+B   Error
+
+
+## Demo 1
 
 rng = np.random.default_rng(1234)
 
