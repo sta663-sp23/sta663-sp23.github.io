@@ -75,7 +75,7 @@ schedule:
 - week: 3
   day: 3
   lecture: "Advanced indexing & Broadcasting"
-  slides: 
+  slides: Lec06
   screencast: 
   readings:
   - text: Broadcasting
