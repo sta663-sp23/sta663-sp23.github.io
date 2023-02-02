@@ -76,7 +76,7 @@ schedule:
   day: 3
   lecture: "Advanced indexing & Broadcasting"
   slides: Lec06
-  screencast: 
+  screencast: https://youtu.be/WSonN_Aa8Aw
   readings:
   - text: Broadcasting
     link: https://numpy.org/doc/stable/user/basics.broadcasting.html
@@ -87,7 +87,7 @@ schedule:
 - week: 3
   day: 5
   lecture: "SciPy"
-  slides: 
+  slides: Lec07
   screencast: 
   notes:
   readings:
