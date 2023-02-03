@@ -56,6 +56,16 @@ np.set_printoptions(edgeitems=3, linewidth=180, precision=4)
 
 :::
 
+
+## SciPy vs NumPy
+
+> In an ideal world, NumPy would contain nothing but the array data type and the most basic operations: indexing, sorting, reshaping, basic elementwise functions, etc. All numerical code would reside in SciPy. However, one of NumPy's important goals is compatibility, so NumPy tries to retain all features supported by either of its predecessors. Thus, NumPy contains some linear algebra functions and Fourier transforms, even though these more properly belong in SciPy. In any case, SciPy contains more fully-featured versions of the linear algebra modules, as well as many other numerical algorithms. If you are doing scientific computing with Python, you should probably install both NumPy and SciPy. Most new features belong in SciPy rather than NumPy.
+
+::: {.aside}
+From [scipy.org/faq/](https://scipy.org/faq/)
+:::
+
+
 # Example 1 <br/> k-means clustering
 
 ## Data
@@ -91,8 +101,9 @@ plt.show()
 ::: {.column width='50%'}
 ```{python}
 from scipy.cluster.vq import kmeans
-
 ctr, dist = kmeans(pts, 3)
+```
+```{python}
 ctr
 dist
 ```
@@ -117,7 +128,7 @@ plt.cla()
 plt.scatter(cl1[:,0], cl1[:,1], c="r", marker = ".")
 plt.scatter(cl2[:,0], cl2[:,1], c="b", marker = "*")
 plt.scatter(cl3[:,0], cl3[:,1], c="c", marker = "D")
-plt.scatter(ctr[:,0], ctr[:,1], c="k", marker = "x", s = 300, linewidths=3.5)
+plt.scatter(ctr[:,0], ctr[:,1], c="k", marker = "x", s = 500, linewidths=3.5)
 plt.show()
 ```
 
@@ -131,13 +142,14 @@ plt.show()
 ```{python}
 ks = range(1,8)
 dists = [kmeans(pts, k)[1] for k in ks]
-
+```
+```{python}
 np.array(dists).reshape(-1)
 ```
 
 ```{python}
 #| echo: false
-#| out-width: 50%
+#| out-width: 66%
 #| fig-align: center
 plt.cla()
 p = plt.plot(ks, dists, "-ok")
@@ -150,7 +162,7 @@ plt.show()
 
 ## Basic functions
 
-For general numeric integration in 1D we use `scipy.integrate.quad()`, which takes as arguments the function to be integrated and the lower and upper bounds of integration.
+For general numeric integration in 1D we use `scipy.integrate.quad()`, which takes as arguments the function to be integrated and the lower and upper bounds of the integral.
 
 ```{python}
 from scipy.integrate import quad
@@ -194,7 +206,7 @@ def norm_pdf(x, μ, σ):
 . . .
 
 ```{python}
-norm_pdf(0,0,1)
+norm_pdf(0, 0, 1)
 norm_pdf(np.Inf, 0, 1)
 norm_pdf(-np.Inf, 0, 1)
 ```
@@ -333,7 +345,8 @@ mv_norm([0], [0], [[1]])
 ::: {.column width='50%'}
 ```{python}
 mv_norm([0,0], [0,0], [[1,0],[0,1]])
-mv_norm([0,0,0], [0,0,0], [[1,0,0],[0,1,0],[0,0,1]])
+mv_norm([0,0,0], [0,0,0], 
+        [[1,0,0],[0,1,0],[0,0,1]])
 ```
 :::
 ::::
@@ -344,11 +357,17 @@ are supported by `dblquad()` and `tplquad()` respectively (see `nquad()` for hig
 
 ```{python cache=TRUE}
 from scipy.integrate import dblquad, tplquad
+```
 
+```{python cache=TRUE}
 dblquad(lambda y, x: mv_norm([x,y], [0,0], np.identity(2)), 
         a=-np.inf, b=np.inf, 
         gfun=lambda x: -np.inf,   hfun=lambda x: np.inf)
-        
+```
+
+. . .
+
+```{python cache=TRUE}
 tplquad(lambda z, y, x: mv_norm([x,y,z], [0,0,0], np.identity(3)),
         a=0, b=np.inf, 
         gfun=lambda x:   0, hfun=lambda x:   np.inf,
@@ -409,6 +428,7 @@ type(res)
 dir(res)
 res.success
 res.x
+res.fun
 ```
 
 
@@ -505,6 +525,7 @@ def f(x):
 from scipy.optimize import minimize
 ```
 
+. . .
 
 :::: {.columns .small}
 ::: {.column width='50%'}
@@ -576,7 +597,7 @@ kd = KDTree(pts)
 ```
 :::
 
-
+. . .
 
 :::: {.columns .small}
 ::: {.column width='50%'}
@@ -602,10 +623,13 @@ i
 
 ::: {.small}
 ```{python}
-#| fig-align: center
-#| out-width: 75%
 from scipy.spatial import ConvexHull
 hull = ConvexHull(pts)
+```
+
+```{python}
+#| fig-align: center
+#| out-width: 75%
 hull.vertices
 scipy.spatial.convex_hull_plot_2d(hull)
 ```
@@ -615,10 +639,13 @@ scipy.spatial.convex_hull_plot_2d(hull)
 
 :::: {.small}
 ```{python}
-#| fig-align: center
-#| out-width: 66%
 from scipy.spatial import Delaunay
 tri = Delaunay(pts)
+```
+
+```{python}
+#| fig-align: center
+#| out-width: 66%
 tri.simplices.T
 scipy.spatial.delaunay_plot_2d(tri)
 ```
@@ -629,10 +656,12 @@ scipy.spatial.delaunay_plot_2d(tri)
 
 :::: {.small}
 ```{python}
-#| fig-align: center
-#| out-width: 66%
 from scipy.spatial import Voronoi
 vor = Voronoi(pts)
+```
+```{python}
+#| fig-align: center
+#| out-width: 66%
 vor.vertices.T
 scipy.spatial.voronoi_plot_2d(vor)
 ```
@@ -666,13 +695,30 @@ Implements classes for 104 continuous and 19 discrete distributions,
 
 ```{python}
 from scipy.stats import norm, gamma, binom, uniform
+```
+
+. . .
+
+```{python}
 norm().rvs(size=5)
+```
+
+. . .
+
+```{python}
 uniform.pdf([0,0.5,1,2])
+```
 
+. . .
 
+```{python}
 binom.mean(n=10, p=0.25)
 binom.median(n=10, p=0.25)
+```
 
+. . .
+
+```{python}
 gamma(a=1,scale=1).stats()
 norm().stats(moments="mvsk")
 ```
@@ -682,7 +728,7 @@ norm().stats(moments="mvsk")
 
 Model parameters can be passed to any of the methods directory, or a distribution can be constructed using a specific set of parameters, which is known as freezing.
 
-:::: {.columns}
+:::: {.columns .small}
 ::: {.column width='50%'}
 ```{python}
 norm_rv = norm(loc=-1, scale=3)
@@ -697,7 +743,9 @@ unif_rv.rvs(5)
 :::
 
 ::: {.column width='50%' .fragment}
-```{python out.width="66%", fig.align="center"}
+```{python}
+#| fig-align: center
+#| out-width: 66%
 g = gamma(a=2, loc=0, scale=1.2)
 
 x = np.linspace(0, 10, 100)
