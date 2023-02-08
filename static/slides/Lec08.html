@@ -1237,7 +1237,7 @@ Dr. Colin Rundel
 <h2>DataFrame</h2>
 <ul>
 <li><p>Just like R a DataFrame is a collection of vectors with a common length</p></li>
-<li><p>Column types can be heterogeneous</p></li>
+<li><p>Column dtypes are be heterogeneous</p></li>
 <li><p>Both columns and rows can have names</p></li>
 </ul>
 <div class="small">
@@ -1349,7 +1349,8 @@ Length: 4, dtype: int64</code></pre>
 </div>
 </div>
 </div>
-<p>An index can also be explicitly provided when constructing a Series,</p>
+<div class="fragment">
+<p>An index (row names) can also be explicitly provided when constructing a Series,</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1"></a>t <span class="op">=</span> pd.Series([<span class="dv">4</span>,<span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">3</span>], index<span class="op">=</span>[<span class="st">&quot;a&quot;</span>,<span class="st">&quot;b&quot;</span>,<span class="st">&quot;c&quot;</span>,<span class="st">&quot;d&quot;</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -1380,10 +1381,11 @@ Length: 4, dtype: int64</code></pre>
 </div>
 </div>
 </div>
+</div>
 </section>
 <section id="series-numpy" class="slide level2">
 <h2>Series + NumPy</h2>
-<p>Series objects are compatible with NumPy like functions (vectorized)</p>
+<p>Series objects are compatible with NumPy like functions (i.e. vectorized)</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1"></a>t <span class="op">=</span> pd.Series([<span class="dv">4</span>,<span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">3</span>], index<span class="op">=</span>[<span class="st">&quot;a&quot;</span>,<span class="st">&quot;b&quot;</span>,<span class="st">&quot;c&quot;</span>,<span class="st">&quot;d&quot;</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -1487,7 +1489,7 @@ dtype: int64</code></pre>
 </section>
 <section id="index-alignment" class="slide level2">
 <h2>Index alignment</h2>
-<p>When performing (arithmetic) operations on series, they will attempt to align the operation by the index values,</p>
+<p>When performing operations with multiple series, generally pandas will attempt to align the operation by the index values,</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb53"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1"></a>m <span class="op">=</span> pd.Series([<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>], index <span class="op">=</span> [<span class="st">&quot;a&quot;</span>,<span class="st">&quot;b&quot;</span>,<span class="st">&quot;c&quot;</span>,<span class="st">&quot;d&quot;</span>])</span>
 <span id="cb53-2"><a href="#cb53-2"></a>n <span class="op">=</span> pd.Series([<span class="dv">4</span>,<span class="dv">3</span>,<span class="dv">2</span>,<span class="dv">1</span>], index <span class="op">=</span> [<span class="st">&quot;d&quot;</span>,<span class="st">&quot;c&quot;</span>,<span class="st">&quot;b&quot;</span>,<span class="st">&quot;a&quot;</span>])</span>
@@ -1534,7 +1536,7 @@ dtype: float64</code></pre>
 </section>
 <section id="series-and-dicts" class="slide level2">
 <h2>Series and dicts</h2>
-<p>Series can also be constructed from dicts, in which case the keys are used to create the index,</p>
+<p>Series can also be constructed from dictionaries, in which case the keys are used as the index,</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb60"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb60-1"><a href="#cb60-1"></a>d <span class="op">=</span> {<span class="st">&quot;anna&quot;</span>: <span class="st">&quot;A+&quot;</span>, <span class="st">&quot;bob&quot;</span>: <span class="st">&quot;B-&quot;</span>, <span class="st">&quot;carol&quot;</span>: <span class="st">&quot;C&quot;</span>, <span class="st">&quot;dave&quot;</span>: <span class="st">&quot;D+&quot;</span>}</span>
 <span id="cb60-2"><a href="#cb60-2"></a>pd.Series(d)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1724,7 +1726,7 @@ dtype: bool</code></pre>
 </section>
 <section id="setting-dtype" class="slide level2">
 <h2>Setting dtype</h2>
-<p>We can force things by setting the Series dtype,</p>
+<p>We can force things by setting the Series’ dtype,</p>
 <div class="columns">
 <div class="column" style="width:50%;">
 <div class="cell">
@@ -1758,7 +1760,7 @@ dtype: boolean</code></pre>
 </section>
 <section id="string-series" class="slide level2">
 <h2>String series</h2>
-<p>Series containing strings can be accessed via the <code>str</code> attribute,</p>
+<p>Series containing strings can their strings accessed via the <code>str</code> attribute,</p>
 <div class="small">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb100"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb100-1"><a href="#cb100-1"></a>s <span class="op">=</span> pd.Series([<span class="st">&quot;the quick&quot;</span>, <span class="st">&quot;brown fox&quot;</span>, <span class="st">&quot;jumps over&quot;</span>, <span class="st">&quot;a lazy dog&quot;</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1868,8 +1870,11 @@ Categories (5, object): [&#39;Fri&#39; &lt; &#39;Mon&#39; &lt; &#39;Thur&#39; &l
 <div class="cell">
 <div class="sourceCode cell-code" id="cb117"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb117-1"><a href="#cb117-1"></a>pd.Series(</span>
 <span id="cb117-2"><a href="#cb117-2"></a>  [<span class="st">&quot;Tue&quot;</span>, <span class="st">&quot;Thur&quot;</span>, <span class="st">&quot;Mon&quot;</span>, <span class="st">&quot;Sat&quot;</span>], </span>
-<span id="cb117-3"><a href="#cb117-3"></a>  dtype<span class="op">=</span>pd.CategoricalDtype(categories<span class="op">=</span>[<span class="st">&quot;Mon&quot;</span>, <span class="st">&quot;Tue&quot;</span>, <span class="st">&quot;Wed&quot;</span>, <span class="st">&quot;Thur&quot;</span>, <span class="st">&quot;Fri&quot;</span>], ordered<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb117-4"><a href="#cb117-4"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb117-3"><a href="#cb117-3"></a>  dtype<span class="op">=</span>pd.CategoricalDtype(</span>
+<span id="cb117-4"><a href="#cb117-4"></a>    categories<span class="op">=</span>[<span class="st">&quot;Mon&quot;</span>, <span class="st">&quot;Tue&quot;</span>, <span class="st">&quot;Wed&quot;</span>, <span class="st">&quot;Thur&quot;</span>, <span class="st">&quot;Fri&quot;</span>], </span>
+<span id="cb117-5"><a href="#cb117-5"></a>    ordered<span class="op">=</span><span class="va">True</span></span>
+<span id="cb117-6"><a href="#cb117-6"></a>  )</span>
+<span id="cb117-7"><a href="#cb117-7"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>0     Tue
 1    Thur
@@ -1882,7 +1887,7 @@ Categories (5, object): [&#39;Mon&#39; &lt; &#39;Tue&#39; &lt; &#39;Wed&#39; &lt
 </section>
 <section id="constructing-dataframes" class="slide level2">
 <h2>Constructing DataFrames</h2>
-<p>Earlier we saw reading a DataFrame in via <code>read_csv()</code>, but data frames can also be constructed via <code>DataFrame()</code>, in general this is done using a dictionary of columns:</p>
+<p>Earlier we saw how to read a DataFrame via <code>read_csv()</code>, but data frames can also be constructed via <code>DataFrame()</code>, in general this is done using a dictionary of columns:</p>
 <div class="columns small">
 <div class="column" style="width:50%;">
 <div class="cell">
@@ -1893,25 +1898,19 @@ Categories (5, object): [&#39;Mon&#39; &lt; &#39;Tue&#39; &lt; &#39;Wed&#39; &lt
 <span id="cb119-5"><a href="#cb119-5"></a>  <span class="st">&quot;height&quot;</span>: np.random.normal(<span class="dv">170</span>, <span class="dv">15</span>, n),</span>
 <span id="cb119-6"><a href="#cb119-6"></a>  <span class="st">&quot;date&quot;</span>:   pd.date_range(start<span class="op">=</span><span class="st">&#39;2/1/2022&#39;</span>, </span>
 <span id="cb119-7"><a href="#cb119-7"></a>                          periods<span class="op">=</span>n, freq<span class="op">=</span><span class="st">&#39;D&#39;</span>)</span>
-<span id="cb119-8"><a href="#cb119-8"></a>}</span>
-<span id="cb119-9"><a href="#cb119-9"></a>d</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>{&#39;id&#39;: array([623, 142, 336, 846, 570]), &#39;weight&#39;: array([54.73107509, 98.3655868 , 60.01839835, 91.87785014, 33.72013207]), &#39;height&#39;: array([176.97949842, 175.06520576, 184.06318659, 171.27255432, 168.20730921]), &#39;date&#39;: DatetimeIndex([&#39;2022-02-01&#39;, &#39;2022-02-02&#39;, &#39;2022-02-03&#39;, &#39;2022-02-04&#39;,
-               &#39;2022-02-05&#39;],
-              dtype=&#39;datetime64[ns]&#39;, freq=&#39;D&#39;)}</code></pre>
-</div>
+<span id="cb119-8"><a href="#cb119-8"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div><div class="column fragment" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb121"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb121-1"><a href="#cb121-1"></a>df <span class="op">=</span> pd.DataFrame(d)</span>
-<span id="cb121-2"><a href="#cb121-2"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb120"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb120-1"><a href="#cb120-1"></a>df <span class="op">=</span> pd.DataFrame(d)</span>
+<span id="cb120-2"><a href="#cb120-2"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>    id     weight      height       date
-0  623  54.731075  176.979498 2022-02-01
-1  142  98.365587  175.065206 2022-02-02
-2  336  60.018398  184.063187 2022-02-03
-3  846  91.877850  171.272554 2022-02-04
-4  570  33.720132  168.207309 2022-02-05</code></pre>
+0  780  58.244369  180.317131 2022-02-01
+1  675  63.680724  185.107711 2022-02-02
+2  164  48.476114  180.108224 2022-02-03
+3  531  32.834607  162.617524 2022-02-04
+4  463  67.902511  172.070975 2022-02-05</code></pre>
 </div>
 </div>
 </div>
@@ -1926,10 +1925,10 @@ Categories (5, object): [&#39;Mon&#39; &lt; &#39;Tue&#39; &lt; &#39;Wed&#39; &lt
 <div class="columns small">
 <div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb123"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb123-1"><a href="#cb123-1"></a>pd.DataFrame(</span>
-<span id="cb123-2"><a href="#cb123-2"></a>  np.diag([<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>]),</span>
-<span id="cb123-3"><a href="#cb123-3"></a>  columns <span class="op">=</span> [<span class="st">&quot;x&quot;</span>,<span class="st">&quot;y&quot;</span>,<span class="st">&quot;z&quot;</span>]</span>
-<span id="cb123-4"><a href="#cb123-4"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb122"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb122-1"><a href="#cb122-1"></a>pd.DataFrame(</span>
+<span id="cb122-2"><a href="#cb122-2"></a>  np.diag([<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>]),</span>
+<span id="cb122-3"><a href="#cb122-3"></a>  columns <span class="op">=</span> [<span class="st">&quot;x&quot;</span>,<span class="st">&quot;y&quot;</span>,<span class="st">&quot;z&quot;</span>]</span>
+<span id="cb122-4"><a href="#cb122-4"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   x  y  z
 0  1  0  0
@@ -1938,10 +1937,10 @@ Categories (5, object): [&#39;Mon&#39; &lt; &#39;Tue&#39; &lt; &#39;Wed&#39; &lt
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb125"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb125-1"><a href="#cb125-1"></a>pd.DataFrame(</span>
-<span id="cb125-2"><a href="#cb125-2"></a>  np.diag([<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>]),</span>
-<span id="cb125-3"><a href="#cb125-3"></a>  columns <span class="op">=</span> [<span class="st">&quot;x&quot;</span>,<span class="st">&quot;y&quot;</span>,<span class="st">&quot;z&quot;</span>]</span>
-<span id="cb125-4"><a href="#cb125-4"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb124"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb124-1"><a href="#cb124-1"></a>pd.DataFrame(</span>
+<span id="cb124-2"><a href="#cb124-2"></a>  np.diag([<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>]),</span>
+<span id="cb124-3"><a href="#cb124-3"></a>  columns <span class="op">=</span> [<span class="st">&quot;x&quot;</span>,<span class="st">&quot;y&quot;</span>,<span class="st">&quot;z&quot;</span>]</span>
+<span id="cb124-4"><a href="#cb124-4"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   x  y  z
 0  1  0  0
@@ -1951,11 +1950,11 @@ Categories (5, object): [&#39;Mon&#39; &lt; &#39;Tue&#39; &lt; &#39;Wed&#39; &lt
 </div>
 </div><div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb127"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb127-1"><a href="#cb127-1"></a>pd.DataFrame(</span>
-<span id="cb127-2"><a href="#cb127-2"></a>  np.tri(<span class="dv">5</span>,<span class="dv">3</span>,<span class="op">-</span><span class="dv">1</span>),</span>
-<span id="cb127-3"><a href="#cb127-3"></a>  columns <span class="op">=</span> [<span class="st">&quot;x&quot;</span>,<span class="st">&quot;y&quot;</span>,<span class="st">&quot;z&quot;</span>],</span>
-<span id="cb127-4"><a href="#cb127-4"></a>  index <span class="op">=</span> [<span class="st">&quot;a&quot;</span>,<span class="st">&quot;b&quot;</span>,<span class="st">&quot;c&quot;</span>,<span class="st">&quot;d&quot;</span>,<span class="st">&quot;e&quot;</span>]</span>
-<span id="cb127-5"><a href="#cb127-5"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb126"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb126-1"><a href="#cb126-1"></a>pd.DataFrame(</span>
+<span id="cb126-2"><a href="#cb126-2"></a>  np.tri(<span class="dv">5</span>,<span class="dv">3</span>,<span class="op">-</span><span class="dv">1</span>),</span>
+<span id="cb126-3"><a href="#cb126-3"></a>  columns <span class="op">=</span> [<span class="st">&quot;x&quot;</span>,<span class="st">&quot;y&quot;</span>,<span class="st">&quot;z&quot;</span>],</span>
+<span id="cb126-4"><a href="#cb126-4"></a>  index <span class="op">=</span> [<span class="st">&quot;a&quot;</span>,<span class="st">&quot;b&quot;</span>,<span class="st">&quot;c&quot;</span>,<span class="st">&quot;d&quot;</span>,<span class="st">&quot;e&quot;</span>]</span>
+<span id="cb126-5"><a href="#cb126-5"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>     x    y    z
 a  0.0  0.0  0.0
@@ -1968,135 +1967,107 @@ e  1.0  1.0  1.0</code></pre>
 </div>
 </div>
 </section>
-<section id="dataframe-indexing" class="slide level2 smaller">
+<section id="dataframe-indexing" class="slide level2">
 <h2>DataFrame indexing</h2>
-<div class="small">
-<div class="cell">
-<div class="sourceCode cell-code" id="cb129"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb129-1"><a href="#cb129-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>    id     weight      height       date
-0  623  54.731075  176.979498 2022-02-01
-1  142  98.365587  175.065206 2022-02-02
-2  336  60.018398  184.063187 2022-02-03
-3  846  91.877850  171.272554 2022-02-04
-4  570  33.720132  168.207309 2022-02-05</code></pre>
-</div>
-</div>
-</div>
-<div class="fragment">
 <div class="columns small">
 <div class="column" style="width:50%;">
 <p>Selecting a column,</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb131"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb131-1"><a href="#cb131-1"></a>df[<span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb128"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb128-1"><a href="#cb128-1"></a>df[<span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-error">
 <pre><code>Error: KeyError: 0</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb133"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb133-1"><a href="#cb133-1"></a>df[<span class="st">&quot;id&quot;</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb130"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb130-1"><a href="#cb130-1"></a>df[<span class="st">&quot;id&quot;</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>0    623
-1    142
-2    336
-3    846
-4    570
+<pre><code>0    780
+1    675
+2    164
+3    531
+4    463
 Name: id, dtype: int64</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb135"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb135-1"><a href="#cb135-1"></a>df.<span class="bu">id</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb132"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb132-1"><a href="#cb132-1"></a>df.<span class="bu">id</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>0    623
-1    142
-2    336
-3    846
-4    570
+<pre><code>0    780
+1    675
+2    164
+3    531
+4    463
 Name: id, dtype: int64</code></pre>
 </div>
 </div>
 </div><div class="column fragment" style="width:50%;">
 <p>Selecting rows (a single slice is assumed to refer to the rows)</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb137"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb137-1"><a href="#cb137-1"></a>df[<span class="dv">1</span>:<span class="dv">3</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb134"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb134-1"><a href="#cb134-1"></a>df[<span class="dv">1</span>:<span class="dv">3</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>    id     weight      height       date
-1  142  98.365587  175.065206 2022-02-02
-2  336  60.018398  184.063187 2022-02-03</code></pre>
+1  675  63.680724  185.107711 2022-02-02
+2  164  48.476114  180.108224 2022-02-03</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb139"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb139-1"><a href="#cb139-1"></a>df[<span class="dv">0</span>::<span class="dv">2</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb136"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb136-1"><a href="#cb136-1"></a>df[<span class="dv">0</span>::<span class="dv">2</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>    id     weight      height       date
-0  623  54.731075  176.979498 2022-02-01
-2  336  60.018398  184.063187 2022-02-03
-4  570  33.720132  168.207309 2022-02-05</code></pre>
-</div>
+0  780  58.244369  180.317131 2022-02-01
+2  164  48.476114  180.108224 2022-02-03
+4  463  67.902511  172.070975 2022-02-05</code></pre>
 </div>
 </div>
 </div>
 </div>
 </section>
-<section id="index-by-position" class="slide level2 smaller">
+<section id="index-by-position" class="slide level2">
 <h2>Index by position</h2>
-<div class="small">
-<div class="cell">
-<div class="sourceCode cell-code" id="cb141"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb141-1"><a href="#cb141-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>    id     weight      height       date
-0  623  54.731075  176.979498 2022-02-01
-1  142  98.365587  175.065206 2022-02-02
-2  336  60.018398  184.063187 2022-02-03
-3  846  91.877850  171.272554 2022-02-04
-4  570  33.720132  168.207309 2022-02-05</code></pre>
-</div>
-</div>
-</div>
 <div class="columns small">
 <div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb143"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb143-1"><a href="#cb143-1"></a>df.iloc[<span class="dv">1</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb138"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb138-1"><a href="#cb138-1"></a>df.iloc[<span class="dv">1</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>id                        142
-weight              98.365587
-height             175.065206
+<pre><code>id                        675
+weight              63.680724
+height             185.107711
 date      2022-02-02 00:00:00
 Name: 1, dtype: object</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb145"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb145-1"><a href="#cb145-1"></a>df.iloc[[<span class="dv">1</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb140"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb140-1"><a href="#cb140-1"></a>df.iloc[[<span class="dv">1</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>    id     weight      height       date
-1  142  98.365587  175.065206 2022-02-02</code></pre>
+1  675  63.680724  185.107711 2022-02-02</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb147"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb147-1"><a href="#cb147-1"></a>df.iloc[<span class="dv">0</span>:<span class="dv">2</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb142"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb142-1"><a href="#cb142-1"></a>df.iloc[<span class="dv">0</span>:<span class="dv">2</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>    id     weight      height       date
-0  623  54.731075  176.979498 2022-02-01
-1  142  98.365587  175.065206 2022-02-02</code></pre>
+0  780  58.244369  180.317131 2022-02-01
+1  675  63.680724  185.107711 2022-02-02</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb149"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb149-1"><a href="#cb149-1"></a>df.iloc[<span class="kw">lambda</span> x: x.index <span class="op">%</span> <span class="dv">2</span> <span class="op">!=</span> <span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb144"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb144-1"><a href="#cb144-1"></a>df.iloc[<span class="kw">lambda</span> x: x.index <span class="op">%</span> <span class="dv">2</span> <span class="op">!=</span> <span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>    id     weight      height       date
-1  142  98.365587  175.065206 2022-02-02
-3  846  91.877850  171.272554 2022-02-04</code></pre>
+1  675  63.680724  185.107711 2022-02-02
+3  531  32.834607  162.617524 2022-02-04</code></pre>
 </div>
 </div>
 </div><div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb151"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb151-1"><a href="#cb151-1"></a>df.iloc[<span class="dv">1</span>:<span class="dv">3</span>,<span class="dv">1</span>:<span class="dv">3</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb146"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb146-1"><a href="#cb146-1"></a>df.iloc[<span class="dv">1</span>:<span class="dv">3</span>,<span class="dv">1</span>:<span class="dv">3</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>      weight      height
-1  98.365587  175.065206
-2  60.018398  184.063187</code></pre>
+1  63.680724  185.107711
+2  48.476114  180.108224</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb153"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb153-1"><a href="#cb153-1"></a>df.iloc[<span class="dv">0</span>:<span class="dv">3</span>, [<span class="dv">0</span>,<span class="dv">3</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb148"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb148-1"><a href="#cb148-1"></a>df.iloc[<span class="dv">0</span>:<span class="dv">3</span>, [<span class="dv">0</span>,<span class="dv">3</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>    id       date
-0  623 2022-02-01
-1  142 2022-02-02
-2  336 2022-02-03</code></pre>
+0  780 2022-02-01
+1  675 2022-02-02
+2  164 2022-02-03</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb155"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb155-1"><a href="#cb155-1"></a>df.iloc[<span class="dv">0</span>:<span class="dv">3</span>, [<span class="va">True</span>, <span class="va">True</span>, <span class="va">False</span>, <span class="va">False</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb150"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb150-1"><a href="#cb150-1"></a>df.iloc[<span class="dv">0</span>:<span class="dv">3</span>, [<span class="va">True</span>, <span class="va">True</span>, <span class="va">False</span>, <span class="va">False</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>    id     weight
-0  623  54.731075
-1  142  98.365587
-2  336  60.018398</code></pre>
+0  780  58.244369
+1  675  63.680724
+2  164  48.476114</code></pre>
 </div>
 </div>
 </div>
@@ -2106,50 +2077,50 @@ Name: 1, dtype: object</code></pre>
 <h2>Index by name</h2>
 <div class="small">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb157"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb157-1"><a href="#cb157-1"></a>df.index <span class="op">=</span> ([<span class="st">&quot;anna&quot;</span>,<span class="st">&quot;bob&quot;</span>,<span class="st">&quot;carol&quot;</span>, <span class="st">&quot;dave&quot;</span>, <span class="st">&quot;erin&quot;</span>])</span>
-<span id="cb157-2"><a href="#cb157-2"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb152"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb152-1"><a href="#cb152-1"></a>df.index <span class="op">=</span> ([<span class="st">&quot;anna&quot;</span>,<span class="st">&quot;bob&quot;</span>,<span class="st">&quot;carol&quot;</span>, <span class="st">&quot;dave&quot;</span>, <span class="st">&quot;erin&quot;</span>])</span>
+<span id="cb152-2"><a href="#cb152-2"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>        id     weight      height       date
-anna   623  54.731075  176.979498 2022-02-01
-bob    142  98.365587  175.065206 2022-02-02
-carol  336  60.018398  184.063187 2022-02-03
-dave   846  91.877850  171.272554 2022-02-04
-erin   570  33.720132  168.207309 2022-02-05</code></pre>
+anna   780  58.244369  180.317131 2022-02-01
+bob    675  63.680724  185.107711 2022-02-02
+carol  164  48.476114  180.108224 2022-02-03
+dave   531  32.834607  162.617524 2022-02-04
+erin   463  67.902511  172.070975 2022-02-05</code></pre>
 </div>
 </div>
 </div>
 <div class="columns small">
 <div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb159"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb159-1"><a href="#cb159-1"></a>df.loc[<span class="st">&quot;anna&quot;</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb154"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb154-1"><a href="#cb154-1"></a>df.loc[<span class="st">&quot;anna&quot;</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>id                        623
-weight              54.731075
-height             176.979498
+<pre><code>id                        780
+weight              58.244369
+height             180.317131
 date      2022-02-01 00:00:00
 Name: anna, dtype: object</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb161"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb161-1"><a href="#cb161-1"></a>df.loc[[<span class="st">&quot;anna&quot;</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb156"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb156-1"><a href="#cb156-1"></a>df.loc[[<span class="st">&quot;anna&quot;</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>       id     weight      height       date
-anna  623  54.731075  176.979498 2022-02-01</code></pre>
+anna  780  58.244369  180.317131 2022-02-01</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb163"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb163-1"><a href="#cb163-1"></a>df.loc[<span class="st">&quot;bob&quot;</span>:<span class="st">&quot;dave&quot;</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb158"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb158-1"><a href="#cb158-1"></a>df.loc[<span class="st">&quot;bob&quot;</span>:<span class="st">&quot;dave&quot;</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>        id     weight      height       date
-bob    142  98.365587  175.065206 2022-02-02
-carol  336  60.018398  184.063187 2022-02-03
-dave   846  91.877850  171.272554 2022-02-04</code></pre>
+bob    675  63.680724  185.107711 2022-02-02
+carol  164  48.476114  180.108224 2022-02-03
+dave   531  32.834607  162.617524 2022-02-04</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb165"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb165-1"><a href="#cb165-1"></a>df.loc[df.<span class="bu">id</span> <span class="op">&lt;</span> <span class="dv">300</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb160"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb160-1"><a href="#cb160-1"></a>df.loc[df.<span class="bu">id</span> <span class="op">&lt;</span> <span class="dv">300</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>      id     weight      height       date
-bob  142  98.365587  175.065206 2022-02-02</code></pre>
+<pre><code>        id     weight      height       date
+carol  164  48.476114  180.108224 2022-02-03</code></pre>
 </div>
 </div>
 </div><div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb167"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb167-1"><a href="#cb167-1"></a>df.loc[:, <span class="st">&quot;date&quot;</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb162"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb162-1"><a href="#cb162-1"></a>df.loc[:, <span class="st">&quot;date&quot;</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>anna    2022-02-01
 bob     2022-02-02
@@ -2158,13 +2129,13 @@ dave    2022-02-04
 erin    2022-02-05
 Name: date, dtype: datetime64[ns]</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb169"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb169-1"><a href="#cb169-1"></a>df.loc[[<span class="st">&quot;bob&quot;</span>,<span class="st">&quot;erin&quot;</span>], <span class="st">&quot;weight&quot;</span>:<span class="st">&quot;height&quot;</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb164"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb164-1"><a href="#cb164-1"></a>df.loc[[<span class="st">&quot;bob&quot;</span>,<span class="st">&quot;erin&quot;</span>], <span class="st">&quot;weight&quot;</span>:<span class="st">&quot;height&quot;</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>         weight      height
-bob   98.365587  175.065206
-erin  33.720132  168.207309</code></pre>
+bob   63.680724  185.107711
+erin  67.902511  172.070975</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb171"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb171-1"><a href="#cb171-1"></a>df.loc[<span class="dv">0</span>:<span class="dv">2</span>, <span class="st">&quot;weight&quot;</span>:<span class="st">&quot;height&quot;</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb166"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb166-1"><a href="#cb166-1"></a>df.loc[<span class="dv">0</span>:<span class="dv">2</span>, <span class="st">&quot;weight&quot;</span>:<span class="st">&quot;height&quot;</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-error">
 <pre><code>Error: TypeError: cannot do slice indexing on Index with these indexers [0] of type int</code></pre>
 </div>
@@ -2178,39 +2149,39 @@ erin  33.720132  168.207309</code></pre>
 <div class="columns small">
 <div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb173"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb173-1"><a href="#cb173-1"></a>d <span class="op">=</span> pd.DataFrame(np.arange(<span class="dv">6</span>).reshape(<span class="dv">3</span>,<span class="dv">2</span>), columns <span class="op">=</span> [<span class="st">&quot;x&quot;</span>,<span class="st">&quot;y&quot;</span>])</span>
-<span id="cb173-2"><a href="#cb173-2"></a>d</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb168"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb168-1"><a href="#cb168-1"></a>d <span class="op">=</span> pd.DataFrame(np.arange(<span class="dv">6</span>).reshape(<span class="dv">3</span>,<span class="dv">2</span>), columns <span class="op">=</span> [<span class="st">&quot;x&quot;</span>,<span class="st">&quot;y&quot;</span>])</span>
+<span id="cb168-2"><a href="#cb168-2"></a>d</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   x  y
 0  0  1
 1  2  3
 2  4  5</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb175"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb175-1"><a href="#cb175-1"></a>v <span class="op">=</span> d.iloc[<span class="dv">0</span>:<span class="dv">2</span>,<span class="dv">0</span>:<span class="dv">2</span>]</span>
-<span id="cb175-2"><a href="#cb175-2"></a>v</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb170"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb170-1"><a href="#cb170-1"></a>v <span class="op">=</span> d.iloc[<span class="dv">0</span>:<span class="dv">2</span>,<span class="dv">0</span>:<span class="dv">2</span>]</span>
+<span id="cb170-2"><a href="#cb170-2"></a>v</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   x  y
 0  0  1
 1  2  3</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb177"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb177-1"><a href="#cb177-1"></a>d.iloc[<span class="dv">0</span>,<span class="dv">1</span>] <span class="op">=</span> <span class="op">-</span><span class="dv">1</span></span>
-<span id="cb177-2"><a href="#cb177-2"></a>v</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb172"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb172-1"><a href="#cb172-1"></a>d.iloc[<span class="dv">0</span>,<span class="dv">1</span>] <span class="op">=</span> <span class="op">-</span><span class="dv">1</span></span>
+<span id="cb172-2"><a href="#cb172-2"></a>v</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   x  y
 0  0 -1
 1  2  3</code></pre>
 </div>
 </div>
-</div><div class="column fragment" style="width:50%;">
+</div><div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb179"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb179-1"><a href="#cb179-1"></a>v.iloc[<span class="dv">0</span>,<span class="dv">0</span>] <span class="op">=</span> np.pi</span>
-<span id="cb179-2"><a href="#cb179-2"></a>v</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb174"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb174-1"><a href="#cb174-1"></a>v.iloc[<span class="dv">0</span>,<span class="dv">0</span>] <span class="op">=</span> np.pi</span>
+<span id="cb174-2"><a href="#cb174-2"></a>v</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>          x  y
 0  3.141593 -1
 1  2.000000  3</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb181"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb181-1"><a href="#cb181-1"></a>d</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb176"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb176-1"><a href="#cb176-1"></a>d</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   x  y
 0  0 -1
@@ -2224,49 +2195,35 @@ erin  33.720132  168.207309</code></pre>
 <aside><div>
 <p>See the documetation <a href="http://pandas-docs.github.io/pandas-docs-travis/user_guide/indexing.html#indexing-view-versus-copy">here</a> for more details</p>
 </div></aside></section>
-<section id="filtering-rows" class="slide level2 smaller">
+<section id="filtering-rows" class="slide level2">
 <h2>Filtering rows</h2>
 <p>The <code>query()</code> method can be used for filtering rows, it evaluates a string expression in the context of the data frame.</p>
-<div class="small">
-<div class="cell">
-<div class="sourceCode cell-code" id="cb183"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb183-1"><a href="#cb183-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>        id     weight      height       date
-anna   623  54.731075  176.979498 2022-02-01
-bob    142  98.365587  175.065206 2022-02-02
-carol  336  60.018398  184.063187 2022-02-03
-dave   846  91.877850  171.272554 2022-02-04
-erin   570  33.720132  168.207309 2022-02-05</code></pre>
-</div>
-</div>
-</div>
 <div class="columns small">
 <div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb185"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb185-1"><a href="#cb185-1"></a>df.query(<span class="st">&#39;date == &quot;2022-02-01&quot;&#39;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb178"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb178-1"><a href="#cb178-1"></a>df.query(<span class="st">&#39;date == &quot;2022-02-01&quot;&#39;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>       id     weight      height       date
-anna  623  54.731075  176.979498 2022-02-01</code></pre>
+anna  780  58.244369  180.317131 2022-02-01</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb187"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb187-1"><a href="#cb187-1"></a>df.query(<span class="st">&#39;weight &gt; 50&#39;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb180"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb180-1"><a href="#cb180-1"></a>df.query(<span class="st">&#39;weight &gt; 50&#39;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>        id     weight      height       date
-anna   623  54.731075  176.979498 2022-02-01
-bob    142  98.365587  175.065206 2022-02-02
-carol  336  60.018398  184.063187 2022-02-03
-dave   846  91.877850  171.272554 2022-02-04</code></pre>
+<pre><code>       id     weight      height       date
+anna  780  58.244369  180.317131 2022-02-01
+bob   675  63.680724  185.107711 2022-02-02
+erin  463  67.902511  172.070975 2022-02-05</code></pre>
 </div>
 </div>
 </div><div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb189"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb189-1"><a href="#cb189-1"></a>df.query(<span class="st">&#39;weight &gt; 50 &amp; height &lt; 165&#39;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb182"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb182-1"><a href="#cb182-1"></a>df.query(<span class="st">&#39;weight &gt; 50 &amp; height &lt; 165&#39;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Empty DataFrame
 Columns: [id, weight, height, date]
 Index: []</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb191"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb191-1"><a href="#cb191-1"></a>qid <span class="op">=</span> <span class="dv">414</span></span>
-<span id="cb191-2"><a href="#cb191-2"></a>df.query(<span class="st">&#39;id == @qid&#39;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb184"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb184-1"><a href="#cb184-1"></a>qid <span class="op">=</span> <span class="dv">414</span></span>
+<span id="cb184-2"><a href="#cb184-2"></a>df.query(<span class="st">&#39;id == @qid&#39;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Empty DataFrame
 Columns: [id, weight, height, date]
@@ -2283,54 +2240,54 @@ Index: []</code></pre>
 <h2>Element access</h2>
 <div class="small">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb193"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb193-1"><a href="#cb193-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb186"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb186-1"><a href="#cb186-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>        id     weight      height       date
-anna   623  54.731075  176.979498 2022-02-01
-bob    142  98.365587  175.065206 2022-02-02
-carol  336  60.018398  184.063187 2022-02-03
-dave   846  91.877850  171.272554 2022-02-04
-erin   570  33.720132  168.207309 2022-02-05</code></pre>
+anna   780  58.244369  180.317131 2022-02-01
+bob    675  63.680724  185.107711 2022-02-02
+carol  164  48.476114  180.108224 2022-02-03
+dave   531  32.834607  162.617524 2022-02-04
+erin   463  67.902511  172.070975 2022-02-05</code></pre>
 </div>
 </div>
 </div>
 <div class="columns small">
 <div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb195"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb195-1"><a href="#cb195-1"></a>df[<span class="dv">0</span>,<span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb188"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb188-1"><a href="#cb188-1"></a>df[<span class="dv">0</span>,<span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-error">
 <pre><code>Error: KeyError: (0, 0)</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb197"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb197-1"><a href="#cb197-1"></a>df.iat[<span class="dv">0</span>,<span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb190"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb190-1"><a href="#cb190-1"></a>df.iat[<span class="dv">0</span>,<span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>623</code></pre>
+<pre><code>780</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb199"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb199-1"><a href="#cb199-1"></a>df.<span class="bu">id</span>[<span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb192"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb192-1"><a href="#cb192-1"></a>df.<span class="bu">id</span>[<span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>623</code></pre>
+<pre><code>780</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb201"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb201-1"><a href="#cb201-1"></a>df[<span class="dv">0</span>:<span class="dv">1</span>].<span class="bu">id</span>[<span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb194"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb194-1"><a href="#cb194-1"></a>df[<span class="dv">0</span>:<span class="dv">1</span>].<span class="bu">id</span>[<span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>623</code></pre>
+<pre><code>780</code></pre>
 </div>
 </div>
 </div><div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb203"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb203-1"><a href="#cb203-1"></a>df[<span class="st">&quot;anna&quot;</span>, <span class="st">&quot;id&quot;</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb196"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb196-1"><a href="#cb196-1"></a>df[<span class="st">&quot;anna&quot;</span>, <span class="st">&quot;id&quot;</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-error">
 <pre><code>Error: KeyError: (&#39;anna&#39;, &#39;id&#39;)</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb205"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb205-1"><a href="#cb205-1"></a>df.at[<span class="st">&quot;anna&quot;</span>, <span class="st">&quot;id&quot;</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb198"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb198-1"><a href="#cb198-1"></a>df.at[<span class="st">&quot;anna&quot;</span>, <span class="st">&quot;id&quot;</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>623</code></pre>
+<pre><code>780</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb207"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb207-1"><a href="#cb207-1"></a>df[<span class="st">&quot;id&quot;</span>][<span class="st">&quot;anna&quot;</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb200"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb200-1"><a href="#cb200-1"></a>df[<span class="st">&quot;id&quot;</span>][<span class="st">&quot;anna&quot;</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>623</code></pre>
+<pre><code>780</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb209"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb209-1"><a href="#cb209-1"></a>df[<span class="st">&quot;id&quot;</span>][<span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb202"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb202-1"><a href="#cb202-1"></a>df[<span class="st">&quot;id&quot;</span>][<span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>623</code></pre>
+<pre><code>780</code></pre>
 </div>
 </div>
 </div>
@@ -2341,15 +2298,15 @@ erin   570  33.720132  168.207309 2022-02-05</code></pre>
 <div class="columns">
 <div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb211"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb211-1"><a href="#cb211-1"></a>df.size</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb204"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb204-1"><a href="#cb204-1"></a>df.size</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>20</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb213"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb213-1"><a href="#cb213-1"></a>df.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb206"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb206-1"><a href="#cb206-1"></a>df.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>(5, 4)</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb215"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb215-1"><a href="#cb215-1"></a>df.info()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb208"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb208-1"><a href="#cb208-1"></a>df.info()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>&lt;class &#39;pandas.core.frame.DataFrame&#39;&gt;
 Index: 5 entries, anna to erin
@@ -2366,7 +2323,7 @@ memory usage: 372.0+ bytes</code></pre>
 </div>
 </div><div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb217"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb217-1"><a href="#cb217-1"></a>df.dtypes</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb210"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb210-1"><a href="#cb210-1"></a>df.dtypes</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>id                 int64
 weight           float64
@@ -2374,17 +2331,17 @@ height           float64
 date      datetime64[ns]
 dtype: object</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb219"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb219-1"><a href="#cb219-1"></a>df.describe()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb212"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb212-1"><a href="#cb212-1"></a>df.describe()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>               id     weight      height
 count    5.000000   5.000000    5.000000
-mean   503.400000  67.742608  175.117551
-std    271.453127  26.957230    6.042132
-min    142.000000  33.720132  168.207309
-25%    336.000000  54.731075  171.272554
-50%    570.000000  60.018398  175.065206
-75%    623.000000  91.877850  176.979498
-max    846.000000  98.365587  184.063187</code></pre>
+mean   522.600000  54.227665  176.044313
+std    235.423661  13.993203    8.845672
+min    164.000000  32.834607  162.617524
+25%    463.000000  48.476114  172.070975
+50%    531.000000  58.244369  180.108224
+75%    675.000000  63.680724  180.317131
+max    780.000000  67.902511  185.107711</code></pre>
 </div>
 </div>
 </div>
@@ -2396,41 +2353,41 @@ max    846.000000  98.365587  184.063187</code></pre>
 <div class="columns small">
 <div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb221"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb221-1"><a href="#cb221-1"></a>df.<span class="bu">filter</span>(items<span class="op">=</span>[<span class="st">&quot;id&quot;</span>,<span class="st">&quot;weight&quot;</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb214"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb214-1"><a href="#cb214-1"></a>df.<span class="bu">filter</span>(items<span class="op">=</span>[<span class="st">&quot;id&quot;</span>,<span class="st">&quot;weight&quot;</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>        id     weight
-anna   623  54.731075
-bob    142  98.365587
-carol  336  60.018398
-dave   846  91.877850
-erin   570  33.720132</code></pre>
+anna   780  58.244369
+bob    675  63.680724
+carol  164  48.476114
+dave   531  32.834607
+erin   463  67.902511</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb223"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb223-1"><a href="#cb223-1"></a>df.<span class="bu">filter</span>(like <span class="op">=</span> <span class="st">&quot;i&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb216"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb216-1"><a href="#cb216-1"></a>df.<span class="bu">filter</span>(like <span class="op">=</span> <span class="st">&quot;i&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>        id     weight      height
-anna   623  54.731075  176.979498
-bob    142  98.365587  175.065206
-carol  336  60.018398  184.063187
-dave   846  91.877850  171.272554
-erin   570  33.720132  168.207309</code></pre>
+anna   780  58.244369  180.317131
+bob    675  63.680724  185.107711
+carol  164  48.476114  180.108224
+dave   531  32.834607  162.617524
+erin   463  67.902511  172.070975</code></pre>
 </div>
 </div>
 </div><div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb225"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb225-1"><a href="#cb225-1"></a>df.<span class="bu">filter</span>(regex<span class="op">=</span><span class="st">&quot;ght$&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb218"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb218-1"><a href="#cb218-1"></a>df.<span class="bu">filter</span>(regex<span class="op">=</span><span class="st">&quot;ght$&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>          weight      height
-anna   54.731075  176.979498
-bob    98.365587  175.065206
-carol  60.018398  184.063187
-dave   91.877850  171.272554
-erin   33.720132  168.207309</code></pre>
+anna   58.244369  180.317131
+bob    63.680724  185.107711
+carol  48.476114  180.108224
+dave   32.834607  162.617524
+erin   67.902511  172.070975</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb227"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb227-1"><a href="#cb227-1"></a>df.<span class="bu">filter</span>(like<span class="op">=</span><span class="st">&quot;o&quot;</span>, axis<span class="op">=</span><span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb220"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb220-1"><a href="#cb220-1"></a>df.<span class="bu">filter</span>(like<span class="op">=</span><span class="st">&quot;o&quot;</span>, axis<span class="op">=</span><span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>        id     weight      height       date
-bob    142  98.365587  175.065206 2022-02-02
-carol  336  60.018398  184.063187 2022-02-03</code></pre>
+bob    675  63.680724  185.107711 2022-02-02
+carol  164  48.476114  180.108224 2022-02-03</code></pre>
 </div>
 </div>
 </div>
@@ -2442,40 +2399,40 @@ carol  336  60.018398  184.063187 2022-02-03</code></pre>
 <div class="columns small">
 <div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb229"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb229-1"><a href="#cb229-1"></a>df[<span class="st">&#39;student&#39;</span>] <span class="op">=</span> [<span class="va">True</span>, <span class="va">True</span>, <span class="va">True</span>, <span class="va">False</span>, <span class="va">None</span>]</span>
-<span id="cb229-2"><a href="#cb229-2"></a>df[<span class="st">&#39;age&#39;</span>] <span class="op">=</span> [<span class="dv">19</span>, <span class="dv">22</span>, <span class="dv">25</span>, <span class="va">None</span>, <span class="va">None</span>]</span>
-<span id="cb229-3"><a href="#cb229-3"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb222"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb222-1"><a href="#cb222-1"></a>df[<span class="st">&#39;student&#39;</span>] <span class="op">=</span> [<span class="va">True</span>, <span class="va">True</span>, <span class="va">True</span>, <span class="va">False</span>, <span class="va">None</span>]</span>
+<span id="cb222-2"><a href="#cb222-2"></a>df[<span class="st">&#39;age&#39;</span>] <span class="op">=</span> [<span class="dv">19</span>, <span class="dv">22</span>, <span class="dv">25</span>, <span class="va">None</span>, <span class="va">None</span>]</span>
+<span id="cb222-3"><a href="#cb222-3"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>        id     weight      height       date student   age
-anna   623  54.731075  176.979498 2022-02-01    True  19.0
-bob    142  98.365587  175.065206 2022-02-02    True  22.0
-carol  336  60.018398  184.063187 2022-02-03    True  25.0
-dave   846  91.877850  171.272554 2022-02-04   False   NaN
-erin   570  33.720132  168.207309 2022-02-05    None   NaN</code></pre>
+anna   780  58.244369  180.317131 2022-02-01    True  19.0
+bob    675  63.680724  185.107711 2022-02-02    True  22.0
+carol  164  48.476114  180.108224 2022-02-03    True  25.0
+dave   531  32.834607  162.617524 2022-02-04   False   NaN
+erin   463  67.902511  172.070975 2022-02-05    None   NaN</code></pre>
 </div>
 </div>
 </div><div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb231"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb231-1"><a href="#cb231-1"></a>df.assign(</span>
-<span id="cb231-2"><a href="#cb231-2"></a>  student <span class="op">=</span> <span class="kw">lambda</span> x: np.where(x.student, <span class="st">&quot;yes&quot;</span>, <span class="st">&quot;no&quot;</span>),</span>
-<span id="cb231-3"><a href="#cb231-3"></a>  rand <span class="op">=</span> np.random.rand(<span class="dv">5</span>)</span>
-<span id="cb231-4"><a href="#cb231-4"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb224"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb224-1"><a href="#cb224-1"></a>df.assign(</span>
+<span id="cb224-2"><a href="#cb224-2"></a>  student <span class="op">=</span> <span class="kw">lambda</span> x: np.where(x.student, <span class="st">&quot;yes&quot;</span>, <span class="st">&quot;no&quot;</span>),</span>
+<span id="cb224-3"><a href="#cb224-3"></a>  rand <span class="op">=</span> np.random.rand(<span class="dv">5</span>)</span>
+<span id="cb224-4"><a href="#cb224-4"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>        id     weight      height       date student   age      rand
-anna   623  54.731075  176.979498 2022-02-01     yes  19.0  0.752240
-bob    142  98.365587  175.065206 2022-02-02     yes  22.0  0.876159
-carol  336  60.018398  184.063187 2022-02-03     yes  25.0  0.797148
-dave   846  91.877850  171.272554 2022-02-04      no   NaN  0.863391
-erin   570  33.720132  168.207309 2022-02-05      no   NaN  0.527163</code></pre>
+anna   780  58.244369  180.317131 2022-02-01     yes  19.0  0.046582
+bob    675  63.680724  185.107711 2022-02-02     yes  22.0  0.644103
+carol  164  48.476114  180.108224 2022-02-03     yes  25.0  0.077900
+dave   531  32.834607  162.617524 2022-02-04      no   NaN  0.309793
+erin   463  67.902511  172.070975 2022-02-05      no   NaN  0.416640</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb233"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb233-1"><a href="#cb233-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb226"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb226-1"><a href="#cb226-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>        id     weight      height       date student   age
-anna   623  54.731075  176.979498 2022-02-01    True  19.0
-bob    142  98.365587  175.065206 2022-02-02    True  22.0
-carol  336  60.018398  184.063187 2022-02-03    True  25.0
-dave   846  91.877850  171.272554 2022-02-04   False   NaN
-erin   570  33.720132  168.207309 2022-02-05    None   NaN</code></pre>
+anna   780  58.244369  180.317131 2022-02-01    True  19.0
+bob    675  63.680724  185.107711 2022-02-02    True  22.0
+carol  164  48.476114  180.108224 2022-02-03    True  25.0
+dave   531  32.834607  162.617524 2022-02-04   False   NaN
+erin   463  67.902511  172.070975 2022-02-05    None   NaN</code></pre>
 </div>
 </div>
 </div>
@@ -2487,50 +2444,50 @@ erin   570  33.720132  168.207309 2022-02-05    None   NaN</code></pre>
 <div class="columns small">
 <div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb235"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb235-1"><a href="#cb235-1"></a>df.drop([<span class="st">&#39;student&#39;</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb228"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb228-1"><a href="#cb228-1"></a>df.drop([<span class="st">&#39;student&#39;</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-error">
 <pre><code>Error: KeyError: &quot;[&#39;student&#39;] not found in axis&quot;</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb237"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb237-1"><a href="#cb237-1"></a>df.drop([<span class="st">&#39;student&#39;</span>], axis<span class="op">=</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb230"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb230-1"><a href="#cb230-1"></a>df.drop([<span class="st">&#39;student&#39;</span>], axis<span class="op">=</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>        id     weight      height       date   age
-anna   623  54.731075  176.979498 2022-02-01  19.0
-bob    142  98.365587  175.065206 2022-02-02  22.0
-carol  336  60.018398  184.063187 2022-02-03  25.0
-dave   846  91.877850  171.272554 2022-02-04   NaN
-erin   570  33.720132  168.207309 2022-02-05   NaN</code></pre>
+anna   780  58.244369  180.317131 2022-02-01  19.0
+bob    675  63.680724  185.107711 2022-02-02  22.0
+carol  164  48.476114  180.108224 2022-02-03  25.0
+dave   531  32.834607  162.617524 2022-02-04   NaN
+erin   463  67.902511  172.070975 2022-02-05   NaN</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb239"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb239-1"><a href="#cb239-1"></a>df.drop([<span class="st">&#39;anna&#39;</span>,<span class="st">&#39;dave&#39;</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb232"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb232-1"><a href="#cb232-1"></a>df.drop([<span class="st">&#39;anna&#39;</span>,<span class="st">&#39;dave&#39;</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>        id     weight      height       date student   age
-bob    142  98.365587  175.065206 2022-02-02    True  22.0
-carol  336  60.018398  184.063187 2022-02-03    True  25.0
-erin   570  33.720132  168.207309 2022-02-05    None   NaN</code></pre>
+bob    675  63.680724  185.107711 2022-02-02    True  22.0
+carol  164  48.476114  180.108224 2022-02-03    True  25.0
+erin   463  67.902511  172.070975 2022-02-05    None   NaN</code></pre>
 </div>
 </div>
 </div><div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb241"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb241-1"><a href="#cb241-1"></a>df.drop(columns <span class="op">=</span> df.columns <span class="op">==</span> <span class="st">&quot;age&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb234"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb234-1"><a href="#cb234-1"></a>df.drop(columns <span class="op">=</span> df.columns <span class="op">==</span> <span class="st">&quot;age&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-error">
 <pre><code>Error: KeyError: &#39;[False, False, False, False, False, True] not found in axis&#39;</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb243"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb243-1"><a href="#cb243-1"></a>df.drop(columns <span class="op">=</span> df.columns[df.columns <span class="op">==</span> <span class="st">&quot;age&quot;</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb236"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb236-1"><a href="#cb236-1"></a>df.drop(columns <span class="op">=</span> df.columns[df.columns <span class="op">==</span> <span class="st">&quot;age&quot;</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>        id     weight      height       date student
-anna   623  54.731075  176.979498 2022-02-01    True
-bob    142  98.365587  175.065206 2022-02-02    True
-carol  336  60.018398  184.063187 2022-02-03    True
-dave   846  91.877850  171.272554 2022-02-04   False
-erin   570  33.720132  168.207309 2022-02-05    None</code></pre>
+anna   780  58.244369  180.317131 2022-02-01    True
+bob    675  63.680724  185.107711 2022-02-02    True
+carol  164  48.476114  180.108224 2022-02-03    True
+dave   531  32.834607  162.617524 2022-02-04   False
+erin   463  67.902511  172.070975 2022-02-05    None</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb245"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb245-1"><a href="#cb245-1"></a>df.drop(columns <span class="op">=</span> df.columns[df.columns.<span class="bu">str</span>.contains(<span class="st">&quot;ght&quot;</span>)])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb238"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb238-1"><a href="#cb238-1"></a>df.drop(columns <span class="op">=</span> df.columns[df.columns.<span class="bu">str</span>.contains(<span class="st">&quot;ght&quot;</span>)])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>        id       date student   age
-anna   623 2022-02-01    True  19.0
-bob    142 2022-02-02    True  22.0
-carol  336 2022-02-03    True  25.0
-dave   846 2022-02-04   False   NaN
-erin   570 2022-02-05    None   NaN</code></pre>
+anna   780 2022-02-01    True  19.0
+bob    675 2022-02-02    True  22.0
+carol  164 2022-02-03    True  25.0
+dave   531 2022-02-04   False   NaN
+erin   463 2022-02-05    None   NaN</code></pre>
 </div>
 </div>
 </div>
@@ -2541,56 +2498,56 @@ erin   570 2022-02-05    None   NaN</code></pre>
 <p>Columns can be dropped via the <code>drop()</code> method,</p>
 <div class="small">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb247"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb247-1"><a href="#cb247-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb240"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb240-1"><a href="#cb240-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>        id     weight      height       date student   age
-anna   623  54.731075  176.979498 2022-02-01    True  19.0
-bob    142  98.365587  175.065206 2022-02-02    True  22.0
-carol  336  60.018398  184.063187 2022-02-03    True  25.0
-dave   846  91.877850  171.272554 2022-02-04   False   NaN
-erin   570  33.720132  168.207309 2022-02-05    None   NaN</code></pre>
+anna   780  58.244369  180.317131 2022-02-01    True  19.0
+bob    675  63.680724  185.107711 2022-02-02    True  22.0
+carol  164  48.476114  180.108224 2022-02-03    True  25.0
+dave   531  32.834607  162.617524 2022-02-04   False   NaN
+erin   463  67.902511  172.070975 2022-02-05    None   NaN</code></pre>
 </div>
 </div>
 </div>
 <div class="columns small">
 <div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb249"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb249-1"><a href="#cb249-1"></a>df.dropna()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb242"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb242-1"><a href="#cb242-1"></a>df.dropna()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>        id     weight      height       date student   age
-anna   623  54.731075  176.979498 2022-02-01    True  19.0
-bob    142  98.365587  175.065206 2022-02-02    True  22.0
-carol  336  60.018398  184.063187 2022-02-03    True  25.0</code></pre>
+anna   780  58.244369  180.317131 2022-02-01    True  19.0
+bob    675  63.680724  185.107711 2022-02-02    True  22.0
+carol  164  48.476114  180.108224 2022-02-03    True  25.0</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb251"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb251-1"><a href="#cb251-1"></a>df.dropna(how<span class="op">=</span><span class="st">&quot;all&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb244"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb244-1"><a href="#cb244-1"></a>df.dropna(how<span class="op">=</span><span class="st">&quot;all&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>        id     weight      height       date student   age
-anna   623  54.731075  176.979498 2022-02-01    True  19.0
-bob    142  98.365587  175.065206 2022-02-02    True  22.0
-carol  336  60.018398  184.063187 2022-02-03    True  25.0
-dave   846  91.877850  171.272554 2022-02-04   False   NaN
-erin   570  33.720132  168.207309 2022-02-05    None   NaN</code></pre>
+anna   780  58.244369  180.317131 2022-02-01    True  19.0
+bob    675  63.680724  185.107711 2022-02-02    True  22.0
+carol  164  48.476114  180.108224 2022-02-03    True  25.0
+dave   531  32.834607  162.617524 2022-02-04   False   NaN
+erin   463  67.902511  172.070975 2022-02-05    None   NaN</code></pre>
 </div>
 </div>
 </div><div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb253"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb253-1"><a href="#cb253-1"></a>df.dropna(axis<span class="op">=</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb246"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb246-1"><a href="#cb246-1"></a>df.dropna(axis<span class="op">=</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>        id     weight      height       date
-anna   623  54.731075  176.979498 2022-02-01
-bob    142  98.365587  175.065206 2022-02-02
-carol  336  60.018398  184.063187 2022-02-03
-dave   846  91.877850  171.272554 2022-02-04
-erin   570  33.720132  168.207309 2022-02-05</code></pre>
+anna   780  58.244369  180.317131 2022-02-01
+bob    675  63.680724  185.107711 2022-02-02
+carol  164  48.476114  180.108224 2022-02-03
+dave   531  32.834607  162.617524 2022-02-04
+erin   463  67.902511  172.070975 2022-02-05</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb255"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb255-1"><a href="#cb255-1"></a>df.dropna(axis<span class="op">=</span><span class="dv">1</span>, thresh<span class="op">=</span><span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb248"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb248-1"><a href="#cb248-1"></a>df.dropna(axis<span class="op">=</span><span class="dv">1</span>, thresh<span class="op">=</span><span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>        id     weight      height       date student
-anna   623  54.731075  176.979498 2022-02-01    True
-bob    142  98.365587  175.065206 2022-02-02    True
-carol  336  60.018398  184.063187 2022-02-03    True
-dave   846  91.877850  171.272554 2022-02-04   False
-erin   570  33.720132  168.207309 2022-02-05    None</code></pre>
+anna   780  58.244369  180.317131 2022-02-01    True
+bob    675  63.680724  185.107711 2022-02-02    True
+carol  164  48.476114  180.108224 2022-02-03    True
+dave   531  32.834607  162.617524 2022-02-04   False
+erin   463  67.902511  172.070975 2022-02-05    None</code></pre>
 </div>
 </div>
 </div>
@@ -2599,26 +2556,28 @@ erin   570  33.720132  168.207309 2022-02-05    None</code></pre>
 <section id="sorting" class="slide level2">
 <h2>Sorting</h2>
 <p>DataFrames can be sorted on one or more columns via <code>sort_values()</code>,</p>
+<div class="small">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb257"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb257-1"><a href="#cb257-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb250"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb250-1"><a href="#cb250-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>        id     weight      height       date student   age
-anna   623  54.731075  176.979498 2022-02-01    True  19.0
-bob    142  98.365587  175.065206 2022-02-02    True  22.0
-carol  336  60.018398  184.063187 2022-02-03    True  25.0
-dave   846  91.877850  171.272554 2022-02-04   False   NaN
-erin   570  33.720132  168.207309 2022-02-05    None   NaN</code></pre>
+anna   780  58.244369  180.317131 2022-02-01    True  19.0
+bob    675  63.680724  185.107711 2022-02-02    True  22.0
+carol  164  48.476114  180.108224 2022-02-03    True  25.0
+dave   531  32.834607  162.617524 2022-02-04   False   NaN
+erin   463  67.902511  172.070975 2022-02-05    None   NaN</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb259"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb259-1"><a href="#cb259-1"></a>df.sort_values(by<span class="op">=</span>[<span class="st">&quot;student&quot;</span>,<span class="st">&quot;id&quot;</span>], ascending<span class="op">=</span>[<span class="va">True</span>,<span class="va">False</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb252"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb252-1"><a href="#cb252-1"></a>df.sort_values(by<span class="op">=</span>[<span class="st">&quot;student&quot;</span>,<span class="st">&quot;id&quot;</span>], ascending<span class="op">=</span>[<span class="va">True</span>,<span class="va">False</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>        id     weight      height       date student   age
-dave   846  91.877850  171.272554 2022-02-04   False   NaN
-anna   623  54.731075  176.979498 2022-02-01    True  19.0
-carol  336  60.018398  184.063187 2022-02-03    True  25.0
-bob    142  98.365587  175.065206 2022-02-02    True  22.0
-erin   570  33.720132  168.207309 2022-02-05    None   NaN</code></pre>
+dave   531  32.834607  162.617524 2022-02-04   False   NaN
+anna   780  58.244369  180.317131 2022-02-01    True  19.0
+bob    675  63.680724  185.107711 2022-02-02    True  22.0
+carol  164  48.476114  180.108224 2022-02-03    True  25.0
+erin   463  67.902511  172.070975 2022-02-05    None   NaN</code></pre>
+</div>
 </div>
 </div>
 </section>
@@ -2628,11 +2587,11 @@ erin   570  33.720132  168.207309 2022-02-05    None   NaN</code></pre>
 <div class="columns small">
 <div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb261"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb261-1"><a href="#cb261-1"></a>df1 <span class="op">=</span> pd.DataFrame(</span>
-<span id="cb261-2"><a href="#cb261-2"></a>  np.arange(<span class="dv">6</span>).reshape(<span class="dv">3</span>,<span class="dv">2</span>), </span>
-<span id="cb261-3"><a href="#cb261-3"></a>  columns<span class="op">=</span><span class="bu">list</span>(<span class="st">&quot;xy&quot;</span>)</span>
-<span id="cb261-4"><a href="#cb261-4"></a>)</span>
-<span id="cb261-5"><a href="#cb261-5"></a>df1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb254"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb254-1"><a href="#cb254-1"></a>df1 <span class="op">=</span> pd.DataFrame(</span>
+<span id="cb254-2"><a href="#cb254-2"></a>  np.arange(<span class="dv">6</span>).reshape(<span class="dv">3</span>,<span class="dv">2</span>), </span>
+<span id="cb254-3"><a href="#cb254-3"></a>  columns<span class="op">=</span><span class="bu">list</span>(<span class="st">&quot;xy&quot;</span>)</span>
+<span id="cb254-4"><a href="#cb254-4"></a>)</span>
+<span id="cb254-5"><a href="#cb254-5"></a>df1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   x  y
 0  0  1
@@ -2642,11 +2601,11 @@ erin   570  33.720132  168.207309 2022-02-05    None   NaN</code></pre>
 </div>
 </div><div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb263"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb263-1"><a href="#cb263-1"></a>df2 <span class="op">=</span> pd.DataFrame(</span>
-<span id="cb263-2"><a href="#cb263-2"></a>  np.arange(<span class="dv">12</span>,<span class="dv">6</span>,<span class="op">-</span><span class="dv">1</span>).reshape(<span class="dv">3</span>,<span class="dv">2</span>), </span>
-<span id="cb263-3"><a href="#cb263-3"></a>  columns<span class="op">=</span><span class="bu">list</span>(<span class="st">&quot;xy&quot;</span>)</span>
-<span id="cb263-4"><a href="#cb263-4"></a>)</span>
-<span id="cb263-5"><a href="#cb263-5"></a>df2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb256"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb256-1"><a href="#cb256-1"></a>df2 <span class="op">=</span> pd.DataFrame(</span>
+<span id="cb256-2"><a href="#cb256-2"></a>  np.arange(<span class="dv">12</span>,<span class="dv">6</span>,<span class="op">-</span><span class="dv">1</span>).reshape(<span class="dv">3</span>,<span class="dv">2</span>), </span>
+<span id="cb256-3"><a href="#cb256-3"></a>  columns<span class="op">=</span><span class="bu">list</span>(<span class="st">&quot;xy&quot;</span>)</span>
+<span id="cb256-4"><a href="#cb256-4"></a>)</span>
+<span id="cb256-5"><a href="#cb256-5"></a>df2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>    x   y
 0  12  11
@@ -2660,7 +2619,7 @@ erin   570  33.720132  168.207309 2022-02-05    None   NaN</code></pre>
 <div class="columns small">
 <div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb265"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb265-1"><a href="#cb265-1"></a>pd.concat([df1,df2])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb258"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb258-1"><a href="#cb258-1"></a>pd.concat([df1,df2])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>    x   y
 0   0   1
@@ -2673,7 +2632,7 @@ erin   570  33.720132  168.207309 2022-02-05    None   NaN</code></pre>
 </div>
 </div><div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb267"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb267-1"><a href="#cb267-1"></a>pd.concat([df1.loc[:,[<span class="st">&quot;y&quot;</span>,<span class="st">&quot;x&quot;</span>]],df2])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb260"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb260-1"><a href="#cb260-1"></a>pd.concat([df1.loc[:,[<span class="st">&quot;y&quot;</span>,<span class="st">&quot;x&quot;</span>]],df2])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>    y   x
 0   1   0
@@ -2692,8 +2651,8 @@ erin   570  33.720132  168.207309 2022-02-05    None   NaN</code></pre>
 <h2>Imputing columns</h2>
 <p>When binding rows missing columns will be added with <code>NaN</code> or <code>&lt;NA&gt;</code> entries.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb269"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb269-1"><a href="#cb269-1"></a>df3 <span class="op">=</span> pd.DataFrame(np.ones((<span class="dv">3</span>,<span class="dv">3</span>)), columns<span class="op">=</span><span class="bu">list</span>(<span class="st">&quot;xbz&quot;</span>))</span>
-<span id="cb269-2"><a href="#cb269-2"></a>df3</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb262"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb262-1"><a href="#cb262-1"></a>df3 <span class="op">=</span> pd.DataFrame(np.ones((<span class="dv">3</span>,<span class="dv">3</span>)), columns<span class="op">=</span><span class="bu">list</span>(<span class="st">&quot;xbz&quot;</span>))</span>
+<span id="cb262-2"><a href="#cb262-2"></a>df3</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>     x    b    z
 0  1.0  1.0  1.0
@@ -2702,7 +2661,7 @@ erin   570  33.720132  168.207309 2022-02-05    None   NaN</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb271"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb271-1"><a href="#cb271-1"></a>pd.concat([df1,df3,df2])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb264"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb264-1"><a href="#cb264-1"></a>pd.concat([df1,df3,df2])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>      x     y    b    z
 0   0.0   1.0  NaN  NaN
@@ -2723,12 +2682,12 @@ erin   570  33.720132  168.207309 2022-02-05    None   NaN</code></pre>
 <div class="columns small">
 <div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb273"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb273-1"><a href="#cb273-1"></a>df1 <span class="op">=</span> pd.DataFrame(</span>
-<span id="cb273-2"><a href="#cb273-2"></a>  np.arange(<span class="dv">6</span>).reshape(<span class="dv">3</span>,<span class="dv">2</span>), </span>
-<span id="cb273-3"><a href="#cb273-3"></a>  columns<span class="op">=</span><span class="bu">list</span>(<span class="st">&quot;xy&quot;</span>), </span>
-<span id="cb273-4"><a href="#cb273-4"></a>  index<span class="op">=</span><span class="bu">list</span>(<span class="st">&quot;abc&quot;</span>)</span>
-<span id="cb273-5"><a href="#cb273-5"></a>)</span>
-<span id="cb273-6"><a href="#cb273-6"></a>df1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb266"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb266-1"><a href="#cb266-1"></a>df1 <span class="op">=</span> pd.DataFrame(</span>
+<span id="cb266-2"><a href="#cb266-2"></a>  np.arange(<span class="dv">6</span>).reshape(<span class="dv">3</span>,<span class="dv">2</span>), </span>
+<span id="cb266-3"><a href="#cb266-3"></a>  columns<span class="op">=</span><span class="bu">list</span>(<span class="st">&quot;xy&quot;</span>), </span>
+<span id="cb266-4"><a href="#cb266-4"></a>  index<span class="op">=</span><span class="bu">list</span>(<span class="st">&quot;abc&quot;</span>)</span>
+<span id="cb266-5"><a href="#cb266-5"></a>)</span>
+<span id="cb266-6"><a href="#cb266-6"></a>df1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   x  y
 a  0  1
@@ -2738,12 +2697,12 @@ c  4  5</code></pre>
 </div>
 </div><div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb275"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb275-1"><a href="#cb275-1"></a>df2 <span class="op">=</span> pd.DataFrame(</span>
-<span id="cb275-2"><a href="#cb275-2"></a>  np.arange(<span class="dv">10</span>,<span class="dv">6</span>,<span class="op">-</span><span class="dv">1</span>).reshape(<span class="dv">2</span>,<span class="dv">2</span>), </span>
-<span id="cb275-3"><a href="#cb275-3"></a>  columns<span class="op">=</span><span class="bu">list</span>(<span class="st">&quot;mn&quot;</span>), </span>
-<span id="cb275-4"><a href="#cb275-4"></a>  index<span class="op">=</span><span class="bu">list</span>(<span class="st">&quot;ac&quot;</span>)</span>
-<span id="cb275-5"><a href="#cb275-5"></a>)</span>
-<span id="cb275-6"><a href="#cb275-6"></a>df2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb268"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb268-1"><a href="#cb268-1"></a>df2 <span class="op">=</span> pd.DataFrame(</span>
+<span id="cb268-2"><a href="#cb268-2"></a>  np.arange(<span class="dv">10</span>,<span class="dv">6</span>,<span class="op">-</span><span class="dv">1</span>).reshape(<span class="dv">2</span>,<span class="dv">2</span>), </span>
+<span id="cb268-3"><a href="#cb268-3"></a>  columns<span class="op">=</span><span class="bu">list</span>(<span class="st">&quot;mn&quot;</span>), </span>
+<span id="cb268-4"><a href="#cb268-4"></a>  index<span class="op">=</span><span class="bu">list</span>(<span class="st">&quot;ac&quot;</span>)</span>
+<span id="cb268-5"><a href="#cb268-5"></a>)</span>
+<span id="cb268-6"><a href="#cb268-6"></a>df2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>    m  n
 a  10  9
@@ -2756,7 +2715,7 @@ c   8  7</code></pre>
 <div class="columns small">
 <div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb277"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb277-1"><a href="#cb277-1"></a>pd.concat([df1,df2], axis<span class="op">=</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb270"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb270-1"><a href="#cb270-1"></a>pd.concat([df1,df2], axis<span class="op">=</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   x  y     m    n
 a  0  1  10.0  9.0
@@ -2766,7 +2725,7 @@ c  4  5   8.0  7.0</code></pre>
 </div>
 </div><div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb279"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb279-1"><a href="#cb279-1"></a>pd.concat([df1,df2], axis<span class="op">=</span><span class="dv">1</span>, join<span class="op">=</span><span class="st">&quot;inner&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb272"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb272-1"><a href="#cb272-1"></a>pd.concat([df1,df2], axis<span class="op">=</span><span class="dv">1</span>, join<span class="op">=</span><span class="st">&quot;inner&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   x  y   m  n
 a  0  1  10  9
@@ -2783,10 +2742,10 @@ c  4  5   8  7</code></pre>
 <div class="columns small">
 <div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb281"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb281-1"><a href="#cb281-1"></a>df1 <span class="op">=</span> pd.DataFrame(</span>
-<span id="cb281-2"><a href="#cb281-2"></a>  {<span class="st">&#39;a&#39;</span>: [<span class="st">&#39;foo&#39;</span>, <span class="st">&#39;bar&#39;</span>], <span class="st">&#39;b&#39;</span>: [<span class="dv">1</span>, <span class="dv">2</span>]}</span>
-<span id="cb281-3"><a href="#cb281-3"></a>)</span>
-<span id="cb281-4"><a href="#cb281-4"></a>df1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb274"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb274-1"><a href="#cb274-1"></a>df1 <span class="op">=</span> pd.DataFrame(</span>
+<span id="cb274-2"><a href="#cb274-2"></a>  {<span class="st">&#39;a&#39;</span>: [<span class="st">&#39;foo&#39;</span>, <span class="st">&#39;bar&#39;</span>], <span class="st">&#39;b&#39;</span>: [<span class="dv">1</span>, <span class="dv">2</span>]}</span>
+<span id="cb274-3"><a href="#cb274-3"></a>)</span>
+<span id="cb274-4"><a href="#cb274-4"></a>df1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>     a  b
 0  foo  1
@@ -2795,10 +2754,10 @@ c  4  5   8  7</code></pre>
 </div>
 </div><div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb283"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb283-1"><a href="#cb283-1"></a>df2 <span class="op">=</span> pd.DataFrame(</span>
-<span id="cb283-2"><a href="#cb283-2"></a>  {<span class="st">&#39;a&#39;</span>: [<span class="st">&#39;foo&#39;</span>, <span class="st">&#39;baz&#39;</span>], <span class="st">&#39;c&#39;</span>: [<span class="dv">3</span>, <span class="dv">4</span>]}</span>
-<span id="cb283-3"><a href="#cb283-3"></a>)</span>
-<span id="cb283-4"><a href="#cb283-4"></a>df2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb276"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb276-1"><a href="#cb276-1"></a>df2 <span class="op">=</span> pd.DataFrame(</span>
+<span id="cb276-2"><a href="#cb276-2"></a>  {<span class="st">&#39;a&#39;</span>: [<span class="st">&#39;foo&#39;</span>, <span class="st">&#39;baz&#39;</span>], <span class="st">&#39;c&#39;</span>: [<span class="dv">3</span>, <span class="dv">4</span>]}</span>
+<span id="cb276-3"><a href="#cb276-3"></a>)</span>
+<span id="cb276-4"><a href="#cb276-4"></a>df2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>     a  c
 0  foo  3
@@ -2811,12 +2770,12 @@ c  4  5   8  7</code></pre>
 <div class="columns small">
 <div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb285"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb285-1"><a href="#cb285-1"></a>pd.merge(df1,df2, how<span class="op">=</span><span class="st">&quot;inner&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb278"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb278-1"><a href="#cb278-1"></a>pd.merge(df1,df2, how<span class="op">=</span><span class="st">&quot;inner&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>     a  b  c
 0  foo  1  3</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb287"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb287-1"><a href="#cb287-1"></a>pd.merge(df1,df2, how<span class="op">=</span><span class="st">&quot;outer&quot;</span>, on<span class="op">=</span><span class="st">&quot;a&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb280"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb280-1"><a href="#cb280-1"></a>pd.merge(df1,df2, how<span class="op">=</span><span class="st">&quot;outer&quot;</span>, on<span class="op">=</span><span class="st">&quot;a&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>     a    b    c
 0  foo  1.0  3.0
@@ -2826,13 +2785,13 @@ c  4  5   8  7</code></pre>
 </div>
 </div><div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb289"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb289-1"><a href="#cb289-1"></a>df1.merge(df2, how<span class="op">=</span><span class="st">&quot;left&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb282"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb282-1"><a href="#cb282-1"></a>df1.merge(df2, how<span class="op">=</span><span class="st">&quot;left&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>     a  b    c
 0  foo  1  3.0
 1  bar  2  NaN</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb291"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb291-1"><a href="#cb291-1"></a>df1.merge(df2, how<span class="op">=</span><span class="st">&quot;right&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb284"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb284-1"><a href="#cb284-1"></a>df1.merge(df2, how<span class="op">=</span><span class="st">&quot;right&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>     a    b  c
 0  foo  1.0  3
@@ -2856,39 +2815,39 @@ c  4  5   8  7</code></pre>
 <h2>groupby and agg</h2>
 <p>Groups can be created within a DataFrame via <code>groupby()</code> - these groups are then used by the standard summary methods (e.g. <code>sum()</code>, <code>mean()</code>, <code>std()</code>, etc.).</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb293"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb293-1"><a href="#cb293-1"></a>df.groupby(<span class="st">&quot;student&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb286"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb286-1"><a href="#cb286-1"></a>df.groupby(<span class="st">&quot;student&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>&lt;pandas.core.groupby.generic.DataFrameGroupBy object at 0x2921ee500&gt;</code></pre>
+<pre><code>&lt;pandas.core.groupby.generic.DataFrameGroupBy object at 0x1701554b0&gt;</code></pre>
 </div>
 </div>
 <div class="columns">
 <div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb295"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb295-1"><a href="#cb295-1"></a>df.groupby(<span class="st">&quot;student&quot;</span>).groups</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb288"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb288-1"><a href="#cb288-1"></a>df.groupby(<span class="st">&quot;student&quot;</span>).groups</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>{False: [&#39;dave&#39;], True: [&#39;anna&#39;, &#39;bob&#39;, &#39;carol&#39;]}</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb297"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb297-1"><a href="#cb297-1"></a>df.groupby(<span class="st">&quot;student&quot;</span>).mean(numeric_only<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb290"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb290-1"><a href="#cb290-1"></a>df.groupby(<span class="st">&quot;student&quot;</span>).mean(numeric_only<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>            id     weight      height   age
-student                                    
-False    846.0  91.877850  171.272554   NaN
-True     367.0  71.038353  178.702630  22.0</code></pre>
+<pre><code>                 id     weight      height   age
+student                                         
+False    531.000000  32.834607  162.617524   NaN
+True     539.666667  56.800402  181.844355  22.0</code></pre>
 </div>
 </div>
 </div><div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb299"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb299-1"><a href="#cb299-1"></a>df.groupby(<span class="st">&quot;student&quot;</span>, dropna<span class="op">=</span><span class="va">False</span>).groups</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb292"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb292-1"><a href="#cb292-1"></a>df.groupby(<span class="st">&quot;student&quot;</span>, dropna<span class="op">=</span><span class="va">False</span>).groups</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-error">
 <pre><code>Error: ValueError: Categorical categories cannot be null</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb301"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb301-1"><a href="#cb301-1"></a>df.groupby(<span class="st">&quot;student&quot;</span>, dropna<span class="op">=</span><span class="va">False</span>).mean(numeric_only<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb294"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb294-1"><a href="#cb294-1"></a>df.groupby(<span class="st">&quot;student&quot;</span>, dropna<span class="op">=</span><span class="va">False</span>).mean(numeric_only<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>            id     weight      height   age
-student                                    
-False    846.0  91.877850  171.272554   NaN
-True     367.0  71.038353  178.702630  22.0
-NaN      570.0  33.720132  168.207309   NaN</code></pre>
+<pre><code>                 id     weight      height   age
+student                                         
+False    531.000000  32.834607  162.617524   NaN
+True     539.666667  56.800402  181.844355  22.0
+NaN      463.000000  67.902511  172.070975   NaN</code></pre>
 </div>
 </div>
 </div>
@@ -2897,30 +2856,30 @@ NaN      570.0  33.720132  168.207309   NaN</code></pre>
 <section id="selecting-groups" class="slide level2 smaller">
 <h2>Selecting groups</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb303"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb303-1"><a href="#cb303-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb296"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb296-1"><a href="#cb296-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>        id     weight      height       date student   age
-anna   623  54.731075  176.979498 2022-02-01    True  19.0
-bob    142  98.365587  175.065206 2022-02-02    True  22.0
-carol  336  60.018398  184.063187 2022-02-03    True  25.0
-dave   846  91.877850  171.272554 2022-02-04   False   NaN
-erin   570  33.720132  168.207309 2022-02-05    None   NaN</code></pre>
+anna   780  58.244369  180.317131 2022-02-01    True  19.0
+bob    675  63.680724  185.107711 2022-02-02    True  22.0
+carol  164  48.476114  180.108224 2022-02-03    True  25.0
+dave   531  32.834607  162.617524 2022-02-04   False   NaN
+erin   463  67.902511  172.070975 2022-02-05    None   NaN</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb305"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb305-1"><a href="#cb305-1"></a>df.groupby(<span class="st">&quot;student&quot;</span>).get_group(<span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb298"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb298-1"><a href="#cb298-1"></a>df.groupby(<span class="st">&quot;student&quot;</span>).get_group(<span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>        id     weight      height       date student   age
-anna   623  54.731075  176.979498 2022-02-01    True  19.0
-bob    142  98.365587  175.065206 2022-02-02    True  22.0
-carol  336  60.018398  184.063187 2022-02-03    True  25.0</code></pre>
+anna   780  58.244369  180.317131 2022-02-01    True  19.0
+bob    675  63.680724  185.107711 2022-02-02    True  22.0
+carol  164  48.476114  180.108224 2022-02-03    True  25.0</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb307"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb307-1"><a href="#cb307-1"></a>df.groupby(<span class="st">&quot;student&quot;</span>).get_group(<span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb300"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb300-1"><a href="#cb300-1"></a>df.groupby(<span class="st">&quot;student&quot;</span>).get_group(<span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>       id    weight      height       date student  age
-dave  846  91.87785  171.272554 2022-02-04   False  NaN</code></pre>
+<pre><code>       id     weight      height       date student  age
+dave  531  32.834607  162.617524 2022-02-04   False  NaN</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb309"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb309-1"><a href="#cb309-1"></a>df.groupby(<span class="st">&quot;student&quot;</span>, dropna<span class="op">=</span><span class="va">False</span>).get_group(np.nan)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb302"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb302-1"><a href="#cb302-1"></a>df.groupby(<span class="st">&quot;student&quot;</span>, dropna<span class="op">=</span><span class="va">False</span>).get_group(np.nan)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-error">
 <pre><code>Error: KeyError: nan</code></pre>
 </div>
@@ -2930,25 +2889,25 @@ dave  846  91.87785  171.272554 2022-02-04   False  NaN</code></pre>
 <h2>Aggregation</h2>
 <div class="small">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb311"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb311-1"><a href="#cb311-1"></a>df <span class="op">=</span> df.drop(<span class="st">&quot;date&quot;</span>, axis<span class="op">=</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb304"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb304-1"><a href="#cb304-1"></a>df <span class="op">=</span> df.drop(<span class="st">&quot;date&quot;</span>, axis<span class="op">=</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 <div class="small">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb312"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb312-1"><a href="#cb312-1"></a>df.groupby(<span class="st">&quot;student&quot;</span>).agg(<span class="st">&quot;mean&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb305"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb305-1"><a href="#cb305-1"></a>df.groupby(<span class="st">&quot;student&quot;</span>).agg(<span class="st">&quot;mean&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>            id     weight      height   age
-student                                    
-False    846.0  91.877850  171.272554   NaN
-True     367.0  71.038353  178.702630  22.0</code></pre>
+<pre><code>                 id     weight      height   age
+student                                         
+False    531.000000  32.834607  162.617524   NaN
+True     539.666667  56.800402  181.844355  22.0</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb314"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb314-1"><a href="#cb314-1"></a>df.groupby(<span class="st">&quot;student&quot;</span>).agg([np.mean, np.std])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb307"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb307-1"><a href="#cb307-1"></a>df.groupby(<span class="st">&quot;student&quot;</span>).agg([np.mean, np.std])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>            id                 weight  ...    height   age     
-          mean         std       mean  ...       std  mean  std
-student                                ...                     
-False    846.0         NaN  91.877850  ...       NaN   NaN  NaN
-True     367.0  241.993802  71.038353  ...  4.740021  22.0  3.0
+<pre><code>                 id                 weight  ...    height   age     
+               mean         std       mean  ...       std  mean  std
+student                                     ...                     
+False    531.000000         NaN  32.834607  ...       NaN   NaN  NaN
+True     539.666667  329.545647  56.800402  ...  2.828079  22.0  3.0
 
 [2 rows x 8 columns]</code></pre>
 </div>

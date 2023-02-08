@@ -62,7 +62,7 @@ Key features:
 
 * Just like R a DataFrame is a collection of vectors with a common length
 
-* Column types can be heterogeneous
+* Column dtypes are be heterogeneous
 
 * Both columns and rows can have names
 
@@ -120,9 +120,9 @@ s.index
 :::
 ::::
 
+. . .
 
-
-An index can also be explicitly provided when constructing a Series,
+An index (row names) can also be explicitly provided when constructing a Series,
 
 ```{python}
 t = pd.Series([4,2,1,3], index=["a","b","c","d"])
@@ -146,7 +146,7 @@ t.index
 
 ## Series + NumPy
 
-Series objects are compatible with NumPy like functions (vectorized)
+Series objects are compatible with NumPy like functions (i.e. vectorized)
 
 ```{python}
 t = pd.Series([4,2,1,3], index=["a","b","c","d"])
@@ -203,7 +203,7 @@ t
 
 ## Index alignment
 
-When performing (arithmetic) operations on series, they will attempt to align the operation by the index values,
+When performing operations with multiple series, generally pandas will attempt to align the operation by the index values,
 
 ```{python}
 m = pd.Series([1,2,3,4], index = ["a","b","c","d"])
@@ -234,7 +234,7 @@ n + o
 
 ## Series and dicts
 
-Series can also be constructed from dicts, in which case the keys are used to create the index,
+Series can also be constructed from dictionaries, in which case the keys are used as the index,
 
 ```{python}
 d = {"anna": "A+", "bob": "B-", "carol": "C", "dave": "D+"}
@@ -335,7 +335,7 @@ pd.isna( pd.Series([True,False,None]) )
 
 ## Setting dtype
 
-We can force things by setting the Series dtype,
+We can force things by setting the Series' dtype,
 
 :::: {.columns}
 ::: {.column width='50%'}
@@ -360,7 +360,7 @@ pd.Series(
 
 ## String series
 
-Series containing strings can be accessed via the `str` attribute,
+Series containing strings can their strings accessed via the `str` attribute,
 
 ::: {.small}
 ```{python}
@@ -424,14 +424,17 @@ pd.Series(
 ```{python}
 pd.Series(
   ["Tue", "Thur", "Mon", "Sat"], 
-  dtype=pd.CategoricalDtype(categories=["Mon", "Tue", "Wed", "Thur", "Fri"], ordered=True)
+  dtype=pd.CategoricalDtype(
+    categories=["Mon", "Tue", "Wed", "Thur", "Fri"], 
+    ordered=True
+  )
 )
 ```
 
 
 ## Constructing DataFrames
 
-Earlier we saw reading a DataFrame in via `read_csv()`, but data frames can also be constructed via `DataFrame()`, in general this is done using a dictionary of columns:
+Earlier we saw how to read a DataFrame via `read_csv()`, but data frames can also be constructed via `DataFrame()`, in general this is done using a dictionary of columns:
 
 
 
@@ -446,7 +449,6 @@ d = {
   "date":   pd.date_range(start='2/1/2022', 
                           periods=n, freq='D')
 }
-d
 ```
 :::
 
@@ -495,15 +497,8 @@ pd.DataFrame(
 ::::
 
 
-## DataFrame indexing {.smaller}
+## DataFrame indexing
 
-::: {.small}
-```{python}
-df
-```
-:::
-
-. . .
 
 :::: {.columns .small}
 ::: {.column width='50%'} 
@@ -524,13 +519,7 @@ df[0::2]
 :::
 ::::
 
-## Index by position {.smaller}
-
-::: {.small}
-```{python}
-df
-```
-:::
+## Index by position
 
 :::: {.columns .small}
 ::: {.column width='50%'}
@@ -599,7 +588,7 @@ v
 ```
 :::
 
-::: {.column width='50%' .fragment}
+::: {.column width='50%'}
 ```{python}
 v.iloc[0,0] = np.pi
 v
@@ -617,15 +606,9 @@ See the documetation [here](http://pandas-docs.github.io/pandas-docs-travis/user
 
 
 
-## Filtering rows {.smaller}
+## Filtering rows
 
 The `query()` method can be used for filtering rows, it evaluates a string expression in the context of the data frame. 
-
-::: {.small}
-```{python}
-df
-```
-:::
 
 :::: {.columns .small}
 ::: {.column width='50%'}
@@ -803,6 +786,7 @@ df.dropna(axis=1, thresh=4)
 
 DataFrames can be sorted on one or more columns via `sort_values()`,
 
+::: {.small}
 ```{python}
 df
 ```
@@ -810,6 +794,8 @@ df
 ```{python error=TRUE}
 df.sort_values(by=["student","id"], ascending=[True,False])
 ```
+:::
+
 
 ## Row binds
 
