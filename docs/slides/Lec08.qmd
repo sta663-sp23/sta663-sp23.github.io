@@ -9,9 +9,27 @@ format:
     transition: fade
     slide-number: true
     self-contained: true
+execute:
+  echo: true
 ---
 
-```{python setup}
+```{r config}
+#| include: false
+options(
+  width=80
+)
+
+local({
+  hook_old <- knitr::knit_hooks$get("error")  # save the old hook
+  knitr::knit_hooks$set(error = function(x, options) {
+    x = sub("## \n## Detailed traceback:\n.*$", "", x)
+    x = sub("Error in py_call_impl\\(.*?\\)\\: ", "", x)
+    hook_old(x, options)
+  })
+})
+```
+
+```{python setup, include=FALSE}
 import scipy
 import numpy as np
 import matplotlib.pyplot as plt
@@ -20,20 +38,8 @@ import pandas as pd
 np.set_printoptions(edgeitems=3, linewidth=180)
 ```
 
-```{r hooks}
-local({
-  hook_old <- knitr::knit_hooks$get("error")  # save the old hook
-  knitr::knit_hooks$set(error = function(x, options) {
-    # now do whatever you want to do with x, and pass
-    # the new x to the old hook
-    x = sub("## \n## Detailed traceback:\n.*$", "", x)
-    x = sub("Error in py_call_impl\\(.*?\\)\\: ", "", x)
-    hook_old(x, options)
-  })
-})
-```
 
-## pandas?
+## pandas
 
 pandas is an implementation of data frames in Python - it takes much of its inspiration from R and NumPy.
 
@@ -43,7 +49,7 @@ pandas is an implementation of data frames in Python - it takes much of its insp
 
 Key features:
 
-* DataFrame object class
+* DataFrame and Series (column) object classes
 
 * Reading and writing tabular data
 
@@ -51,26 +57,8 @@ Key features:
 
 * Data reshaping
 
+
 ## DataFrame
-
-```{python}
-import pandas as pd
-```
-
-:::: {.columns .small}
-::: {.column width='50%'}
-```{python}
-iris = pd.read_csv("data/iris.csv")
-iris
-```
-:::
-::::
-
-
-.pull-right[
-```{python}
-print( type(iris) )
-```
 
 * Just like R a DataFrame is a collection of vectors with a common length
 
@@ -78,15 +66,20 @@ print( type(iris) )
 
 * Both columns and rows can have names
 
+::: {.small}
+```{python}
+iris = pd.read_csv("data/iris.csv")
+type(iris)
+iris
+```
+:::
 
-]
-]
 
 ## Series
 
 The columns of a DataFrame are constructed as Series - a 1d array like object containing values of the same type (similar to an ndarray).
 
-:::: {.columns}
+:::: {.columns .small}
 ::: {.column width='50%'}
 ```{python}
 pd.Series([1,2,3,4])
@@ -103,15 +96,31 @@ pd.Series([1,"A",True])
 :::
 ::::
 
-## Series methods
 
-Once constructed the components of a series can be accessed via `array()` and `index()` methods.
+## Series methods {.smaller}
+
+Once constructed the components of a series can be accessed via `array` and `index` attributes.
 
 ```{python}
 s = pd.Series([4,2,1,3])
+```
+
+:::: {.columns}
+::: {.column width='50%'}
+```{python}
+s
+```
+:::
+
+::: {.column width='50%'}
+```{python}
 s.array
 s.index
 ```
+:::
+::::
+
+
 
 An index can also be explicitly provided when constructing a Series,
 
@@ -134,6 +143,7 @@ t.index
 :::
 ::::
 
+
 ## Series + NumPy
 
 Series objects are compatible with NumPy like functions (vectorized)
@@ -142,17 +152,29 @@ Series objects are compatible with NumPy like functions (vectorized)
 t = pd.Series([4,2,1,3], index=["a","b","c","d"])
 ```
 
+:::: {.columns}
+::: {.column width='50%'}
 ```{python}
 t + 1
+t / 2 + 1
+```
+:::
 
+::: {.column width='50%'}
+```{python}
 np.log(t)
-
 np.exp(-t**2/2)
 ```
+:::
+::::
 
-## Series indexing
 
-Series can be indexed in the same was as NumPy arrays with the addition of being able to use label(s) when selecting elements.
+
+
+
+## Series indexing {.smaller}
+
+Series can be indexed in the same was as NumPy arrays with the addition of being able to use index label(s) when selecting elements.
 
 ```{python}
 t = pd.Series([4,2,1,3], index=["a","b","c","d"])
@@ -167,10 +189,8 @@ t["c"]
 t[["a","d"]]
 ```
 :::
-::::
 
-
-.pull-right[
+::: {.column width='50%'}
 ```{python}
 t[t == 3]
 t[t % 2 == 0]
@@ -180,9 +200,10 @@ t
 :::
 ::::
 
+
 ## Index alignment
 
-When performing (arithmetic) operations on series, they will attempt to align by their index,
+When performing (arithmetic) operations on series, they will attempt to align the operation by the index values,
 
 ```{python}
 m = pd.Series([1,2,3,4], index = ["a","b","c","d"])
@@ -192,7 +213,7 @@ o = pd.Series([1,1,1,1,1], index = ["b","d","a","c","e"])
 
 . . .
 
-:::: {.columns}
+:::: {.columns .small}
 ::: {.column width='50%'}
 ```{python}
 m + n
@@ -213,12 +234,14 @@ n + o
 
 ## Series and dicts
 
-Series can also be constructed from dicts, in which case the keys are used to form the index,
+Series can also be constructed from dicts, in which case the keys are used to create the index,
 
 ```{python}
 d = {"anna": "A+", "bob": "B-", "carol": "C", "dave": "D+"}
 pd.Series(d)
 ```
+
+. . .
 
 Index order will follow key order, unless overriden by `index`,
 
@@ -230,11 +253,12 @@ pd.Series(d, index = ["dave","carol","bob","anna"])
 
 Pandas encodes missing values using NaN (mostly),
 
-:::: {.columns}
+:::: {.columns .small}
 ::: {.column width='50%'}
 ```{python}
 s = pd.Series(
-  {"anna": "A+", "bob": "B-", "carol": "C", "dave": "D+"}, 
+  {"anna": "A+", "bob": "B-", 
+   "carol": "C", "dave": "D+"}, 
   index = ["erin","dave","carol","bob","anna"]
 )
 ```
@@ -249,7 +273,8 @@ pd.isna(s)
 ::: {.column width='50%' .fragment}
 ```{python}
 s = pd.Series(
-  {"anna": 97, "bob": 82, "carol": 75, "dave": 68}, 
+  {"anna": 97, "bob": 82, 
+   "carol": 75, "dave": 68}, 
   index = ["erin","dave","carol","bob","anna"],
   dtype = 'int64'
 )
@@ -262,7 +287,7 @@ pd.isna(s)
 :::
 ::::
 
-## Aside - why `np.isna()`?
+## Aside - why `np.isna()`? {.smaller}
 
 ```{python}
 s = pd.Series([1,2,3,None])
@@ -281,6 +306,8 @@ s == np.nan
 ```{python}
 np.nan == np.nan
 np.nan != np.nan
+np.isnan(np.nan)
+np.isnan(0)
 ```
 :::
 ::::
@@ -305,38 +332,47 @@ pd.isna( pd.Series([True,False,None]) )
 :::
 ::::
 
-. . .
 
+## Setting dtype
 
 We can force things by setting the Series dtype,
 
-<div>
 :::: {.columns}
 ::: {.column width='50%'}
 ```{python}
-pd.Series([1,2,3,None], dtype = pd.Int64Dtype())
+pd.Series(
+  [1,2,3,None], 
+  dtype = pd.Int64Dtype()
+)
 ```
 :::
 
 ::: {.column width='50%'}
 ```{python}
-pd.Series([True, False,None], dtype = pd.BooleanDtype())
+pd.Series(
+  [True, False,None], 
+  dtype = pd.BooleanDtype()
+)
 ```
 :::
 ::::
-</div>
 
 
 ## String series
 
 Series containing strings can be accessed via the `str` attribute,
 
-:::: {.columns}
-::: {.column width='50%'}
+::: {.small}
 ```{python}
 s = pd.Series(["the quick", "brown fox", "jumps over", "a lazy dog"])
-s
+```
+:::
 
+
+:::: {.columns .small}
+::: {.column width='50%'}
+```{python}
+s
 s.str.upper()
 s.str.split(" ")
 ```
@@ -351,30 +387,39 @@ pd.Series([1,2,3]).str
 :::
 ::::
 
+
 ## Categorical Series
 
-
-:::: {.columns}
-::: {.column width='50%'} .small[
+:::: {.columns .small}
+::: {.column width='50%'}
 ```{python}
-pd.Series(["Mon", "Tue", "Wed", "Thur", "Fri"])
+pd.Series(
+  ["Mon", "Tue", "Wed", "Thur", "Fri"]
+)
 ```
 :::
-:::: :::
 
-::: {.column width='50%'} .small[
+::: {.column width='50%'}
 ```{python}
-pd.Series(["Mon", "Tue", "Wed", "Thur", "Fri"], dtype="category")
+pd.Series(
+  ["Mon", "Tue", "Wed", "Thur", "Fri"],
+  dtype="category"
+)
 ```
 :::
-:::: ]
+::::
 
-<div></div>
 
-.small[
+::: {.small}
 ```{python}
-pd.Series(["Mon", "Tue", "Wed", "Thur", "Fri"], dtype=pd.CategoricalDtype(ordered=True))
+pd.Series(
+  ["Mon", "Tue", "Wed", "Thur", "Fri"], 
+  dtype=pd.CategoricalDtype(ordered=True)
+)
 ```
+:::
+
+## Category orders
 
 ```{python}
 pd.Series(
@@ -383,39 +428,45 @@ pd.Series(
 )
 ```
 
-]
 
 ## Constructing DataFrames
 
-We just saw reading a DataFrame in via `read_csv()`, but data frames can also be constructed via `DataFrame()`, general this is done via dict of columns:
+Earlier we saw reading a DataFrame in via `read_csv()`, but data frames can also be constructed via `DataFrame()`, in general this is done using a dictionary of columns:
 
-::: {.aside}
-See more io functions [here](https://pandas.pydata.org/docs/reference/io.html)
-:::
 
+
+:::: {.columns .small}
+::: {.column width='50%'}
 ```{python}
 n = 5
 d = {
   "id":     np.random.randint(100, 999, n),
   "weight": np.random.normal(70, 20, n),
   "height": np.random.normal(170, 15, n),
-  "date":   pd.date_range(start='2/1/2022', periods=n, freq='D')
+  "date":   pd.date_range(start='2/1/2022', 
+                          periods=n, freq='D')
 }
 d
 ```
+:::
 
-. . .
-
+::: {.column width='50%' .fragment}
 ```{python}
 df = pd.DataFrame(d)
 df
 ```
+:::
+::::
+
+::: {.aside}
+See more IO functions [here](https://pandas.pydata.org/docs/reference/io.html)
+:::
 
 ## DataFrame from nparray
 
 For 2d ndarrays it is also possible to construct a DataFrame - generally it is a good idea to provide column names and row names (indexes)
 
-:::: {.columns}
+:::: {.columns .small}
 ::: {.column width='50%'}
 ```{python}
 pd.DataFrame(
@@ -443,50 +494,46 @@ pd.DataFrame(
 :::
 ::::
 
-## DataFrame indexing
 
-.small[
+## DataFrame indexing {.smaller}
+
+::: {.small}
 ```{python}
 df
 ```
 :::
-::::
 
 . . .
 
-:::: {.columns}
+:::: {.columns .small}
 ::: {.column width='50%'} 
-.midi[Selecting a column,]
-.small[
+Selecting a column,
 ```{python error=TRUE}
 df[0]
 df["id"]
 df.id
 ```
 :::
-:::: :::
 
 ::: {.column width='50%' .fragment} 
-.midi[Selecting rows, a single slice is assumed to refer to the rows]
-.small[
+Selecting rows (a single slice is assumed to refer to the rows)
 ```{python}
 df[1:3]
 df[0::2]
 ```
 :::
-:::: ]
+::::
 
-## Index by position
+## Index by position {.smaller}
 
-.small[
+::: {.small}
 ```{python}
 df
 ```
 :::
-::::
 
-:::: {.columns}
-::: {.column width='50%'} .small[
+:::: {.columns .small}
+::: {.column width='50%'}
 ```{python}
 df.iloc[1]
 df.iloc[[1]]
@@ -494,30 +541,28 @@ df.iloc[0:2]
 df.iloc[lambda x: x.index % 2 != 0]
 ```
 :::
-:::: :::
 
-::: {.column width='50%'} .small[
+::: {.column width='50%'}
 ```{python}
 df.iloc[1:3,1:3]
 df.iloc[0:3, [0,3]]
 df.iloc[0:3, [True, True, False, False]]
 ```
 :::
-:::: ]
+::::
 
 
-## Index by name
+## Index by name {.smaller}
 
-.small[
+::: {.small}
 ```{python}
 df.index = (["anna","bob","carol", "dave", "erin"])
 df
 ```
 :::
-::::
 
-:::: {.columns}
-::: {.column width='50%'} .small[
+:::: {.columns .small}
+::: {.column width='50%'}
 ```{python}
 df.loc["anna"]
 df.loc[["anna"]]
@@ -525,23 +570,23 @@ df.loc["bob":"dave"]
 df.loc[df.id < 300]
 ```
 :::
-:::: :::
 
-::: {.column width='50%'} .small[
+::: {.column width='50%'}
 ```{python, error=TRUE}
 df.loc[:, "date"]
 df.loc[["bob","erin"], "weight":"height"]
 df.loc[0:2, "weight":"height"]
 ```
 :::
-:::: ]
+::::
+
 
 ## Views vs. Copies
 
 In general most pandas operations will generate a new object but some will return views, mostly the later occurs with subsetting. 
 
-:::: {.columns}
-::: {.column width='50%'} .small[
+:::: {.columns .small}
+::: {.column width='50%'}
 ```{python}
 d = pd.DataFrame(np.arange(6).reshape(3,2), columns = ["x","y"])
 d
@@ -553,16 +598,15 @@ d.iloc[0,1] = -1
 v
 ```
 :::
-:::: :::
 
-::: {.column width='50%' .fragment} .small[
+::: {.column width='50%' .fragment}
 ```{python}
 v.iloc[0,0] = np.pi
 v
 d
 ```
 :::
-:::: ]
+::::
 
 
 
@@ -570,28 +614,28 @@ d
 ::: {.aside}
 See the documetation [here](http://pandas-docs.github.io/pandas-docs-travis/user_guide/indexing.html#indexing-view-versus-copy) for more details
 :::
-## Filtering rows
+
+
+
+## Filtering rows {.smaller}
 
 The `query()` method can be used for filtering rows, it evaluates a string expression in the context of the data frame. 
 
-.small[
+::: {.small}
 ```{python}
 df
 ```
 :::
-::::
 
-:::: {.columns}
-::: {.column width='50%'} .small[
+:::: {.columns .small}
+::: {.column width='50%'}
 ```{python}
 df.query('date == "2022-02-01"')
 df.query('weight > 50')
 ```
 :::
-:::: ]
 
-
-.pull-right[ .small[
+::: {.column width='50%'}
 ```{python}
 df.query('weight > 50 & height < 165')
 
@@ -599,7 +643,7 @@ qid = 414
 df.query('id == @qid')
 ```
 :::
-:::: ]
+::::
 
 
 
@@ -607,17 +651,17 @@ df.query('id == @qid')
 For more details on query syntax see [here](https://pandas.pydata.org/docs/user_guide/indexing.html#indexing-query)
 :::
 
+
 ## Element access
 
-.small[
+::: {.small}
 ```{python}
 df
 ```
 :::
-::::
 
-:::: {.columns}
-::: {.column width='50%'} .small[
+:::: {.columns .small}
+::: {.column width='50%'}
 ```{python error=TRUE}
 df[0,0]
 df.iat[0,0]
@@ -625,9 +669,8 @@ df.id[0]
 df[0:1].id[0]
 ```
 :::
-:::: :::
 
-::: {.column width='50%'} .small[
+::: {.column width='50%'}
 ```{python, error=TRUE}
 df["anna", "id"]
 df.at["anna", "id"]
@@ -635,13 +678,10 @@ df["id"]["anna"]
 df["id"][0]
 ```
 :::
-:::: ]
+::::
 
-## DataFrame properties
 
-```{python}
-df
-```
+## DataFrame properties {.smaller}
 
 :::: {.columns}
 ::: {.column width='50%'}
@@ -660,58 +700,43 @@ df.describe()
 :::
 ::::
 
+
 ## Selecting Columns
 
 Beyond the use of `loc()` and `iloc()` there is also the `filter()` method which can be used to select columns (or indices) by name with pattern matching
 
-.small[
-```{python}
-df
-```
-:::
-::::
-
-:::: {.columns}
-::: {.column width='50%'} .small[
+:::: {.columns .small}
+::: {.column width='50%'}
 ```{python}
 df.filter(items=["id","weight"])
 df.filter(like = "i")
 ```
 :::
-:::: :::
 
-::: {.column width='50%'} .small[
+::: {.column width='50%'}
 ```{python}
 df.filter(regex="ght$")
 df.filter(like="o", axis=0)
 ```
 :::
-:::: ]
+::::
 
 
 
-## Adding columns
+## Adding columns {.smaller}
 
 Indexing with assignment allows for inplace modification of a DataFrame, while `assign()` creates a new object (but is chainable)
 
-.small[
-```{python}
-df
-```
-:::
-::::
-
-:::: {.columns}
-::: {.column width='50%'} .small[
+:::: {.columns .small}
+::: {.column width='50%'}
 ```{python}
 df['student'] = [True, True, True, False, None]
 df['age'] = [19, 22, 25, None, None]
 df
 ```
 :::
-:::: :::
 
-::: {.column width='50%'} .small[
+::: {.column width='50%'}
 ```{python}
 df.assign(
   student = lambda x: np.where(x.student, "yes", "no"),
@@ -720,72 +745,68 @@ df.assign(
 df
 ```
 :::
-:::: ]
+::::
 
-## Removing columns (and rows)
+
+## Removing columns (and rows) {.smaller}
 
 Columns can be dropped via the `drop()` method,
 
-.small[
-```{python}
-df
-```
-:::
-::::
 
-:::: {.columns}
-::: {.column width='50%'} .small[
+:::: {.columns .small}
+::: {.column width='50%'}
 ```{python error=TRUE}
 df.drop(['student'])
 df.drop(['student'], axis=1)
 df.drop(['anna','dave'])
 ```
 :::
-:::: :::
 
-::: {.column width='50%'} .small[
+::: {.column width='50%'}
 ```{python error=TRUE}
 df.drop(columns = df.columns == "age")
 df.drop(columns = df.columns[df.columns == "age"])
 df.drop(columns = df.columns[df.columns.str.contains("ght")])
 ```
 :::
-:::: ]
+::::
 
-## Dropping missing values
+
+
+## Dropping missing values {.smaller}
 
 Columns can be dropped via the `drop()` method,
 
-.small[
+::: {.small}
 ```{python}
 df
 ```
 :::
-::::
 
-:::: {.columns}
-::: {.column width='50%'} .small[
+:::: {.columns .small}
+::: {.column width='50%'}
 ```{python error=TRUE}
 df.dropna()
 df.dropna(how="all")
 ```
 :::
-:::: :::
 
-::: {.column width='50%'} .small[
+::: {.column width='50%'}
 ```{python error=TRUE}
 df.dropna(axis=1)
 df.dropna(axis=1, thresh=4)
 ```
 :::
-:::: ]
+::::
 
 ## Sorting
 
-DataFrames can be sorted on one or more axes via `sort_values()`,
+DataFrames can be sorted on one or more columns via `sort_values()`,
 
 ```{python}
 df
+```
+
 ```{python error=TRUE}
 df.sort_values(by=["student","id"], ascending=[True,False])
 ```
@@ -794,45 +815,49 @@ df.sort_values(by=["student","id"], ascending=[True,False])
 
 DataFrames can have their rows joined via the the `concat()` function (`append()` is also available but deprecated),
 
-:::: {.columns}
-::: {.column width='50%'} .small[
+:::: {.columns .small}
+::: {.column width='50%'}
 ```{python}
-df1 = pd.DataFrame(np.arange(6).reshape(3,2), columns=list("xy"))
+df1 = pd.DataFrame(
+  np.arange(6).reshape(3,2), 
+  columns=list("xy")
+)
 df1
 ```
 :::
-:::: :::
 
-::: {.column width='50%'} .small[
+::: {.column width='50%'}
 ```{python}
-df2 = pd.DataFrame(np.arange(12,6,-1).reshape(3,2), columns=list("xy"))
+df2 = pd.DataFrame(
+  np.arange(12,6,-1).reshape(3,2), 
+  columns=list("xy")
+)
 df2
 ```
 :::
-:::: ]
+::::
 
 . . .
 
-<div>
 
-:::: {.columns}
-::: {.column width='50%'} .small[
+:::: {.columns .small}
+::: {.column width='50%'}
 ```{python}
 pd.concat([df1,df2])
 ```
 :::
-:::: :::
 
-::: {.column width='50%'} .small[
+::: {.column width='50%'}
 ```{python}
 pd.concat([df1.loc[:,["y","x"]],df2])
 ```
 :::
-:::: ]
+::::
 
-</div>
 
-## Imputing columns
+## Imputing columns {.smaller}
+
+When binding rows missing columns will be added with `NaN` or `<NA>` entries.
 
 ```{python}
 df3 = pd.DataFrame(np.ones((3,3)), columns=list("xbz"))
@@ -847,87 +872,89 @@ pd.concat([df1,df3,df2])
 
 Similarly, columns can be joined with `concat()` where `axis=1`,
 
-:::: {.columns}
-::: {.column width='50%'} .small[
+:::: {.columns .small}
+::: {.column width='50%'}
 ```{python}
-df1 = pd.DataFrame(np.arange(6).reshape(3,2), columns=list("xy"), index=list("abc"))
+df1 = pd.DataFrame(
+  np.arange(6).reshape(3,2), 
+  columns=list("xy"), 
+  index=list("abc")
+)
 df1
 ```
 :::
-:::: :::
 
-::: {.column width='50%'} .small[
+::: {.column width='50%'}
 ```{python}
-df2 = pd.DataFrame(np.arange(10,6,-1).reshape(2,2), columns=list("mn"), index=list("ac"))
+df2 = pd.DataFrame(
+  np.arange(10,6,-1).reshape(2,2), 
+  columns=list("mn"), 
+  index=list("ac")
+)
 df2
 ```
 :::
-:::: ]
+::::
 
 . . .
 
-<div>
-
-:::: {.columns}
-::: {.column width='50%'} .small[
+:::: {.columns .small}
+::: {.column width='50%'}
 ```{python}
 pd.concat([df1,df2], axis=1)
 ```
 :::
-:::: :::
 
-::: {.column width='50%'} .small[
+::: {.column width='50%'}
 ```{python}
 pd.concat([df1,df2], axis=1, join="inner")
 ```
 :::
-:::: ]
+::::
 
-</div>
 
 ## Joining DataFrames
 
 Table joins are implemented via the `merge()` function or method,
 
-:::: {.columns}
-::: {.column width='50%'} .small[
+:::: {.columns .small}
+::: {.column width='50%'}
 ```{python}
-df1 = pd.DataFrame({'a': ['foo', 'bar'], 'b': [1, 2]})
+df1 = pd.DataFrame(
+  {'a': ['foo', 'bar'], 'b': [1, 2]}
+)
 df1
 ```
 :::
-:::: :::
 
-::: {.column width='50%'} .small[
+::: {.column width='50%'}
 ```{python}
-df2 = pd.DataFrame({'a': ['foo', 'baz'], 'c': [3, 4]})
+df2 = pd.DataFrame(
+  {'a': ['foo', 'baz'], 'c': [3, 4]}
+)
 df2
 ```
 :::
-:::: ]
+::::
 
 . . .
 
-<div>
-
-:::: {.columns}
-::: {.column width='50%'} .small[
+:::: {.columns .small}
+::: {.column width='50%'}
 ```{python}
 pd.merge(df1,df2, how="inner")
 pd.merge(df1,df2, how="outer", on="a")
 ```
 :::
-:::: :::
 
-::: {.column width='50%'} .small[
+::: {.column width='50%'}
 ```{python}
 df1.merge(df2, how="left")
 df1.merge(df2, how="right")
 ```
 :::
-:::: ]
+::::
 
-</div>
 
 ## join vs merge vs concat
 
@@ -939,13 +966,10 @@ All three can be used to accomplish the same thing, in terms of "column bind" ty
 
 * `join()` uses `merge()` behind the scenes, but prefers to join based on (row) indexes. Also has different default `how` compared to `merge()`, "left" vs "inner".
 
-## groupby and agg
+
+## groupby and agg {.smaller}
 
 Groups can be created within a DataFrame via `groupby()` - these groups are then used by the standard summary methods (e.g. `sum()`, `mean()`, `std()`, etc.).
-
-```{python}
-df
-```
 
 ```{python error=TRUE}
 df.groupby("student")
@@ -955,24 +979,24 @@ df.groupby("student")
 ::: {.column width='50%'}
 ```{python error=TRUE}
 df.groupby("student").groups
-df.groupby("student").mean()
+df.groupby("student").mean(numeric_only=True)
 ```
 :::
 
 ::: {.column width='50%'}
 ```{python error=TRUE}
 df.groupby("student", dropna=False).groups
-df.groupby("student", dropna=False).mean()
+df.groupby("student", dropna=False).mean(numeric_only=True)
 ```
 :::
 ::::
 
-## Selecting groups
+
+## Selecting groups {.smaller}
 
 ```{python}
 df
 ```
-
 
 ```{python error=TRUE}
 df.groupby("student").get_group(True)
@@ -982,30 +1006,21 @@ df.groupby("student").get_group(False)
 df.groupby("student", dropna=False).get_group(np.nan)
 ```
 
+
 ## Aggregation
 
-.small[
+::: {.small}
 ```{python}
 df = df.drop("date", axis=1)
 ```
 :::
-::::
 
-.small[
+::: {.small}
 ```{python}
 df.groupby("student").agg("mean")
 df.groupby("student").agg([np.mean, np.std])
 ```
 :::
-::::
-
---
-.small[
-```{python}
-df.groupby("student").agg([np.mean, np.std]).columns
-```
-:::
-::::
 
 ::: {.aside}
 More on multindexes and other aggregation/summary methods next time.
