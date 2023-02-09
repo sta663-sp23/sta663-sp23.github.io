@@ -99,7 +99,7 @@ schedule:
   day: 3
   lecture: "pandas"
   slides: Lec08
-  screencast: 
+  screencast: https://youtu.be/r_xjH2sr4SQ
   readings:
   - text: Python for Data Analysis (Early Release)
     link: https://wesmckinney.com/book/pandas-basics.html
@@ -108,7 +108,7 @@ schedule:
 - week: 4
   day: 5
   lecture: "More pandas"
-  slides: 
+  slides: Lec09
   screencast: 
   readings:
   - text: Reshaping
