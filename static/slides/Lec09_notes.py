@@ -3,7 +3,7 @@ import pandas as pd
 
 ## Exercise 1
 
-df = pd.read_csv("https://sta663-sp22.github.io/slides/data/us_rent.csv")
+df = pd.read_csv("https://sta663-sp23.github.io/slides/data/us_rent.csv")
 
 ( df
   .pivot(index="name", columns="variable", values="estimate")
