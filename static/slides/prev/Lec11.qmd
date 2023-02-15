@@ -546,7 +546,6 @@ with sns.axes_style("dark"):
   plt.show()
 ```
 :::
-:::: :::
 
 ::: {.column width='50%'} .small[
 ```{python out.width="45%"}
@@ -575,7 +574,6 @@ sinplot()
 plt.show()
 ```
 :::
-:::: :::
 
 ::: {.column width='50%'} .small[
 ```{python out.width="40%"}
@@ -634,7 +632,6 @@ show_palette("husl")
 show_palette("Set2")
 ```
 :::
-:::: :::
 
 ::: {.column width='50%'} .small[
 ```{python out.width="75%"}

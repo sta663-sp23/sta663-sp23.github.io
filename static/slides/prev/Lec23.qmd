@@ -259,7 +259,6 @@ X.shape
 X[0:3]
 ```
 :::
-:::: :::
 
 ::: {.column width='50%'} .small[ 
 ```{python}
@@ -632,7 +631,6 @@ $$\text{Sigmoid}(x) = \frac{1}{1+\exp(-x)}$$
 knitr::include_graphics("imgs/torch_Sigmoid.png")
 ```
 :::
-:::: :::
 
 ::: {.column width='50%'} .small[
 $$\text{ReLU}(x) = \max(0,x)$$

@@ -456,7 +456,6 @@ sns.lineplot(data=books, x="volume", y="weight_lm2_pred", hue="cover")
 plt.show()
 ```
 :::
-:::: :::
 
 ::: {.column width='50%'} .small[
 ```{python}

@@ -245,7 +245,6 @@ y_test.shape
 X_train
 ```
 :::
-:::: :::
 
 ::: {.column width='50%'} .small[
 ```{python}
@@ -490,7 +489,6 @@ plt.fill_between(
 plt.show()
 ```
 :::
-:::: :::
 
 ::: {.column width='50%'}
 ```{python ref.label="ridge_se", echo=FALSE}

@@ -168,7 +168,6 @@ dmatrix("x:y", demo_data("x","y","z"))
 dmatrix("x*y", demo_data("x","y","z"))
 ```
 :::
-:::: :::
 
 ::: {.column width='50%'}.small[ 
 ```{python}
@@ -188,7 +187,6 @@ dmatrix("x-1", demo_data("x","y","z"))
 dmatrix("-1 + x", demo_data("x","y","z"))
 ```
 :::
-:::: :::
 
 ::: {.column width='50%'}.small[ 
 ```{python}

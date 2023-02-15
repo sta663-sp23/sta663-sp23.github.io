@@ -130,7 +130,6 @@ VERSION_CODENAME=bionic
 UBUNTU_CODENAME=bionic
 ```
 :::
-:::: :::
 
 ::: {.column width='50%'} .fedora[
 ```
@@ -215,7 +214,6 @@ cr173@vcm-26406:~$ tree -d -L 1 /
 *└── var
 ```
 :::
-:::: :::
 
 ::: {.column width='50%'} .fedora[ 
 ```
@@ -284,7 +282,6 @@ cr173@algebra2 [~]$ tree -d -L 1 /
 └── tmp -> ../var/tmp
 ```
 :::
-:::: :::
 
 ::: {.column width='50%'} .fedora[
 ```

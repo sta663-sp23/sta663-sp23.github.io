@@ -319,7 +319,6 @@ df = pd.concat([
 ])
 ```
 :::
-:::: :::
 
 ::: {.column width='50%'}.small[
 ```{python}
@@ -378,7 +377,6 @@ f, grad, hess = mk_quad(0.7)
 optimize.minimize(fun = f, x0 = (1.6, 1.1), jac=grad, method="BFGS")
 ```
 :::
-:::: :::
 
 ::: {.column width='50%'} .small[
 ```{python}
@@ -428,7 +426,6 @@ df = pd.concat([
 ])
 ```
 :::
-:::: :::
 
 ::: {.column width='50%'} .small[
 ```{python}
@@ -691,7 +688,6 @@ optimize.minimize(f, np.ones(n), jac=grad, method="CG", tol=1e-10)
 optimize.minimize(f, np.ones(n), jac=grad, method="CG", tol=1e-8)
 ```
 :::
-:::: :::
 
 ::: {.column width='50%'} .small[
 ```{python}
