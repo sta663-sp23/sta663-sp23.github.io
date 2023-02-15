@@ -232,11 +232,17 @@ data = pd.DataFrame({
 })
 ```
 
+::: {.small}
+```{python}
+data
+```
+:::
+
+. . .
 
 :::: {.columns .small}
 ::: {.column width='50%'}
 ```{python}
-data
 data.set_index('a')
 data.set_index('c', drop=False)
 ```
@@ -388,8 +394,6 @@ pd.DataFrame(
 
 
 
-
-
 ## MultiIndex indexing
 
 ```{python include=FALSE}
@@ -406,12 +410,12 @@ data
 ```{python error=TRUE}
 data["A"]
 data["x"]
-data["m"]
 ```
 :::
 
 ::: {.column width='50%' .fragment}
 ```{python error=TRUE}
+data["m"]
 data["m","A"]
 data["A","x"]
 data["A"]["x"]
@@ -587,9 +591,11 @@ df_wide.columns
 
 ::: {.column width='50%' .fragment}
 ```{python}
-df_wide.reset_index(
-).rename_axis(
-  columns=None
+( df_wide
+  .reset_index()
+  .rename_axis(
+    columns=None
+  )
 )
 ```
 :::
@@ -759,9 +765,13 @@ readr::write_csv(us_rent, file = "data/us_rent.csv")
 Create a DataFrame from the data available at [https://sta663-sp23.github.io/slides/data/us_rent.csv](https://sta663-sp23.github.io/slides/data/us_rent.csv) using `pd.read_csv()`. 
 
 These data come from the 2017 American Community Survey and reflect the following values:
+
 * `name` - name of state
+
 * `variable` - Variable name: income = median yearly income, rent = median monthly rent
+
 * `estimate` - Estimated value
+
 * `moe` - 90% margin of error
 
 Using these data find the state(s) with the lowest income to rent ratio.
@@ -806,6 +816,7 @@ cereal.groupby("type")
 ## GroupBy attributes and methods
 
 :::: {.columns .small}
+::: {.column width='50%'}
 ```{python error=TRUE}
 cereal.groupby("type").groups
 cereal.groupby("type").mean(numeric_only=True)
@@ -931,15 +942,9 @@ Note that we have lost the non-numeric columns
 ```{python}
 ( cereal
   .groupby("mfr")
-  .transform(
-    lambda x: (x - np.mean(x))/np.std(x)
-  ) 
+  .transform( lambda x: (x - np.mean(x))/np.std(x) ) 
 )
 ```
-:::
-
-::: {.aside}
-Above we are standardizing each numerical column of each manufacturer 
 :::
 
 

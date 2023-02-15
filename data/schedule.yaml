@@ -109,7 +109,7 @@ schedule:
   day: 5
   lecture: "More pandas"
   slides: Lec09
-  screencast: 
+  screencast: https://youtu.be/V6Y44zrdfxU
   readings:
   - text: Reshaping
     link: https://pandas.pydata.org/docs/user_guide/reshaping.html
@@ -120,7 +120,7 @@ schedule:
 - week: 5
   day: 3
   lecture: "Visualization - pyplot & pandas"
-  slides: 
+  slides: Lec10
   screencast: 
   readings:
   - text: matplotlib tutorials
