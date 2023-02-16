@@ -288,7 +288,8 @@ df = pd.DataFrame({
 df
 ```
 
-```{python out.width="75%"}
+```{python}
+#| out-width: 75%
 g = sns.catplot(data=df.melt(), y="variable", x="value", aspect=2)
 g.ax.set_xlabel("Time (100 iter)")
 g.ax.set_ylabel("")

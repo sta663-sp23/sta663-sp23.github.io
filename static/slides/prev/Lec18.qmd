@@ -285,7 +285,8 @@ Patsy also has support for B-splines and other related models.
 
 :::: {.columns}
 ::: {.column width='50%'}
-```{python out.width="66%"}
+```{python}
+#| out-width: 66%
 d = pd.read_csv("data/d1.csv")
 
 sns.relplot(x="x", y="y", data=d)
@@ -302,7 +303,8 @@ X
 
 ## What is `bs(x)[i]`?
 
-```{python out.width="66%"}
+```{python}
+#| out-width: 66%
 bs_df = ( 
   dmatrix("bs(x, df=6)", data=d, return_type="dataframe")
   .drop(["Intercept"], axis = 1)
@@ -323,7 +325,8 @@ lm.coef_
 
 . . .
 
-```{python out.width="33%"}
+```{python}
+#| out-width: 33%
 plt.figure(layout="constrained")
 sns.lineplot(x=d["x"], y=lm.predict(X).ravel(), color="k")
 sns.scatterplot(x="x", y="y", data=d)
@@ -353,7 +356,8 @@ p = make_pipeline(
 
 
 .pull-right[
-```{python out.width="80%"}
+```{python}
+#| out-width: 80%
 plt.figure()
 sns.lineplot(x=d["x"], y=p.predict(d[["x"]]).ravel(), color="k")
 sns.scatterplot(x="x", y="y", data=d)
@@ -366,7 +370,8 @@ plt.show()
 
 For patsy the number of splines is determined by `df` while for sklearn this is determined by `n_knots + degree - 1`.
 
-```{python out.width="33%"}
+```{python}
+#| out-width: 33%
 p = p.set_params(splinetransformer__n_knots = 5).fit(d[["x"]], d["y"])
 
 plt.figure(layout="constrained")
@@ -377,7 +382,8 @@ plt.show()
 
 but that is not the whole story, if we examine the bases we also see they differ slightly between implementations:
 
-```{python out.width="55%"}
+```{python}
+#| out-width: 55%
 bs_df = pd.DataFrame(
   SplineTransformer(n_knots=6, degree=3, include_bias=True).fit_transform(d[["x"]]),
   columns = ["bs["+ str(i) +"]" for i in range(8)]
@@ -510,7 +516,8 @@ res.predict()
 :::: {.columns}
 ::: {.column width='50%'}
 *QQ Plot*
-```{python out.width="80%"}
+```{python}
+#| out-width: 80%
 plt.figure()
 sm.graphics.qqplot(res.resid, line="s")
 plt.show()
@@ -519,7 +526,8 @@ plt.show()
 
 ::: {.column width='50%'}
 *Leverage plot*
-```{python out.width="80%"}
+```{python}
+#| out-width: 80%
 plt.figure()
 sm.graphics.plot_leverage_resid2(res)
 plt.show()
@@ -543,7 +551,8 @@ print(res.summary())
 
 :::: {.columns}
 ::: {.column width='50%'}
-```{python out.width="80%"}
+```{python}
+#| out-width: 80%
 plt.figure()
 sm.graphics.qqplot(res.resid, line="s")
 plt.show()
@@ -551,7 +560,8 @@ plt.show()
 :::
 
 ::: {.column width='50%'}
-```{python out.width="80%"}
+```{python}
+#| out-width: 80%
 plt.figure()
 sm.graphics.plot_leverage_resid2(res)
 plt.show()

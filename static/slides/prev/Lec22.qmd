@@ -748,7 +748,8 @@ losses = training_loop(m, X, y, opt, n=3000)
 m.beta
 ```
 
-```{python out.width="50%"}
+```{python}
+#| out-width: 50%
 plt.figure(figsize=(8,6), layout="constrained")
 plt.plot(losses)
 plt.show()

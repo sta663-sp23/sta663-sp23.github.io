@@ -381,7 +381,8 @@ m = mnist_model(64, 10)
 l = m.fit(X_train, y_train, X_test, y_test)
 ```
 
-```{python out.width="45%"}
+```{python}
+#| out-width: 45%
 plt.figure(figsize=(8,6), layout="constrained")
 plt.plot(l)
 plt.show()
@@ -458,7 +459,8 @@ loss, train_acc, test_acc = mnist_model(64, 10).fit(X_train, y_train, X_test, y_
 ```
 
 
-```{python out.width="45%"}
+```{python}
+#| out-width: 45%
 plt.figure(figsize=(8,6), layout="constrained")
 plt.plot(train_acc, label="train accuracy")
 plt.plot(test_acc, label="test accuracy")

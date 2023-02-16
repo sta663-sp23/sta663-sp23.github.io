@@ -536,7 +536,8 @@ X_train, X_test, y_train, y_test = train_test_split(
 
 
 .small[
-```{python out.width="66%"}
+```{python}
+#| out-width: 66%
 coef_img = mc_log_cv.best_estimator_.coef_.reshape(10,8,8)
 
 fig, axes = plt.subplots(nrows=2, ncols=5, figsize=(10, 5), layout="constrained")

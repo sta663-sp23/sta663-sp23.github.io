@@ -274,7 +274,8 @@ res = pd.DataFrame(data = {"alpha": alpha, "train_rmse": train_rmse, "test_rmse"
 res
 ```
 
-```{python out.width="66%"}
+```{python}
+#| out-width: 66%
 g = sns.relplot(x="alpha", y="value", hue="variable", data = pd.melt(res, id_vars=["alpha"]))
 g.set(xscale="log")
 ```
@@ -386,7 +387,8 @@ res = pd.DataFrame(
 res
 ```
 
-```{python out.width="66%"}
+```{python}
+#| out-width: 66%
 g = sns.relplot(x="alpha", y="value", hue="variable", data=res.melt(id_vars=["alpha"]), marker="o", kind="line")
 g.set(xscale="log")
 ```
@@ -516,7 +518,8 @@ res = pd.DataFrame(
 res
 ```
 
-```{python out.width="66%"}
+```{python}
+#| out-width: 66%
 g = sns.relplot(
   data = res.melt(id_vars="alpha", value_name="coef values", var_name="feature"),
   x = "alpha", y = "coef values", hue = "feature",

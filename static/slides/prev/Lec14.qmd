@@ -140,7 +140,8 @@ books
 These data come from the `allbacks` data set from the `DAAG` package in R
 :::
 
-```{python out.width="50%"}
+```{python}
+#| out-width: 50%
 sns.relplot(data=books, x="volume", y="weight", hue="cover")
 ```
 
@@ -257,7 +258,8 @@ books["weight_lm_pred"] = lm.predict(X = books[["volume"]])
 books
 ```
 
-```{python out.width="50%"}
+```{python}
+#| out-width: 50%
 plt.figure()
 sns.scatterplot(data=books, x="volume", y="weight", hue="cover")
 sns.lineplot(data=books, x="volume", y="weight_lm_pred", color="green")
@@ -268,7 +270,8 @@ plt.show()
 
 There is no built in functionality for calculating residuals, so this needs to be done by hand.
 
-```{python out.width="40%"}
+```{python}
+#| out-width: 40%
 books["resid_lm_pred"] = books["weight"] - books["weight_lm_pred"]
 
 plt.figure(layout="constrained")
@@ -536,7 +539,8 @@ plm.coef_
 :::: :::
 
 ::: {.column width='50%' .fragment} .small[
-```{python out.width="66%"}
+```{python}
+#| out-width: 66%
 df["y_pred"] = plm.predict(X=X)
 plt.figure(layout="constrained")
 sns.scatterplot(data=df, x="x", y="y")
@@ -620,7 +624,8 @@ poly_model(X = df[["x"]], y = df.y, degree = 3)
 :::
 
 ::: {.column width='50%' .fragment}
-```{python out.width="66%"}
+```{python}
+#| out-width: 66%
 degrees = range(1,11)
 rmses = [poly_model(X=df[["x"]], y=df.y, degree=d) 
          for d in degrees]
@@ -678,7 +683,8 @@ p
 p.predict(X = df[["x"]])
 ```
 
-```{python out.width="40%"}
+```{python}
+#| out-width: 40%
 plt.figure(layout="constrained")
 sns.scatterplot(data=df, x="x", y="y")
 sns.lineplot(x=df.x, y=p.predict(X = df[["x"]]), color="k")

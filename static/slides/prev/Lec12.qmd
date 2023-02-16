@@ -145,14 +145,16 @@ grad = lambda x: 2*x
 
 :::: {.columns}
 ::: {.column width='50%'}
-```{python out.width="90%"}
+```{python}
+#| out-width: 90%
 opt = grad_desc_1d(-2., f, grad, step=0.25)
 plot_1d_traj( (-2, 2), f, opt )
 ```
 :::
 
 ::: {.column width='50%' .fragment}
-```{python out.width="90%"}
+```{python}
+#| out-width: 90%
 opt = grad_desc_1d(-2, f, grad, step=0.5)
 plot_1d_traj( (-2, 2), f, opt )
 ```
@@ -164,14 +166,16 @@ plot_1d_traj( (-2, 2), f, opt )
 
 :::: {.columns}
 ::: {.column width='50%'}
-```{python out.width="90%"}
+```{python}
+#| out-width: 90%
 opt = grad_desc_1d(-2, f, grad, step=0.9)
 plot_1d_traj( (-2,2), f, opt )
 ```
 :::
 
 ::: {.column width='50%' .fragment}
-```{python out.width="90%"}
+```{python}
+#| out-width: 90%
 opt = grad_desc_1d(-2, f, grad, step=1)
 plot_1d_traj( (-2,2), f, opt )
 ```
@@ -495,14 +499,16 @@ def plot_2d_traj(x, y, f, traj=None, title="", figsize=(5,5)):
 
 :::: {.columns}
 ::: {.column width='50%'}
-```{python out.width="100%"}
+```{python}
+#| out-width: 100%
 f, grad, hess = mk_quad(0.7)
 plot_2d_traj((-1,2), (-1,2), f, title="$\\epsilon=0.7$")
 ```
 :::
 
 ::: {.column width='50%'}
-```{python out.width="100%"}
+```{python}
+#| out-width: 100%
 f, grad, hess = mk_quad(0.02)
 plot_2d_traj((-1,2), (-1,2), f, title="$\\epsilon=0.02$")
 ```
@@ -549,7 +555,8 @@ def grad_desc_2d(x0, f, grad, step, tau=0.5, max_step=100, max_back=10, tol = 1e
 
 :::: {.columns}
 ::: {.column width='50%'}
-```{python out.width="95%"}
+```{python}
+#| out-width: 95%
 f, grad, hess = mk_quad(0.7)
 opt = grad_desc_2d((1.6, 1.1), f, grad, step=1)
 plot_2d_traj((-1,2), (-1,2), f, title="$\\epsilon=0.7$", traj=opt)
@@ -557,7 +564,8 @@ plot_2d_traj((-1,2), (-1,2), f, title="$\\epsilon=0.7$", traj=opt)
 :::
 
 ::: {.column width='50%'}
-```{python out.width="95%"}
+```{python}
+#| out-width: 95%
 f, grad, hess = mk_quad(0.7)
 opt = grad_desc_2d((1.6, 1.1), f, grad, step=2)
 plot_2d_traj((-1,2), (-1,2), f, title="$\\epsilon=0.7$", traj=opt)
@@ -569,7 +577,8 @@ plot_2d_traj((-1,2), (-1,2), f, title="$\\epsilon=0.7$", traj=opt)
 
 :::: {.columns}
 ::: {.column width='50%'}
-```{python out.width="95%"}
+```{python}
+#| out-width: 95%
 f, grad, hess = mk_quad(0.02)
 opt = grad_desc_2d((1.6, 1.1), f, grad, step=1)
 plot_2d_traj((-1,2), (-1,2), f, title="$\\epsilon=0.02$", traj=opt)
@@ -577,7 +586,8 @@ plot_2d_traj((-1,2), (-1,2), f, title="$\\epsilon=0.02$", traj=opt)
 :::
 
 ::: {.column width='50%'}
-```{python out.width="95%"}
+```{python}
+#| out-width: 95%
 f, grad, hess = mk_quad(0.02)
 opt = grad_desc_2d((1.6, 1.1), f, grad, step=2)
 plot_2d_traj((-1,2), (-1,2), f, title="$\\epsilon=0.02$", traj=opt)
@@ -589,7 +599,8 @@ plot_2d_traj((-1,2), (-1,2), f, title="$\\epsilon=0.02$", traj=opt)
 
 :::: {.columns}
 ::: {.column width='50%'}
-```{python out.width="95%"}
+```{python}
+#| out-width: 95%
 f, grad, hess = mk_rosenbrock()
 opt = grad_desc_2d((1.6, 1.1), f, grad, step=0.25)
 plot_2d_traj((-2,2), (-2,2), f, traj=opt)
@@ -597,7 +608,8 @@ plot_2d_traj((-2,2), (-2,2), f, traj=opt)
 :::
 
 ::: {.column width='50%'}
-```{python out.width="95%"}
+```{python}
+#| out-width: 95%
 f, grad, hess = mk_rosenbrock()
 opt = grad_desc_2d((-0.5, 0), f, grad, step=0.25)
 plot_2d_traj((-2,2), (-2,2), f, traj=opt)
@@ -695,7 +707,8 @@ Based on Chapter 5.1 from [Core Statistics](https://www.maths.ed.ac.uk/~swood34/
 
 :::: {.columns}
 ::: {.column width='50%'}
-```{python out.width="95%"}
+```{python}
+#| out-width: 95%
 f, grad, hess = mk_quad(0.7)
 opt = newtons_method((1.6, 1.1), f, grad, hess)
 plot_2d_traj((-1,2), (-1,2), f, traj=opt)
@@ -703,7 +716,8 @@ plot_2d_traj((-1,2), (-1,2), f, traj=opt)
 :::
 
 ::: {.column width='50%'}
-```{python out.width="95%"}
+```{python}
+#| out-width: 95%
 f, grad, hess = mk_quad(0.02)
 opt = newtons_method((1.6, 1.1), f, grad, hess)
 plot_2d_traj((-1,2), (-1,2), f, traj=opt)
@@ -715,7 +729,8 @@ plot_2d_traj((-1,2), (-1,2), f, traj=opt)
 
 :::: {.columns}
 ::: {.column width='50%'}
-```{python out.width="95%"}
+```{python}
+#| out-width: 95%
 f, grad, hess = mk_rosenbrock()
 opt = newtons_method((1.6, 1.1), f, grad, hess)
 plot_2d_traj((-2,2), (-2,2), f, traj=opt)
@@ -723,7 +738,8 @@ plot_2d_traj((-2,2), (-2,2), f, traj=opt)
 :::
 
 ::: {.column width='50%'}
-```{python out.width="95%"}
+```{python}
+#| out-width: 95%
 f, grad, hess = mk_rosenbrock()
 opt = newtons_method((-0.5, 0), f, grad, hess)
 plot_2d_traj((-2,2), (-2,2), f, traj=opt)
@@ -809,7 +825,8 @@ def conjugate_gradient(x0, f, grad, hess, max_iter=100, tol=1e-8):
 
 :::: {.columns}
 ::: {.column width='50%'}
-```{python out.width="95%"}
+```{python}
+#| out-width: 95%
 f, grad, hess = mk_quad(0.7)
 opt = conjugate_gradient((1.6, 1.1), f, grad, hess)
 plot_2d_traj((-1,2), (-1,2), f, title="$\\epsilon=0.7$", traj=opt)
@@ -817,7 +834,8 @@ plot_2d_traj((-1,2), (-1,2), f, title="$\\epsilon=0.7$", traj=opt)
 :::
 
 ::: {.column width='50%'}
-```{python out.width="95%"}
+```{python}
+#| out-width: 95%
 f, grad, hess = mk_quad(0.02)
 opt = conjugate_gradient((1.6, 1.1), f, grad, hess)
 plot_2d_traj((-1,2), (-1,2), f, title="$\\epsilon=0.02$", traj=opt)
@@ -829,7 +847,8 @@ plot_2d_traj((-1,2), (-1,2), f, title="$\\epsilon=0.02$", traj=opt)
 
 :::: {.columns}
 ::: {.column width='50%'}
-```{python out.width="95%"}
+```{python}
+#| out-width: 95%
 f, grad, hess = mk_rosenbrock()
 opt = conjugate_gradient((1.6, 1.1), f, grad, hess)
 plot_2d_traj((-2,2), (-2,2), f, traj=opt)
@@ -837,7 +856,8 @@ plot_2d_traj((-2,2), (-2,2), f, traj=opt)
 :::
 
 ::: {.column width='50%'}
-```{python out.width="95%"}
+```{python}
+#| out-width: 95%
 f, grad, hess = mk_rosenbrock()
 opt = conjugate_gradient((-0.5, 0), f, grad, hess)
 plot_2d_traj((-2,2), (-2,2), f, traj=opt)
@@ -891,7 +911,8 @@ def conjugate_gradient_scipy(x0, f, grad, tol=1e-8):
 
 :::: {.columns}
 ::: {.column width='50%'}
-```{python out.width="95%"}
+```{python}
+#| out-width: 95%
 f, grad, hess = mk_quad(0.7)
 opt = conjugate_gradient_scipy((1.6, 1.1), f, grad)
 plot_2d_traj((-1,2), (-1,2), f, title="$\\epsilon=0.7$", traj=opt)
@@ -899,7 +920,8 @@ plot_2d_traj((-1,2), (-1,2), f, title="$\\epsilon=0.7$", traj=opt)
 :::
 
 ::: {.column width='50%'}
-```{python out.width="95%"}
+```{python}
+#| out-width: 95%
 f, grad, hess = mk_quad(0.02)
 opt = conjugate_gradient_scipy((1.6, 1.1), f, grad)
 plot_2d_traj((-1,2), (-1,2), f, title="$\\epsilon=0.02$", traj=opt)
@@ -911,7 +933,8 @@ plot_2d_traj((-1,2), (-1,2), f, title="$\\epsilon=0.02$", traj=opt)
 
 :::: {.columns}
 ::: {.column width='50%'}
-```{python out.width="95%"}
+```{python}
+#| out-width: 95%
 f, grad, hess = mk_rosenbrock()
 opt = conjugate_gradient_scipy((1.6, 1.1), f, grad)
 plot_2d_traj((-2,2), (-2,2), f, traj=opt)
@@ -919,7 +942,8 @@ plot_2d_traj((-2,2), (-2,2), f, traj=opt)
 :::
 
 ::: {.column width='50%'}
-```{python out.width="95%"}
+```{python}
+#| out-width: 95%
 f, grad, hess = mk_rosenbrock()
 opt = conjugate_gradient_scipy((-0.5, 0), f, grad)
 plot_2d_traj((-2,2), (-2,2), f, traj=opt)
@@ -959,7 +983,8 @@ def newton_cg(x0, f, grad, hess=None, tol=1e-8):
 
 :::: {.columns}
 ::: {.column width='50%'}
-```{python out.width="95%"}
+```{python}
+#| out-width: 95%
 f, grad, hess = mk_quad(0.7)
 opt = newton_cg((1.6, 1.1), f, grad)
 plot_2d_traj((-1,2), (-1,2), f, traj=opt, title="w/o hessian")
@@ -967,7 +992,8 @@ plot_2d_traj((-1,2), (-1,2), f, traj=opt, title="w/o hessian")
 :::
 
 ::: {.column width='50%'}
-```{python out.width="95%"}
+```{python}
+#| out-width: 95%
 f, grad, hess = mk_quad(0.7)
 opt = newton_cg((1.6, 1.1), f, grad, hess)
 plot_2d_traj((-1,2), (-1,2), f, traj=opt, title="w/ hessian")
@@ -979,7 +1005,8 @@ plot_2d_traj((-1,2), (-1,2), f, traj=opt, title="w/ hessian")
 
 :::: {.columns}
 ::: {.column width='50%'}
-```{python out.width="95%"}
+```{python}
+#| out-width: 95%
 f, grad, hess = mk_quad(0.02)
 opt = newton_cg((1.6, 1.1), f, grad)
 plot_2d_traj((-1,2), (-1,2), f, traj=opt, title="w/o hessian")
@@ -987,7 +1014,8 @@ plot_2d_traj((-1,2), (-1,2), f, traj=opt, title="w/o hessian")
 :::
 
 ::: {.column width='50%'}
-```{python out.width="95%"}
+```{python}
+#| out-width: 95%
 f, grad, hess = mk_quad(0.02)
 opt = newton_cg((1.6, 1.1), f, grad, hess)
 plot_2d_traj((-1,2), (-1,2), f, traj=opt, title="w/ hessian")
@@ -999,7 +1027,8 @@ plot_2d_traj((-1,2), (-1,2), f, traj=opt, title="w/ hessian")
 
 :::: {.columns}
 ::: {.column width='50%'}
-```{python out.width="95%"}
+```{python}
+#| out-width: 95%
 f, grad, hess = mk_rosenbrock()
 opt = newton_cg((1.6, 1.1), f, grad)
 plot_2d_traj((-2,2), (-2,2), f, traj=opt, title="w/o hessian")
@@ -1007,7 +1036,8 @@ plot_2d_traj((-2,2), (-2,2), f, traj=opt, title="w/o hessian")
 :::
 
 ::: {.column width='50%'}
-```{python out.width="95%"}
+```{python}
+#| out-width: 95%
 f, grad, hess = mk_rosenbrock()
 opt = newton_cg((1.6, 1.1), f, grad, hess)
 plot_2d_traj((-2,2), (-2,2), f, traj=opt, title="w/ hessian")
@@ -1046,7 +1076,8 @@ def bfgs(x0, f, grad, hess=None, tol=1e-8):
 
 :::: {.columns}
 ::: {.column width='50%'}
-```{python out.width="95%"}
+```{python}
+#| out-width: 95%
 f, grad, hess = mk_quad(0.7)
 opt = bfgs((1.6, 1.1), f, grad)
 plot_2d_traj((-1,2), (-1,2), f, traj=opt)
@@ -1054,7 +1085,8 @@ plot_2d_traj((-1,2), (-1,2), f, traj=opt)
 :::
 
 ::: {.column width='50%'}
-```{python out.width="95%"}
+```{python}
+#| out-width: 95%
 f, grad, hess = mk_quad(0.02)
 opt = bfgs((1.6, 1.1), f, grad)
 plot_2d_traj((-1,2), (-1,2), f, traj=opt)
@@ -1066,7 +1098,8 @@ plot_2d_traj((-1,2), (-1,2), f, traj=opt)
 
 :::: {.columns}
 ::: {.column width='50%'}
-```{python out.width="95%"}
+```{python}
+#| out-width: 95%
 f, grad, hess = mk_rosenbrock()
 opt = bfgs((1.6, 1.1), f, grad)
 plot_2d_traj((-2,2), (-2,2), f, traj=opt)
@@ -1074,7 +1107,8 @@ plot_2d_traj((-2,2), (-2,2), f, traj=opt)
 :::
 
 ::: {.column width='50%'}
-```{python out.width="95%"}
+```{python}
+#| out-width: 95%
 f, grad, hess = mk_rosenbrock()
 opt = bfgs((-0.5, 0), f, grad)
 plot_2d_traj((-2,2), (-2,2), f, traj=opt)
@@ -1127,7 +1161,8 @@ From https://github.com/greg-rychlewski/nelder-mead
 
 :::: {.columns}
 ::: {.column width='50%'}
-```{python out.width="95%"}
+```{python}
+#| out-width: 95%
 f, grad, hess = mk_quad(0.7)
 opt = nelder_mead((1.6, 1.1), f, grad)
 plot_2d_traj((-1,2), (-1,2), f, traj=opt)
@@ -1135,7 +1170,8 @@ plot_2d_traj((-1,2), (-1,2), f, traj=opt)
 :::
 
 ::: {.column width='50%'}
-```{python out.width="95%"}
+```{python}
+#| out-width: 95%
 f, grad, hess = mk_quad(0.02)
 opt = nelder_mead((1.6, 1.1), f, grad)
 plot_2d_traj((-1,2), (-1,2), f, traj=opt)
@@ -1147,7 +1183,8 @@ plot_2d_traj((-1,2), (-1,2), f, traj=opt)
 
 :::: {.columns}
 ::: {.column width='50%'}
-```{python out.width="95%"}
+```{python}
+#| out-width: 95%
 f, grad, hess = mk_rosenbrock()
 opt = nelder_mead((1.6, 1.1), f, grad)
 plot_2d_traj((-2,2), (-2,2), f, traj=opt)
@@ -1155,7 +1192,8 @@ plot_2d_traj((-2,2), (-2,2), f, traj=opt)
 :::
 
 ::: {.column width='50%'}
-```{python out.width="95%"}
+```{python}
+#| out-width: 95%
 f, grad, hess = mk_rosenbrock()
 opt = nelder_mead((-0.5, 0), f, grad)
 plot_2d_traj((-2,2), (-2,2), f, traj=opt)
