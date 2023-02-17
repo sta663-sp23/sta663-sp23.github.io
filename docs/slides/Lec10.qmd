@@ -677,7 +677,8 @@ df.set_index("x").plot.barh(
 
 :::: {.columns .small}
 ::: {.column width='50%'}
-```{python out.width="66%"}
+```{python}
+#| out-width: 66%
 df = pd.DataFrame({
   "x1": np.random.normal(size=100),
   "x2": np.random.normal(1,1.5, size=100),
@@ -689,12 +690,14 @@ df.plot.hist(figsize=(5,3), alpha=0.5, bins=15)
 :::
 
 ::: {.column width='50%'}
-```{python out.width="66%"}
+```{python}
+#| out-width: 66%
 df_wide = df.melt()
 df_wide.plot.hist(figsize=(5,3), alpha=0.5, bins=15)
 ```
 
-```{python out.width="66%"}
+```{python}
+#| out-width: 66%
 df_wide.set_index("variable").plot.hist(
   figsize=(5,3), alpha=0.5, bins=15
 )
@@ -712,7 +715,8 @@ df_wide
 :::
 
 ::: {.column width='50%'}
-```{python out.width="66%"}
+```{python}
+#| out-width: 66%
 plt.figure(figsize=(5,5))
 
 h = ( df_wide

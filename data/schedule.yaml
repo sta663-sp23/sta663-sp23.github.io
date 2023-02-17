@@ -121,7 +121,7 @@ schedule:
   day: 3
   lecture: "Visualization - pyplot & pandas"
   slides: Lec10
-  screencast: 
+  screencast: https://youtu.be/3MUrxCe9IKY
   readings:
   - text: matplotlib tutorials
     link: https://matplotlib.org/stable/tutorials/index
@@ -133,7 +133,7 @@ schedule:
 - week: 5
   day: 5
   lecture: "Visualization - seaborn"
-  slides: 
+  slides: Lec11
   screencast: 
   readings:
   - text: seaborn user guide
