@@ -113,6 +113,8 @@ def plot_1d_traj(x, f, traj, title="", figsize=(5,3)):
   plt.plot(x_ext, f(x_ext), "-k")
 
   plt.plot(traj[0], traj[1], ".-b", ms = 10)
+  plt.plot(traj[0][0], traj[1][0], ".r", ms = 15)
+  plt.plot(traj[0][-1], traj[1][-1], ".c", ms = 15)
 
   plt.xlim(xlim)
   plt.ylim(ylim)
@@ -165,6 +167,8 @@ plot_1d_traj( (-2, 2), f, opt )
 
 ## Where can it go wrong?
 
+If you pick a bad step size then bad things can happen,
+
 :::: {.columns .small}
 ::: {.column width='50%'}
 ```{python}
@@ -186,6 +190,8 @@ plot_1d_traj( (-2,2), f, opt )
 
 
 ## Local minima of a quartic
+
+Since the function is no longer convex - both starting point and step size matter.
 
 :::: {.columns .small}
 ::: {.column width='50%'}
@@ -253,14 +259,14 @@ If the step size is too large it is possible for the algorithm to
 
 ```{python out.width="90%", error=TRUE}
 opt = grad_desc_1d(-1.5, f, grad, step=0.75)
-plot_1d_traj( (-1.5, 1.5), f, opt )
+plot_1d_traj( (-2, 2), f, opt )
 ```
 :::
 
 ::: {.column width='50%' .fragment}
 ```{python out.width="90%", error=TRUE}
 opt = grad_desc_1d(1.5, f, grad, step=0.25)
-plot_1d_traj( (-1.5, 1.5), f, opt)
+plot_1d_traj( (-2, 2), f, opt)
 ```
 :::
 ::::
@@ -288,8 +294,11 @@ inefficiency of small step size.
 
 ::: {.column width='50%' .fragment}
 ```{python}
-#| code-line-numbers: 9-14
-def grad_desc_1d_bt(x, f, grad, step, tau=0.5, max_step=100, max_back=10, tol = 1e-6):
+#| code-line-numbers: 1,9-14
+def grad_desc_1d_bt(
+  x, f, grad, step, tau=0.5, 
+  max_step=100, max_back=10, tol = 1e-6
+):
   all_x_i = [x]
   all_f_i = [f(x)]
   
@@ -324,7 +333,7 @@ def grad_desc_1d_bt(x, f, grad, step, tau=0.5, max_step=100, max_back=10, tol = 
 ::::
 
 ::: {.aside}
-This is a simplified (hand wavy) version of the [Armijo-Goldstein condition](https://en.wikipedia.org/wiki/Backtracking_line_search)
+This is a simplified (hand wavy) version of the [Armijo-Goldstein condition](https://en.wikipedia.org/wiki/Backtracking_line_search) <br/>
 Check $f(x_k-\alpha \nabla f(x_k)) \leq f(x_k) - c \alpha (\nabla f(x_k))^2$.
 :::
 
@@ -489,6 +498,8 @@ def plot_2d_traj(x, y, f, traj=None, title="", figsize=(5,5)):
   
   if not traj is None:
     plt.plot(traj[0], traj[1], ".-b", ms = 10)
+    plt.plot(traj[0][0], traj[1][0], ".r", ms = 15)
+    plt.plot(traj[0][-1], traj[1][-1], ".c", ms = 15)
   
   if not title == "":
     plt.title(title)
@@ -682,6 +693,7 @@ $$
 
 ::: {.small}
 ```{python}
+#| code-line-numbers: 1,9-19
 def newtons_method(x0, f, grad, hess, max_iter=100, max_back=10, tol=1e-8):
     all_x_i = [x0[0]]
     all_y_i = [x0[1]]
@@ -810,6 +822,7 @@ $$
 
 ::: {.column width='50%'}
 ```{python}
+#| code-line-numbers: 1-2,11-18
 def conjugate_gradient(x0, f, grad, hess, 
                        max_iter=100, tol=1e-8):
     all_x_i = [x0[0]]
@@ -912,6 +925,7 @@ $$
 
 ::: {.column width='50%'}
 ```{python}
+#| code-line-numbers: 1,6-15
 def conjugate_gradient_scipy(x0, f, grad, tol=1e-8):
     all_x_i = [x0[0]]
     all_y_i = [x0[1]]
@@ -982,7 +996,7 @@ plot_2d_traj((-2,2), (-2,2), f, traj=opt)
 
 ## Method: Newton-CG
 
-Is a variant of Newtons method but does not require inverting the Hessian, or even a Hessian function - in which case it can be estimated by finite differencing of the gradient.
+Is a variant of Newtons method but does not require inverting the Hessian, or even a Hessian function (for the latter case it is estimated by finite differencing of the gradient)
 
 :::: {.columns .small}
 ::: {.column width='50%'}
@@ -1085,6 +1099,7 @@ The Broyden-Fletcher-Goldfarb-Shanno (BFGS) algorithm is a quasi-newton which it
 :::: {.columns .small}
 ::: {.column width='50%'}
 ```{python}
+#| code-line-numbers: 1,12-15
 def bfgs(x0, f, grad, hess=None, tol=1e-8):
     all_x_i = [x0[0]]
     all_y_i = [x0[1]]
@@ -1160,6 +1175,7 @@ This is a gradient free method that uses a series of simplexes which are used to
 :::: {.columns .small}
 ::: {.column width='50%'}
 ```{python}
+#| code-line-numbers: 1,12-15
 def nelder_mead(x0, f, grad, hess=None, tol=1e-8):
     all_x_i = [x0[0]]
     all_y_i = [x0[1]]
