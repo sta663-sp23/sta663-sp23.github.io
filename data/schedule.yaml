@@ -134,7 +134,7 @@ schedule:
   day: 5
   lecture: "Visualization - seaborn"
   slides: Lec11
-  screencast: 
+  screencast: https://youtu.be/4yaW9Ut2q9Y
   readings:
   - text: seaborn user guide
     link: https://seaborn.pydata.org/tutorial.html
@@ -145,7 +145,7 @@ schedule:
 - week: 6
   day: 3
   lecture: "Numerical optimization"
-  slides: 
+  slides: Lec12
   screencast: 
   readings:
   - text: scipy optimization lecture
