@@ -1003,9 +1003,9 @@ x.round(2)
 
 ::: {.column width='50%' .fragment}
 ```{python}
-mle_norm = lambda θ: -np.sum(np.log(
-  norm.pdf(x, loc=θ[0], scale=θ[1])
-))
+mle_norm = lambda θ: -np.sum(
+  norm.logpdf(x, loc=θ[0], scale=θ[1])
+)
 
 mle_norm([0,1])
 mle_norm([-3, 1])
@@ -1030,7 +1030,7 @@ def mle_norm2(θ):
   if θ[1] <= 0:
     return np.Inf
   else:
-    return -np.sum(np.log(norm.pdf(x, loc=θ[0], scale=θ[1])))
+    return -np.sum(norm.logpdf(x, loc=θ[0], scale=θ[1]))
 ```
 :::
 
