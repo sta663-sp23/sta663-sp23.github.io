@@ -81,7 +81,7 @@ blockquote {
   padding-bottom: 0 !important;
 }
 
-.reveal pre.sourceCode code {
+.reveal pre.sourceCode code, .reveal pre code  {
   max-height: 550px;
 }
 
