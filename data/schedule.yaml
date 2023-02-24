@@ -154,7 +154,7 @@ schedule:
 
 - week: 6
   day: 5
-  lecture: "Numerical optimization - benchmarks"
+  lecture: "Numerical optimization (cont.)"
   slides: Lec13
   screencast: 
   readings:
