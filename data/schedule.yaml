@@ -156,7 +156,7 @@ schedule:
   day: 5
   lecture: "Numerical optimization (cont.)"
   slides: Lec13
-  screencast: 
+  screencast: https://youtu.be/aHAbalx3DF4
   readings:
   - text: scipy optimization lecture examples
     link: https://github.com/scipy-lectures/scipy-lecture-notes/tree/master/advanced/mathematical_optimization/examples
@@ -166,7 +166,7 @@ schedule:
 - week: 7
   day: 3
   lecture: "scikit-learn"
-  slides: 
+  slides: Lec14
   screencast: 
   readings:
   - text: scikit-learn user guide

@@ -13,12 +13,6 @@ execute:
   echo: true
 ---
 
-```{css}
-.reveal code {
-  white-space: pre;
-}
-```
-
 ```{python setup}
 #| include: false
 import numpy as np

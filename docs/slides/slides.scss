@@ -57,8 +57,13 @@ details>summary {
   font-size: 0.75em;
 }
 
+.tiny {
+  font-size: 0.5em;
+}
+
 .reveal code {
   font-size: 0.8em;
+  white-space: pre;
 }
 
 .reveal .cell {
