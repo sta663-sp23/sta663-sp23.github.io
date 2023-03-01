@@ -584,6 +584,16 @@ Create and fit a model for the `books` data that includes an interaction effect 
 
 You will need to do this manually with `pd.getdummies()` and some additional data munging.
 
+The data can be read into pandas with,
+```{python}
+#| eval: false
+books = pd.read_csv(
+  "https://sta663-sp23.github.io/slides/data/daag_books.csv"
+)
+```
+
+
+
 # Other transformers
 
 ## Polynomial regression
