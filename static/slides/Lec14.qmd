@@ -13,10 +13,6 @@ execute:
   echo: true
 ---
 
-```{css echo=FALSE}
-
-```
-
 ```{python setup}
 #| include: false
 import numpy as np
@@ -57,9 +53,9 @@ local({
 ## scikit-learn
 
 > Scikit-learn is an open source machine learning library that supports supervised and unsupervised learning. It also provides various tools for model fitting, data preprocessing, model selection, model evaluation, and many other utilities.
-
-&nbsp;
-
+>
+> <br/>
+>
 > * Simple and efficient tools for predictive data analysis
 > * Accessible to everybody, and reusable in various contexts
 > * Built on NumPy, SciPy, and matplotlib
@@ -67,7 +63,7 @@ local({
 
 
 ::: {.aside}
-This is one of several other "scikits" (e.g. scikit-image) which are scientific toolboxes built on top of scipy.
+This is one of several other "scikits" (e.g. scikit-image) which are scientific toolboxes built on top of scipy. For a more complete list see [here](https://pypi.org/search/?q=scikit).
 :::
 
 ## Submodules
@@ -197,7 +193,7 @@ lm.intercept_
 
 ## A couple of considerations
 
-When fitting a model, scikit-learn expects `X` to be a 2d array-like object (e.g. a `np.array` or `pd.DataFrame`) but will not accept a `pd.Series` or 1d `np.array`.
+When fitting a model, scikit-learn expects `X` to be a 2d array-like object (e.g. a `np.array` or `pd.DataFrame`) and so it will not accept a `pd.Series` or 1d `np.array`.
 
 :::: {.columns .small}
 ::: {.column width='50%'}
@@ -303,7 +299,7 @@ There is no built in functionality for calculating residuals, so this needs to b
 
 ::: {.small}
 ```{python}
-#| out-width: 40%
+#| out-width: 66%
 books["resid_lm_pred"] = books["weight"] - books["weight_lm_pred"]
 
 plt.figure(layout="constrained")
@@ -391,7 +387,10 @@ lm.feature_names_in_
 ```{python}
 lm = LinearRegression(
 ).fit(
-  X = pd.get_dummies(books[["volume", "cover"]], drop_first=True),
+  X = pd.get_dummies(
+    books[["volume", "cover"]], 
+    drop_first=True
+  ),
   y = books.weight
 )
 
@@ -431,7 +430,7 @@ enc.transform(X = books[["cover"]])
 ```
 :::
 
-::: {.column width='50%'}
+::: {.column width='50%' .fragment}
 ```{python}
 enc = OneHotEncoder(sparse_output=False, drop="first")
 enc.fit_transform(X = books[["cover"]])
@@ -456,7 +455,7 @@ f
 ```
 :::
 
-::: {.column width='50%'}
+::: {.column width='50%' .fragment}
 ```{python}
 enc.inverse_transform(f)
 ```
@@ -472,14 +471,8 @@ Unlike `pd.get_dummies()` it is not safe to use `OneHotEncoder` with both numeri
 ::: {.small}
 ```{python}
 enc = OneHotEncoder(sparse_output=False)
-X = enc.fit_transform(
-  X = books[["volume", "cover"]]
-)
-
-pd.DataFrame(
-  data=X,
-  columns = enc.get_feature_names_out()
-)
+X = enc.fit_transform(X = books[["volume", "cover"]])
+pd.DataFrame(data=X, columns = enc.get_feature_names_out())
 ```
 :::
 
