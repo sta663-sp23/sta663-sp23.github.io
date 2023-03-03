@@ -1,0 +1,839 @@
+---
+title: "scikit-learn<br/>Cross-validation"
+subtitle: "Lecture 15"
+author: "Dr. Colin Rundel"
+footer: "Sta 663 - Spring 2023"
+format:
+  revealjs:
+    theme: slides.scss
+    transition: fade
+    slide-number: true
+    self-contained: true
+execute: 
+  echo: true
+---
+
+```{python setup}
+#| include: false
+import numpy as np
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+
+import sklearn
+sklearn.set_config(display="text")
+
+
+plt.rcParams['figure.dpi'] = 200
+
+np.set_printoptions(
+  edgeitems=30, linewidth=200,
+  precision = 5, suppress=True
+  #formatter=dict(float=lambda x: "%.5g" % x)
+)
+
+books = pd.read_csv("data/daag_books.csv")
+
+
+from sklearn.metrics import mean_squared_error
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn.linear_model import LinearRegression
+```
+
+```{r r_setup}
+#| include: false
+knitr::opts_chunk$set(
+  fig.align="center",
+  cache=FALSE
+)
+
+local({
+  hook_err_old <- knitr::knit_hooks$get("error")  # save the old hook
+  knitr::knit_hooks$set(error = function(x, options) {
+    # now do whatever you want to do with x, and pass
+    # the new x to the old hook
+    x = sub("## \n## Detailed traceback:\n.*$", "", x)
+    x = sub("Error in py_call_impl\\(.*?\\)\\: ", "", x)
+    hook_err_old(x, options)
+  })
+  
+  hook_warn_old <- knitr::knit_hooks$get("warning")  # save the old hook
+  knitr::knit_hooks$set(warning = function(x, options) {
+    x = sub("<string>:1: ", "", x)
+    hook_warn_old(x, options)
+  })
+})
+```
+
+# Pipelines
+
+## From last time
+
+We will now look at another flavor of regression model, that involves preprocessing and a hyperparameter - namely polynomial regression.
+
+```{python}
+df = pd.read_csv("data/gp.csv")
+sns.relplot(data=df, x="x", y="y")
+```
+
+## Pipelines
+
+You may have noticed that `PolynomialFeatures` takes a model matrix as input and returns a new model matrix as output which is then used as the input for `LinearRegression`. This is not an accident, and by structuring the library in this way sklearn is designed to enable the connection of these steps together, into what sklearn calls a *pipeline*.
+
+::: {.small}
+```{python}
+from sklearn.pipeline import make_pipeline
+
+p = make_pipeline(
+  PolynomialFeatures(degree=4),
+  LinearRegression()
+)
+p
+```
+:::
+
+
+## Using Pipelines
+
+Once constructed, this object can be used just like our previous `LinearRegression` model (i.e. fit to our data and then used for prediction)
+
+::: {.small}
+```{python}
+p = p.fit(X = df[["x"]], y = df.y)
+p.predict(X = df[["x"]])
+```
+:::
+
+##
+
+::: {.small}
+```{python}
+plt.figure(layout="constrained")
+sns.scatterplot(data=df, x="x", y="y")
+sns.lineplot(x=df.x, y=p.predict(X = df[["x"]]), color="k")
+plt.show()
+```
+:::
+
+
+## Model coefficients (or other attributes)
+
+The attributes of pipeline steps are not directly accessible, but can be accessed via the `steps` or `named_steps` attributes,
+
+::: {.small}
+```{python, error=TRUE}
+p.coef_
+```
+:::
+
+. . .
+
+::: {.small}
+```{python}
+p.steps
+p.steps[1][1].coef_
+p.named_steps["linearregression"].intercept_
+```
+:::
+
+## Other useful bits
+
+::: {.small}
+```{python}
+p.steps[0][1].get_feature_names_out()
+p.steps[1][1].get_params()
+```
+:::
+
+
+
+Anyone notice a problem?
+
+. . .
+
+::: {.small}
+```{python}
+p.steps[1][1].rank_
+p.steps[1][1].n_features_in_
+```
+:::
+
+
+
+
+## What about step parameters?
+
+By accessing each step we can adjust their parameters (via `set_params()`),
+
+::: {.small}
+```{python}
+p.named_steps["linearregression"].get_params()
+```
+:::
+
+. . .
+
+::: {.small}
+```{python}
+p.named_steps["linearregression"].set_params(
+  fit_intercept=False
+)
+
+p.fit(X = df[["x"]], y = df.y)
+```
+:::
+
+. . .
+
+::: {.small}
+```{python}
+p.named_steps["linearregression"].intercept_
+p.named_steps["linearregression"].coef_
+```
+:::
+
+
+## Pipeline parameter names
+
+These parameters can also be directly accessed at the pipeline level, names are constructed as step name + `__` + parameter name:
+
+::: {.small}
+```{python}
+p.get_params()
+p.set_params(
+  linearregression__fit_intercept=True, 
+  polynomialfeatures__include_bias=False
+)
+```
+:::
+
+##
+
+::: {.small}
+```{python}
+p.fit(X = df[["x"]], y = df.y)
+p.named_steps["polynomialfeatures"].get_feature_names_out()
+p.named_steps["linearregression"].intercept_
+p.named_steps["linearregression"].coef_
+```
+:::
+
+
+## Tuning parameters
+
+We've already seen a manual approach to tuning models over the degree parameter, scikit-learn also has built in tools to aide with this process. Here we will leverage `GridSearchCV` to tune the degree parameter in our pipeline.
+
+
+::: {.small}
+```{python}
+from sklearn.model_selection import GridSearchCV, KFold
+
+p = make_pipeline(
+    PolynomialFeatures(include_bias=True),
+    LinearRegression(fit_intercept=False)
+)
+
+grid_search = GridSearchCV(
+  estimator = p, 
+  param_grid = {"polynomialfeatures__degree": range(1,10)},
+  scoring = "neg_root_mean_squared_error",
+  cv = KFold(shuffle=True)
+)
+```
+:::
+
+::: {.aside}
+More details on this in a bit
+:::
+
+
+## Preview - Performing a grid search
+
+::: {.small}
+```{python}
+grid_search.fit(X = df[["x"]], y = df.y)
+```
+:::
+
+. . .
+
+::: {.small}
+```{python}
+grid_search.best_index_
+grid_search.best_params_
+grid_search.best_score_
+```
+:::
+
+
+# Column Transformers
+
+## Column Transformers
+
+Are a tool for selectively applying transformer(s) to column(s) of an array or DataFrame, they function in a way that is similar to a pipeline and similarly have a `make` helper function `make_column_transformer()`.
+
+::: {.small}
+```{python}
+from sklearn.compose import make_column_transformer
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+```
+:::
+
+:::: {.columns .small}
+::: {.column width='50%'}
+```{python}
+ct = make_column_transformer(
+  (StandardScaler(), ["volume"]),
+  (OneHotEncoder(), ["cover"]),
+).fit(
+  books
+)
+```
+:::
+
+::: {.column width='50%'}
+```{python}
+ct.get_feature_names_out()
+ct.transform(books)
+```
+:::
+::::
+
+
+## Keeping or dropping other columns
+
+One addition important argument is `remainder` which determines what happens to unspecified columns. The default is `"drop"` which is why `weight` was removed, the alternative is `"passthrough"` which retains untransformed columns.
+
+:::: {.columns .small}
+::: {.column width='50%'}
+```{python}
+ct = make_column_transformer(
+  (StandardScaler(), ["volume"]),
+  (OneHotEncoder(), ["cover"]),
+  remainder = "passthrough"
+).fit(
+  books
+)
+```
+:::
+
+::: {.column width='50%'}
+```{python}
+ct.get_feature_names_out()
+ct.transform(books)
+```
+:::
+::::
+
+
+## Column selection
+
+One lingering issue with the above approach is that we've had to hard code the column names (or indexes). Often we want to select columns based on their dtype (e.g. categorical vs numerical) this can be done via pandas or sklearn,
+
+::: {.small}
+```{python}
+from sklearn.compose import make_column_selector
+```
+:::
+
+:::: {.columns .small}
+::: {.column width='50%'}
+```{python}
+ct = make_column_transformer(
+  ( StandardScaler(), 
+    make_column_selector(dtype_include=np.number)),
+  ( OneHotEncoder(), 
+    make_column_selector(dtype_include=[object, bool]))
+)
+
+ct.fit_transform(books)
+```
+:::
+
+::: {.column width='50%'}
+```{python}
+ct = make_column_transformer(
+  ( StandardScaler(), 
+    books.select_dtypes(include=['number']).columns ),
+  ( OneHotEncoder(), 
+    books.select_dtypes(include=['object']).columns )
+)
+
+ct.fit_transform(books)
+```
+:::
+::::
+
+::: {.aside}
+`make_column_selector()` also supports selecting via `pattern` or excluding via `dtype_exclude`
+:::
+
+##
+
+:::: {.columns .small}
+::: {.column width='50%'}
+```{python}
+ct.fit_transform(books)
+ct.get_feature_names_out()
+```
+:::
+
+::: {.column width='50%'}
+```{python}
+ct.fit_transform(books)
+ct.get_feature_names_out()
+```
+:::
+::::
+
+
+# Demo 1 - Putting it together <br/> Interaction model
+
+
+# Cross validation &<br/>hyper parameter tuning
+
+## Ridge regression
+
+One way to expand on the idea of least squares regression is to modify the loss function. One such approach is known as Ridge regression, which adds a scaled penalty for the sum of the squares of the $\betas$ to the least squares loss. 
+
+$$ \underset{\boldsymbol{\beta}}{\text{argmin}} \; \lVert \boldsymbol{y} - \boldsymbol{X} \boldsymbol{\beta} \rVert^2 + \lambda (\boldsymbol{\beta}^T\boldsymbol{\beta}) $$
+
+
+::: {.small}
+```{python}
+d = pd.read_csv("data/ridge.csv")
+d
+```
+:::
+
+## dummy coding
+
+::: {.small}
+```{python}
+d = pd.get_dummies(d)
+d
+```
+:::
+
+
+## Fitting a ridge regession model
+
+The `linear_model` submodule also contains the `Ridge` model which can be used to fit a ridge regression. Usage is identical other than `Ridge()` takes the parameter `alpha` to specify the regularization parameter.
+
+::: {.small}
+```{python}
+from sklearn.linear_model import Ridge, LinearRegression
+
+X, y = d.drop(["y"], axis=1), d.y
+
+rg = Ridge(fit_intercept=False, alpha=10).fit(X, y)
+lm = LinearRegression(fit_intercept=False).fit(X, y)
+```
+:::
+
+. . .
+
+:::: {.columns .small}
+::: {.column width='50%'}
+```{python}
+rg.coef_
+lm.coef_
+```
+:::
+
+::: {.column width='50%'}
+```{python}
+mean_squared_error(y, rg.predict(X))
+mean_squared_error(y, lm.predict(X))
+```
+:::
+::::
+
+
+::: {.aside}
+Generally for a Ridge (or Lasso) model it is important to scale the features before fitting (i.e. `StandardScaler()`) - in this case this is not necessary as $x_1,\ldots,x_4$ all have mean of ~0 and std dev of ~1 
+:::
+
+
+## Test-Train split
+
+The most basic form of CV is to split the data into a testing and training set, this can be achieved using `train_test_split` from the `model_selection` submodule.
+
+::: {.small}
+```{python}
+from sklearn.model_selection import train_test_split
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1234)
+```
+:::
+
+. . .
+
+:::: {.columns .small}
+::: {.column width='50%'}
+```{python}
+X.shape
+X_train.shape
+X_test.shape
+```
+:::
+
+::: {.column width='50%'}
+```{python}
+y.shape
+y_train.shape
+y_test.shape
+```
+:::
+::::
+
+
+##
+
+:::: {.columns .small}
+::: {.column width='50%'}
+```{python}
+X_train
+```
+:::
+
+::: {.column width='50%'}
+```{python}
+y_train
+```
+:::
+::::
+
+
+## Train vs Test rmse
+
+::: {.small}
+```{python}
+#| output-location: column
+alpha = np.logspace(-2,1, 100)
+train_rmse = []
+test_rmse = []
+
+for a in alpha:
+    rg = Ridge(alpha=a).fit(X_train, y_train)
+    
+    train_rmse.append( 
+      mean_squared_error(
+        y_train, rg.predict(X_train), squared=False
+      ) 
+    )
+    test_rmse.append( 
+      mean_squared_error(
+        y_test, rg.predict(X_test), squared=False
+      ) 
+    )
+
+res = pd.DataFrame(
+  data = {"alpha": alpha, 
+          "train": train_rmse, 
+          "test": test_rmse}
+)
+res
+```
+:::
+
+##
+
+::: {.small}
+```{python}
+sns.relplot(
+  x="alpha", y="rmse", hue="variable", data = pd.melt(res, id_vars=["alpha"],value_name="rmse")
+).set(
+  xscale="log"
+)
+```
+:::
+
+
+## Best alpha?
+
+:::: {.columns .small}
+::: {.column width='50%'}
+```{python}
+min_i = np.argmin(res.train)
+min_i
+
+res.iloc[[min_i],:]
+```
+:::
+
+::: {.column width='50%'}
+```{python}
+min_i = np.argmin(res.test)
+min_i
+
+res.iloc[[min_i],:]
+```
+:::
+::::
+
+
+## k-fold cross validation
+
+The previous approach was relatively straight forward, but it required a fair bit of book keeping  to implement and we only examined a single test/train split. If we would like to perform k-fold cross validation we can use `cross_val_score` from the `model_selection` submodule. 
+
+. . .
+
+```{python}
+from sklearn.model_selection import cross_val_score
+
+cross_val_score(
+  Ridge(alpha=0.59, fit_intercept=False), 
+  X, y,
+  cv=5, 
+  scoring="neg_root_mean_squared_error"
+)
+```
+
+
+::: {.aside}
+🚩🚩🚩 Note that the default k-fold cross validation used here does not shuffle your data which can be massively problematic if your data is ordered 🚩🚩🚩 
+:::
+
+## Controling k-fold behavior
+
+Rather than providing `cv` as an integer, it is better to specify a cross-validation scheme directly (with additional options). Here we will use the `KFold` class from the `model_selection` submodule. 
+
+```{python}
+from sklearn.model_selection import KFold
+
+cross_val_score(
+  Ridge(alpha=0.59, fit_intercept=False), 
+  X, y, 
+  cv = KFold(n_splits=5, shuffle=True, random_state=1234), 
+  scoring="neg_root_mean_squared_error"
+)
+```
+
+
+## KFold object
+
+`KFold()` returns a class object which provides the method `split()` which in turn is a generator that returns a tuple with the indexes of the training and testing selects for each fold given a model matrix `X`,
+
+::: {.small}
+```{python}
+ex = pd.DataFrame(data = list(range(10)), columns=["x"])
+```
+:::
+
+:::: {.columns}
+::: {.column width='50%'}
+```{python}
+cv = KFold(5)
+for train, test in cv.split(ex):
+  print(f'Train: {train} | test: {test}')
+```
+:::
+
+::: {.column width='50%'}
+```{python}
+cv = KFold(5, shuffle=True, random_state=1234)
+for train, test in cv.split(ex):
+  print(f'Train: {train} | test: {test}')
+```
+:::
+::::
+
+
+
+## Train vs Test rmse (again)
+
+::: {.small}
+```{python}
+alpha = np.logspace(-2,1, 30)
+test_mean_rmse = []
+test_rmse = []
+cv = KFold(n_splits=5, shuffle=True, random_state=1234)
+
+for a in alpha:
+    rg = Ridge(fit_intercept=False, alpha=a).fit(X_train, y_train)
+    
+    scores = -1 * cross_val_score(
+      rg, X, y, 
+      cv = cv, 
+      scoring="neg_root_mean_squared_error"
+    )
+    test_mean_rmse.append(np.mean(scores))
+    test_rmse.append(scores)
+
+res = pd.DataFrame(
+    data = np.c_[alpha, test_mean_rmse, test_rmse],
+    columns = ["alpha", "mean_rmse"] + ["fold" + str(i) for i in range(1,6) ]
+)
+```
+:::
+
+##
+
+::: {.small}
+```{python}
+res
+```
+:::
+
+##
+
+::: {.small}
+```{python}
+sns.relplot(
+  x="alpha", y="rmse", hue="variable", data=res.melt(id_vars=["alpha"], value_name="rmse"), 
+  marker="o", kind="line"
+).set(
+  xscale="log"
+)
+```
+:::
+
+## Best alpha? (again)
+
+::: {.small}
+```{python}
+i = res.drop(
+  ["alpha"], axis=1
+).agg(
+  np.argmin
+).to_numpy()
+
+i = np.sort(np.unique(i))
+
+res.iloc[ i, : ]
+```
+:::
+
+## Aside - Available metrics 
+
+For most of the cross validation functions we pass in a string instead of a scoring function from the metrics submodule - if you are interested in seeing the names of the possible metrics, these are available via the `sklearn.metrics.SCORERS` dictionary,
+
+::: {.small}
+```{python}
+np.array( sorted(
+  sklearn.metrics.SCORERS.keys()
+) )
+```
+:::
+
+
+## Grid Search
+
+We can further reduce the amount of code needed if there is a specific set of parameter values we would like to explore using cross validation. This is done using the `GridSearchCV` function from the `model_selection` submodule.
+
+::: {.small}
+```{python}
+from sklearn.model_selection import GridSearchCV
+
+gs = GridSearchCV(
+  Ridge(fit_intercept=False),
+  {"alpha": np.logspace(-2, 1, 30)},
+  cv = KFold(5, shuffle=True, random_state=1234),
+  scoring = "neg_root_mean_squared_error"
+).fit(
+  X, y
+)
+```
+:::
+
+##
+
+```{python}
+gs.best_index_
+gs.best_params_
+gs.best_score_
+```
+
+## `best_estimator_` attribute
+
+If `refit = True` (the default) with `GridSearchCV()` then the `best_estimator_` attribute will be available which gives direct access to the "best" model or pipeline object. This model is constructed by using the parameter(s) that achieved the maximum score and refitting the model to the complete data set.
+
+::: {.small}
+```{python}
+gs.best_estimator_
+
+gs.best_estimator_.coef_
+
+gs.best_estimator_.predict(X)
+```
+:::
+
+
+## `cv_results_` attribute
+
+Other useful details about the grid search process are stored in the dictionary `cv_results_` attribute which includes things like average test scores, fold level test scores, test ranks, test runtimes, etc.
+
+::: {.small}
+```{python}
+gs.cv_results_.keys()
+```
+
+```{python}
+gs.cv_results_["param_alpha"]
+gs.cv_results_["mean_test_score"]
+```
+:::
+
+##
+
+::: {.small}
+```{python}
+#| output-location: column
+alpha = np.array(gs.cv_results_["param_alpha"],dtype="float64")
+score = -gs.cv_results_["mean_test_score"]
+score_std = gs.cv_results_["std_test_score"]
+n_folds = gs.cv.get_n_splits()
+
+plt.figure(layout="constrained")
+
+ax = sns.lineplot(x=alpha, y=score)
+ax.set_xscale("log")
+
+plt.fill_between(
+  x = alpha,
+  y1 = score + 1.96*score_std / np.sqrt(n_folds),
+  y2 = score - 1.96*score_std / np.sqrt(n_folds),
+  alpha = 0.2
+)
+
+plt.show()
+```
+:::
+
+
+## Ridge traceplot
+
+::: {.small}
+```{python}
+alpha = np.logspace(-1,5, 100)
+betas = []
+
+for a in alpha:
+    rg = Ridge(alpha=a).fit(X, y)
+    
+    betas.append(rg.coef_)
+
+res = pd.DataFrame(
+  data = betas, columns = rg.feature_names_in_
+).assign(
+  alpha = alpha  
+)
+```
+:::
+
+##
+
+::: {.small}
+```{python}
+g = sns.relplot(
+  data = res.melt(id_vars="alpha", value_name="coef values", var_name="feature"),
+  x = "alpha", y = "coef values", hue = "feature",
+  kind = "line", aspect=2
+)
+g.set(xscale="log")
+```
+:::
+
+

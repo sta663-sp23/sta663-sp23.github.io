@@ -167,7 +167,7 @@ schedule:
   day: 3
   lecture: "scikit-learn"
   slides: Lec14
-  screencast: 
+  screencast: https://youtu.be/2bUC9IMNrJA
   readings:
   - text: scikit-learn user guide
     link: https://scikit-learn.org/stable/user_guide.html
@@ -179,7 +179,7 @@ schedule:
   day: 5
   lecture: "scikit-learn - cross validation"
   screencast: 
-  slides: 
+  slides: Lec15
   readings:
   notes: 
 
