@@ -220,58 +220,11 @@ p.named_steps["linearregression"].coef_
 :::
 
 
-## Tuning parameters
-
-We've already seen a manual approach to tuning models over the degree parameter, scikit-learn also has built in tools to aide with this process. Here we will leverage `GridSearchCV` to tune the degree parameter in our pipeline.
-
-
-::: {.small}
-```{python}
-from sklearn.model_selection import GridSearchCV, KFold
-
-p = make_pipeline(
-    PolynomialFeatures(include_bias=True),
-    LinearRegression(fit_intercept=False)
-)
-
-grid_search = GridSearchCV(
-  estimator = p, 
-  param_grid = {"polynomialfeatures__degree": range(1,10)},
-  scoring = "neg_root_mean_squared_error",
-  cv = KFold(shuffle=True)
-)
-```
-:::
-
-::: {.aside}
-More details on this in a bit
-:::
-
-
-## Preview - Performing a grid search
-
-::: {.small}
-```{python}
-grid_search.fit(X = df[["x"]], y = df.y)
-```
-:::
-
-. . .
-
-::: {.small}
-```{python}
-grid_search.best_index_
-grid_search.best_params_
-grid_search.best_score_
-```
-:::
-
-
 # Column Transformers
 
 ## Column Transformers
 
-Are a tool for selectively applying transformer(s) to column(s) of an array or DataFrame, they function in a way that is similar to a pipeline and similarly have a `make` helper function `make_column_transformer()`.
+Are a tool for selectively applying transformer(s) to column(s) of an array or DataFrame, they function in a way that is similar to a pipeline and similarly have a make helper function.
 
 ::: {.small}
 ```{python}
@@ -329,7 +282,7 @@ ct.transform(books)
 
 ## Column selection
 
-One lingering issue with the above approach is that we've had to hard code the column names (or indexes). Often we want to select columns based on their dtype (e.g. categorical vs numerical) this can be done via pandas or sklearn,
+One lingering issue with the above approach is that we've had to hard code the column names (or use indexes). Often we want to select columns based on their dtype (e.g. categorical vs numerical) this can be done via pandas or sklearn,
 
 ::: {.small}
 ```{python}
@@ -342,12 +295,16 @@ from sklearn.compose import make_column_selector
 ```{python}
 ct = make_column_transformer(
   ( StandardScaler(), 
-    make_column_selector(dtype_include=np.number)),
+    make_column_selector(
+      dtype_include=np.number
+    )
+  ),
   ( OneHotEncoder(), 
-    make_column_selector(dtype_include=[object, bool]))
+    make_column_selector(
+      dtype_include=[object, bool]
+    )
+  )
 )
-
-ct.fit_transform(books)
 ```
 :::
 
@@ -355,12 +312,16 @@ ct.fit_transform(books)
 ```{python}
 ct = make_column_transformer(
   ( StandardScaler(), 
-    books.select_dtypes(include=['number']).columns ),
+    books.select_dtypes(
+      include=['number']
+    ).columns
+  ),
   ( OneHotEncoder(), 
-    books.select_dtypes(include=['object']).columns )
+    books.select_dtypes(
+      include=['object']
+    ).columns
+  )
 )
-
-ct.fit_transform(books)
 ```
 :::
 ::::
@@ -395,10 +356,11 @@ ct.get_feature_names_out()
 
 ## Ridge regression
 
-One way to expand on the idea of least squares regression is to modify the loss function. One such approach is known as Ridge regression, which adds a scaled penalty for the sum of the squares of the $\betas$ to the least squares loss. 
+One way to expand on the idea of least squares regression is to modify the loss function. One such approach is known as Ridge regression, which adds a scaled penalty for the sum of the squares of the $\beta$s to the least squares loss. 
 
+::: {.small}
 $$ \underset{\boldsymbol{\beta}}{\text{argmin}} \; \lVert \boldsymbol{y} - \boldsymbol{X} \boldsymbol{\beta} \rVert^2 + \lambda (\boldsymbol{\beta}^T\boldsymbol{\beta}) $$
-
+:::
 
 ::: {.small}
 ```{python}
@@ -622,7 +584,7 @@ ex = pd.DataFrame(data = list(range(10)), columns=["x"])
 ```
 :::
 
-:::: {.columns}
+:::: {.columns .small}
 ::: {.column width='50%'}
 ```{python}
 cv = KFold(5)
