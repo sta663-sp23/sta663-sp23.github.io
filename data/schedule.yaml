@@ -178,7 +178,7 @@ schedule:
 - week: 7
   day: 5
   lecture: "scikit-learn - cross validation"
-  screencast: 
+  screencast: https://youtu.be/eLz97ttA5z4
   slides: Lec15
   readings:
   notes: 
@@ -186,7 +186,7 @@ schedule:
 - week: 8
   day: 3
   lecture: "scikit-learn - classification"
-  slides: 
+  slides: Lec16
   screencast: 
   readings:
   notes: 
