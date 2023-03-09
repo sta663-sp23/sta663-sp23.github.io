@@ -9,6 +9,8 @@ format:
     transition: fade
     slide-number: true
     self-contained: true
+execute: 
+  echo: true
 ---
 
 ```{r r_setup}

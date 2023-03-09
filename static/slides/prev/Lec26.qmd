@@ -8,6 +8,8 @@ footer: "Sta 663 - Spring 2023"format:
     transition: fade
     slide-number: true
     self-contained: true
+execute: 
+  echo: true
 ---
 
 ```{r r_setup}
