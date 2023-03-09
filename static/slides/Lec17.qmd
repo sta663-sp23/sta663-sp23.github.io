@@ -9,9 +9,12 @@ format:
     transition: fade
     slide-number: true
     self-contained: true
+execute: 
+  echo: true
 ---
 
 ```{python setup}
+#| include: false
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -19,6 +22,7 @@ import pandas as pd
 import seaborn as sns
 
 import sklearn
+sklearn.set_config(display="text")
 
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
@@ -28,7 +32,7 @@ from sklearn.metrics import classification_report
 plt.rcParams['figure.dpi'] = 200
 
 np.set_printoptions(
-  edgeitems=30, linewidth=200,
+  edgeitems=30, linewidth=80,
   precision = 5, suppress=True
   #formatter=dict(float=lambda x: "%.5g" % x)
 )
@@ -39,13 +43,12 @@ pd.set_option("display.precision", 6)
 ```
 
 ```{r r_setup}
+#| include: false
 knitr::opts_chunk$set(
   fig.align="center",
   cache=FALSE
 )
-```
 
-```{r hooks}
 local({
   hook_err_old <- knitr::knit_hooks$get("error")  # save the old hook
   knitr::knit_hooks$set(error = function(x, options) {
@@ -64,17 +67,14 @@ local({
 })
 ```
 
----
-class: center, middle
-
-## Classes
+# Classes
 
 ## Basic syntax
 
 These are the basic component of Python's object oriented system - we've been using them regularly all over the place and will now look at how they are defined and used.
 
 
-:::: {.columns}
+:::: {.columns .small}
 ::: {.column width='50%'}
 ```{python}
 class rect:
@@ -114,11 +114,12 @@ x.area()
 :::
 ::::
 
+
 ## Instantiation (constructors)
 
 When instantiating a class object (e.g. `rect()`) we invoke the `__init__()` method if it is present in the classes' definition.
 
-:::: {.columns}
+:::: {.columns .small}
 ::: {.column width='50%'}
 ```{python}
 class rect:
@@ -157,11 +158,12 @@ z.p2
 :::
 ::::
 
+
 ## Method chaining
 
-We've seen a number of objects (i.e. Pandas DataFrames) that allow for method chaining to construct a pipeline of operations. We can achieve the same by having our class methods return `self`.
+We've seen a number of objects (i.e. Pandas DataFrames) that allow for method chaining to construct a pipeline of operations. We can achieve the same by having our class methods return itself via `self`.
 
-:::: {.columns}
+:::: {.columns .small}
 ::: {.column width='50%'}
 ```{python}
 class rect:
@@ -198,11 +200,12 @@ rect().set_p1((-1,-1)).set_p2((2,2)).area()
 :::
 ::::
 
+
 ## Class object string formating
 
 All class objects have a default print method / string conversion method, but the default behavior is not very useful,
 
-:::: {.columns}
+:::: {.columns .small}
 ::: {.column width='50%'}
 ```{python}
 print(rect())
@@ -220,57 +223,73 @@ str(rect())
 
 Both of the above are handled by the `__str__()` method which is implicitly created for our class - we can override this,
 
+::: {.small}
 ```{python}
 def rect_str(self):
   return f"Rect[{self.p1}, {self.p2}] => area={self.area()}"
 
 rect.__str__ = rect_str
 ```
+:::
 
 . . .
 
+::: {.small}
 ```{python}
 rect()
 print(rect())
 str(rect())
 ```
+:::
 
 ## Class representation
 
 There is another special method which is responsible for the printing of the object (see `rect()` above) called `__repr__()` which is responsible for printing the classes representation. If possible this is meant to be a valid Python expression capable of recreating the object.
 
+::: {.small}
 ```{python}
 def rect_repr(self):
   return f"rect({self.p1}, {self.p2})"
 
 rect.__repr__ = rect_repr
 ```
+:::
 
 . . .
 
+::: {.small}
 ```{python}
 rect()
 repr(rect())
 ```
+:::
+
 
 ## Inheritance
 
 Part of the object oriented system is that classes can inherit from other classes, meaning they gain access to all of their parents attributes and methods. We will not go too in depth on this topic beyond showing the basic functionality.
 
+::: {.small}
 ```{python}
 class square(rect):
     pass
 ```
+:::
 
+. . .
+
+::: {.small}
 ```{python}
 square()
 square().area()
 square().set_p1((-1,-1)).area()
 ```
+:::
+
 
 ## Overriding methods
 
-:::: {.columns}
+:::: {.columns .small}
 ::: {.column width='50%'}
 ```{python}
 class square(rect):
@@ -304,7 +323,7 @@ class square(rect):
 ```
 :::
 
-::: {.column width='50%'}
+::: {.column width='50%' .fragment}
 ```{python error=TRUE}
 square()
 square().area()
@@ -318,12 +337,12 @@ square().set_p2((0,0))
 :::
 ::::
 
+
 ## Making an object iterable
 
 When using an object with a for loop, python looks for the `__iter__()` method which is expected to return an iterator object (e.g. `iter()` of a list, tuple, etc.).
 
-
-:::: {.columns}
+:::: {.columns .small}
 ::: {.column width='50%'}
 ```{python}
 class rect:
@@ -349,7 +368,7 @@ class rect:
 ```
 :::
 
-::: {.column width='50%'}
+::: {.column width='50%' .fragment}
 ```{python}
 for pt in rect():
   print(pt)
@@ -360,9 +379,11 @@ for pt in rect():
 
 ## Fancier iteration
 
+::: {.small}
 A class itself can be made iterable by adding a `__next__()` method which is called until a `StopIteration` exception is encountered. In which case, `__iter__()` is still needed but should just `return self`.
+:::
 
-:::: {.columns}
+:::: {.columns .small}
 ::: {.column width='50%'}
 ```{python}
 class rect:
@@ -392,7 +413,7 @@ class rect:
 ```
 :::
 
-::: {.column width='50%'}
+::: {.column width='50%' .fragment}
 ```{python}
 r = rect()
 for pt in r:
@@ -404,11 +425,14 @@ for pt in r:
 :::
 ::::
 
+
 ## Generators
 
-There is a lot of bookkeeping in the implementation above - we can simplify this significantly by using a generator function with `__iter__()`. A generator is a function which using `yield` instead of `return` which allows the function to preserve state between `next()` calls.
+::: {.small}
+There is a lot of bookkeeping in the implementation above - we can simplify this significantly by using a generator function with `__iter__()`. A generator is a function which uses `yield` instead of `return` which allows the function to preserve state between `next()` calls.
+:::
 
-:::: {.columns}
+:::: {.columns .small}
 ::: {.column width='50%'}
 ```{python}
 class rect:
@@ -433,7 +457,7 @@ class rect:
 ```
 :::
 
-::: {.column width='50%'}
+::: {.column width='50%' .fragment}
 ```{python}
 r = rect()
 
@@ -446,31 +470,34 @@ for pt in r:
 :::
 ::::
 
+
 ## Class attributes
 
 We can examine all of a classes' methods and attributes using `dir()`,
 
 ```{python}
-dir(rect)
+np.array(
+  dir(rect)
+)
 ```
 
 . . .
 
-.center[
-Where did `p1` and `p2` go?
-]
+<br/>
 
-. . .
+::: {.center}
+Where did `p1` and `p2` go?
+:::
+
+##
 
 ```{python}
-dir(rect())
+np.array(
+  dir(rect())
+)
 ```
 
-
----
-class: center, middle
-
-## Custom Transformers
+# Custom sklearn transformers
 
 ## FunctionTransformer
 
@@ -482,7 +509,7 @@ from sklearn.preprocessing import FunctionTransformer
 X = pd.DataFrame({"x1": range(1,6), "x2": range(5, 0, -1)})
 ```
 
-:::: {.columns}
+:::: {.columns .small}
 ::: {.column width='50%'}
 ```{python}
 log_transform = FunctionTransformer(np.log)
@@ -501,8 +528,10 @@ dir(lt)
 :::
 ::::
 
+
 ## Input types
 
+::: {.small}
 ```{python, error=TRUE}
 def interact(X, y = None):
   return np.c_[X, X[:,0] * X[:,1]]
@@ -510,10 +539,11 @@ def interact(X, y = None):
 X = pd.DataFrame({"x1": range(1,6), "x2": range(5, 0, -1)})
 Z = np.array(X)
 ```
+:::
 
 . . .
 
-:::: {.columns}
+:::: {.columns .small}
 ::: {.column width='50%'}
 ```{python, error=TRUE}
 FunctionTransformer(interact).fit_transform(X)
@@ -529,8 +559,7 @@ FunctionTransformer(interact).fit_transform(Z)
 
 . . .
 
-<div>
-:::: {.columns}
+:::: {.columns .small}
 ::: {.column width='50%'}
 ```{python, error=TRUE}
 FunctionTransformer(
@@ -547,17 +576,17 @@ FunctionTransformer(
 ```
 :::
 ::::
-</div>
 
 ::: {.aside}
 The `validate` argument both checks that `X` is 2d as well as converts it to a np.array
 :::
 
+
 ## Build your own transformer
 
-For a more full features transformer, it is possible to construct it as a class that inherits from `BaseEstimator` and `TransformerMixin` classes from the base submodule.
+For a more full featured transformer, it is possible to construct it as a class that inherits from `BaseEstimator` and `TransformerMixin` classes from the `base` submodule.
 
-:::: {.columns}
+:::: {.columns .small}
 ::: {.column width='50%'}
 ```{python}
 from sklearn.base import BaseEstimator, TransformerMixin
@@ -573,12 +602,14 @@ class scaler(BaseEstimator, TransformerMixin):
   def transform(self, X, y=None):
     return X*self.m + self.b
 ```
+
+```{python}
+X = pd.DataFrame({"x1": range(1,6), "x2": range(5, 0, -1)}); X
+```
 :::
 
 ::: {.column width='50%' .fragment}
 ```{python}
-X = pd.DataFrame({"x1": range(1,6), "x2": range(5, 0, -1)})
-
 double = scaler(2)
 double.fit_transform(X)
 
@@ -589,18 +620,24 @@ double.set_params(b=-3).fit_transform(X)
 :::
 ::::
 
+
 ## What else do we get?
 
 ```{python}
-print(
-  pd.DataFrame(np.array(dir(double)).reshape(-1,4)).to_string(index=False, header=False, col_space=20)
+#| include: false
+np.set_printoptions(
+  linewidth=80
 )
 ```
 
----
-class: center, middle
+```{python}
+print(
+  np.array(dir(double))
+)
+```
 
-## Demo - Interaction Transformer
+# Demo - Interaction Transformer
+
 
 ## Useful methods
 
@@ -612,11 +649,12 @@ We employed a couple of special methods that are worth mentioning in a little mo
 
 * Later, in `tranform()` one or both will again be called with `reset=False` and the properties of `X` will be checked against the values in the attribute.
 
-* These are worth using as they promote an interface consistent with sklearn and also provide convenient error checking with useful warning and error messages.
+* These are worth using as they promote an interface consistent with sklearn and also provide convenient error checking with useful warning / error messages.
+
 
 ## `check_is_fitted()`
 
-This is another useful helper function from `sklearn.utils` - it is fairly simplistic in that it checks for the existence of the specified attribute. If not attribute is given then it checks for any attributes ending in `_` that do not begin with `__`.
+This is another useful helper function from `sklearn.utils` - it is fairly simplistic in that it checks for the existence of the specified attribute. If no attribute is given then it checks for any attributes ending in `_` that do not begin with `__`.
 
 Again this is useful for providing a consistent interface and useful error / warning messages.
 
