@@ -651,10 +651,30 @@ We employed a couple of special methods that are worth mentioning in a little mo
 
 * These are worth using as they promote an interface consistent with sklearn and also provide convenient error checking with useful warning / error messages.
 
+::: {.aside}
+These methods are part of `BaseEstimator` but are not available as part of the published documentation see the code on [GitHub](https://github.com/scikit-learn/scikit-learn/blob/30bf6f39a7126a351db8971d24aa865fa5605569/sklearn/base.py#L125) or use `?sklearn.base.BaseEstimator._validate_data`
+:::
+
 
 ## `check_is_fitted()`
 
-This is another useful helper function from `sklearn.utils` - it is fairly simplistic in that it checks for the existence of the specified attribute. If no attribute is given then it checks for any attributes ending in `_` that do not begin with `__`.
+This is another useful helper function from `sklearn.utils` - it is fairly simplistic in that it checks for the existence of a specified attribute. If no attribute is given then it checks for any attributes ending in `_` that do not begin with `__`.
 
 Again this is useful for providing a consistent interface and useful error / warning messages.
 
+See also the other `check*()` functions in `sklearn.utils`.
+
+
+## Other custom estimators
+
+If you want to implement your own custom modeling function it is possible, there are different Mixin base classes in `sklearn.base` that provide the common core interface.
+
+| Class                       | Description                               |
+|-----------------------------|-------------------------------------------|
+| `base.BiclusterMixin`       | Mixin class for all bicluster estimators  |
+| `base.ClassifierMixin`      | Mixin class for all classifiers           |
+| `base.ClusterMixin`         | Mixin class for all cluster estimators    |
+| `base.DensityMixin`         | Mixin class for all density estimators    |
+| `base.RegressorMixin`       | Mixin class for all regression estimators |
+| `base.TransformerMixin`     | Mixin class for all transformers          |
+| `base.OneToOneFeatureMixin` | Provides get_feature_names_out for simple transformers |

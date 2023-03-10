@@ -1378,14 +1378,14 @@ Dr. Colin Rundel
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb28"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1"></a><span class="bu">print</span>(rect())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>&lt;__main__.rect object at 0x2a3ad7010&gt;</code></pre>
+<pre><code>&lt;__main__.rect object at 0x2aec6b010&gt;</code></pre>
 </div>
 </div>
 </div><div class="column" style="width:50%;">
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb30"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1"></a><span class="bu">str</span>(rect())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>&#39;&lt;__main__.rect object at 0x2a3ad5270&gt;&#39;</code></pre>
+<pre><code>&#39;&lt;__main__.rect object at 0x2aec69270&gt;&#39;</code></pre>
 </div>
 </div>
 </div>
@@ -1406,7 +1406,7 @@ Dr. Colin Rundel
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1"></a>rect()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>&lt;__main__.rect object at 0x2a3ad69e0&gt;</code></pre>
+<pre><code>&lt;__main__.rect object at 0x2aec6a9e0&gt;</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb35"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1"></a><span class="bu">print</span>(rect())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -1939,11 +1939,61 @@ Dr. Colin Rundel
 <li><p>Later, in <code>tranform()</code> one or both will again be called with <code>reset=False</code> and the properties of <code>X</code> will be checked against the values in the attribute.</p></li>
 <li><p>These are worth using as they promote an interface consistent with sklearn and also provide convenient error checking with useful warning / error messages.</p></li>
 </ul>
-</section>
+
+<aside><div>
+<p>These methods are part of <code>BaseEstimator</code> but are not available as part of the published documentation see the code on <a href="https://github.com/scikit-learn/scikit-learn/blob/30bf6f39a7126a351db8971d24aa865fa5605569/sklearn/base.py#L125">GitHub</a> or use <code>?sklearn.base.BaseEstimator._validate_data</code></p>
+</div></aside></section>
 <section id="check_is_fitted" class="slide level2">
 <h2><code>check_is_fitted()</code></h2>
-<p>This is another useful helper function from <code>sklearn.utils</code> - it is fairly simplistic in that it checks for the existence of the specified attribute. If no attribute is given then it checks for any attributes ending in <code>_</code> that do not begin with <code>__</code>.</p>
+<p>This is another useful helper function from <code>sklearn.utils</code> - it is fairly simplistic in that it checks for the existence of a specified attribute. If no attribute is given then it checks for any attributes ending in <code>_</code> that do not begin with <code>__</code>.</p>
 <p>Again this is useful for providing a consistent interface and useful error / warning messages.</p>
+<p>See also the other <code>check*()</code> functions in <code>sklearn.utils</code>.</p>
+</section>
+<section id="other-custom-estimators" class="slide level2">
+<h2>Other custom estimators</h2>
+<p>If you want to implement your own custom modeling function it is possible, there are different Mixin base classes in <code>sklearn.base</code> that provide the common core interface.</p>
+<table>
+<colgroup>
+<col style="width: 40%">
+<col style="width: 59%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Class</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>base.BiclusterMixin</code></td>
+<td>Mixin class for all bicluster estimators</td>
+</tr>
+<tr class="even">
+<td><code>base.ClassifierMixin</code></td>
+<td>Mixin class for all classifiers</td>
+</tr>
+<tr class="odd">
+<td><code>base.ClusterMixin</code></td>
+<td>Mixin class for all cluster estimators</td>
+</tr>
+<tr class="even">
+<td><code>base.DensityMixin</code></td>
+<td>Mixin class for all density estimators</td>
+</tr>
+<tr class="odd">
+<td><code>base.RegressorMixin</code></td>
+<td>Mixin class for all regression estimators</td>
+</tr>
+<tr class="even">
+<td><code>base.TransformerMixin</code></td>
+<td>Mixin class for all transformers</td>
+</tr>
+<tr class="odd">
+<td><code>base.OneToOneFeatureMixin</code></td>
+<td>Provides get_feature_names_out for simple transformers</td>
+</tr>
+</tbody>
+</table>
 <div class="footer footer-default">
 <p>Sta 663 - Spring 2023</p>
 </div>
