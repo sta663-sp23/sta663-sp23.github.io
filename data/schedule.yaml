@@ -187,14 +187,14 @@ schedule:
   day: 3
   lecture: "scikit-learn - classification"
   slides: Lec16
-  screencast: 
+  screencast: https://youtu.be/Np4tonZ1F_M
   readings:
   notes: 
 
 - week: 8
   day: 5
   lecture: "Classes and custom transformers"
-  slides: 
+  slides: Lec17
   screencast:
   readings:
   - text: Python tutorial - Classes
