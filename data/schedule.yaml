@@ -195,7 +195,7 @@ schedule:
   day: 5
   lecture: "Classes and custom transformers"
   slides: Lec17
-  screencast:
+  screencast: https://youtu.be/8K0aRBVelm0
   readings:
   - text: Python tutorial - Classes
     link: https://docs.python.org/3/tutorial/classes.html#a-first-look-at-classes
@@ -217,7 +217,7 @@ schedule:
 - week: 10
   day: 3
   lecture: "statsmodels + patsy"
-  slides: 
+  slides: Lec18
   screencast: 
   readings:
   - text: patsy docs
