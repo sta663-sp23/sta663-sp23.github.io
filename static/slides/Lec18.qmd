@@ -31,7 +31,7 @@ from sklearn.metrics import classification_report
 plt.rcParams['figure.dpi'] = 200
 
 np.set_printoptions(
-  edgeitems=30, linewidth=200,
+  edgeitems=30, linewidth=80,
   precision = 5, suppress=True
   #formatter=dict(float=lambda x: "%.5g" % x)
 )
@@ -127,7 +127,7 @@ Note the `T.` in `a[T.a2]` is there to indicate treatment coding (i.e. typical d
 
 ::: {.small}
 ```{python}
-y, x  = dmatrices("y ~ a + a:b + np.exp(x1)", data)
+y, X  = dmatrices("y ~ a + a:b + np.exp(x1)", data)
 ```
 :::
 
@@ -140,7 +140,7 @@ y
 
 ::: {.column width='50%'}
 ```{python}
-x
+X
 ```
 :::
 ::::
@@ -246,7 +246,7 @@ new_data = {"x1": np.random.normal(size=10)}
 :::
 
 :::: {.columns .small}
-::: {.column width='50%'}
+::: {.column width='50%' .fragment}
 ```{python}
 d = dmatrix("scale(x1)", data)
 d
@@ -512,7 +512,7 @@ The error occurs because `X` contains mixed types - specifically we have categor
 X_dc = pd.get_dummies(X)
 model = sm.OLS(endog=y, exog=X_dc)
 model
-dir(model)
+np.array(dir(model))
 ```
 :::
 
@@ -689,17 +689,6 @@ print(res.summary())
 :::
 
 
-## Fit and summary
-
-::: {.small}
-```{python}
-res = model.fit()
-print(res.summary())
-```
-:::
-
-
-
 ## Formula interface
 
 ::: {.small}
@@ -719,9 +708,6 @@ print(res.summary())
 
 ::: {.small}
 > These data are from the study described in Belenky et al. (2003), for the most sleep-deprived group (3 hours time-in-bed) and for the first 10 days of the study, up to the recovery period. The original study analyzed speed (1/(reaction time)) and treated day as a categorical rather than a continuous predictor.
->
-> The average reaction time per day (in milliseconds) for subjects in a sleep deprivation study.
-> Days 0-1 were adaptation and training (T1/T2), day 2 was baseline (B); sleep deprivation started after day 2.
 
 ```{python}
 sleep = pd.read_csv("data/sleepstudy.csv")
@@ -754,7 +740,7 @@ print(res_rand_int.summary())
 :::
 
 
-##
+## lme4 version
 
 ::: {.small}
 ```{r}
@@ -786,10 +772,16 @@ The prediction is only taking into account the fixed effects here, not the group
 
 ::: {.small}
 ```{python}
-# Dictionary of random effects estimates
-re = res_rand_int.random_effects
 # Multiply each RE by the random effects design matrix for each group
-rex = [np.dot(me_rand_int.exog_re_li[j], re[k]) for (j, k) in enumerate(me_rand_int.group_labels)]
+rex = [ 
+  np.dot(
+    me_rand_int.exog_re_li[j], 
+    res_rand_int.random_effects[k]
+  ) 
+  for (j, k) in enumerate(me_rand_int.group_labels)
+]
+rex[0]
+
 # Add the fixed and random terms to get the overall prediction
 y_hat = res_rand_int.predict() + np.concatenate(rex)
 ```
@@ -799,7 +791,10 @@ y_hat = res_rand_int.predict() + np.concatenate(rex)
 Based on code provide on [stack overflow](https://stats.stackexchange.com/questions/467543/including-random-effects-in-prediction-with-linear-mixed-model).
 :::
 
-```{python echo=FALSE, out.width="90%"}
+##
+
+```{python}
+#| echo: false
 pred = sleep.assign(pred = y_hat)
 g = sns.FacetGrid(pred, col="Subject", col_wrap=6)
 g = g.map(sns.scatterplot, "Days", "Reaction")
@@ -821,7 +816,7 @@ print(res_rand_sl.summary())
 ```
 :::
 
-##
+## lme4 version
 
 ::: {.small}
 ```{r}
@@ -886,19 +881,35 @@ print(cm.summary(usevar="unequal"))
 
 ## Contigency tables
 
-Below are data from the GSS and a survery of Duke students in a intro stats class - the question asked about how concerned the respondent was about the effect of global warming on polar ice cap melt.
-
 ::: {.small}
+Below are data from the GSS and a survery of Duke students in a intro stats class - the question asked about how concerned the respondent was about the effect of global warming on polar ice cap melt.
+:::
+
+:::: {.columns .small}
+::: {.column width='50%'}
 ```{python}
-gss = pd.DataFrame({"US": [454, 226], "Duke": [56,32]}, index=["A great deal", "Not a great deal"])
+gss = pd.DataFrame({"US": [454, 226], 
+                    "Duke": [56,32]}, 
+                   index=["A great deal", "Not a great deal"])
 gss
+
 ```
 :::
 
-::: {.small}
+::: {.column width='50%'}
 ```{python}
 tbl = sm.stats.Table2x2(gss.to_numpy())
-print(tbl.summary())
-print(tbl.test_nominal_association())
+print(tbl)
 ```
 :::
+::::
+
+. . .
+
+::: {.small}
+```{python}
+print(tbl.summary())
+print(tbl.test_nominal_association()) # chi^2 test of independence
+```
+:::
+
