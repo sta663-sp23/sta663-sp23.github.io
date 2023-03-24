@@ -218,7 +218,7 @@ schedule:
   day: 3
   lecture: "patsy + statsmodels"
   slides: Lec18
-  screencast: 
+  screencast: https://youtu.be/8K0aRBVelm0
   readings:
   - text: patsy docs
     link: https://patsy.readthedocs.io/en/latest/
@@ -229,18 +229,18 @@ schedule:
 
 - week: 10
   day: 5
-  lecture: "PyMC3 + ArviZ"
+  lecture: "PyMC + ArviZ"
   slides: 
   screencast: 
   readings:
-  - text: PyMC3 docs
-    link: https://docs.pymc.io/en/v3/
-  - text: ArviZ docs
-    link: https://arviz-devs.github.io/arviz/index.html
+  - text: PyMC introduction
+    link: https://www.pymc.io/projects/docs/en/stable/learn/core_notebooks/pymc_overview.html#pymc-overview
+  - text: ArviZ user guide
+    link: https://python.arviz.org/en/stable/user_guide/index.html
 
 - week: 11
   day: 3
-  lecture: "More PyMC3"
+  lecture: "More PyMC"
   slides: 
   screencast: 
   readings:
