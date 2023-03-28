@@ -1,4 +1,8 @@
 # llvmlite bullshit - https://github.com/numba/llvmlite/issues/320
+#
+#   sudo install_name_tool -change "@rpath/libz.1.dylib" "/usr/lib/libz.1.dylib" /opt/homebrew/lib/python3.10/site-packages/llvmlite/binding/libllvmlite.dylib
+#   sudo install_name_tool -change "@rpath/libc++.1.dylib" "/usr/lib/libc++.1.dylib" /opt/homebrew/lib/python3.10/site-packages/llvmlite/binding/libllvmlite.dylib
+
 
 # Demo 1 - Linear regression
 
