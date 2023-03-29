@@ -1,0 +1,884 @@
+---
+title: "More PyMC"
+subtitle: "Lecture 20"
+author: "Dr. Colin Rundel"
+footer: "Sta 663 - Spring 2023"
+format:
+  revealjs:
+    theme: slides.scss
+    transition: fade
+    slide-number: true
+    self-contained: true
+execute: 
+  echo: true
+---
+
+```{python setup}
+#| include: false
+
+import numpy as np
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+import scipy
+
+import patsy
+
+import pymc as pm
+import arviz as az
+
+plt.rcParams['figure.dpi'] = 200
+
+np.set_printoptions(
+  edgeitems=30, linewidth=200,
+  precision = 5, suppress=True
+  #formatter=dict(float=lambda x: "%.5g" % x)
+)
+
+pd.set_option("display.width", 150)
+pd.set_option("display.max_columns", 10)
+pd.set_option("display.precision", 6)
+```
+
+```{r r_setup}
+#| include: false
+knitr::opts_chunk$set(
+  fig.align="center",
+  cache=FALSE
+)
+
+local({
+  hook_err_old <- knitr::knit_hooks$get("error")  # save the old hook
+  knitr::knit_hooks$set(error = function(x, options) {
+    # now do whatever you want to do with x, and pass
+    # the new x to the old hook
+    x = sub("## \n## Detailed traceback:\n.*$", "", x)
+    x = sub("Error in py_call_impl\\(.*?\\)\\: ", "", x)
+    #x = stringr::str_wrap(x, width = 100)
+    hook_err_old(x, options)
+  })
+  
+  hook_warn_old <- knitr::knit_hooks$get("warning")  # save the old hook
+  knitr::knit_hooks$set(warning = function(x, options) {
+    x = sub("<string>:1: ", "", x)
+    #x = stringr::str_wrap(x, width = 100)
+    hook_warn_old(x, options)
+  })
+  
+  hook_msg_old <- knitr::knit_hooks$get("output")  # save the old hook
+  knitr::knit_hooks$set(output = function(x, options) {
+    x = stringr::str_replace(x, "(## ).* ([A-Za-z]+Warning:)", "\\1\\2")
+    x = stringr::str_split(x, "\n")[[1]]
+    #x = stringr::str_wrap(x, width = 120, exdent = 3)
+    x = stringr::str_remove_all(x, "\r")
+    x = stringi::stri_wrap(x, width=120, exdent = 3, normalize=FALSE)
+    x = paste(x, collapse="\n")
+    
+    #x = stringr::str_wrap(x, width = 100)
+    hook_msg_old(x, options)
+  })
+})
+```
+
+# Demo 1 - Logistic Regression
+
+<br/><br/><br/><br/>
+
+::: {.small}
+Based on PyMC [Out-Of-Sample Predictions](https://www.pymc.io/projects/examples/en/latest/generalized_linear_models/GLM-out-of-sample-predictions.html) example
+:::
+
+
+## Data
+
+:::: {.columns .small}
+::: {.column width='33%'}
+```{python}
+#| echo: false
+from scipy.special import expit as inverse_logit
+
+rng = np.random.default_rng(1234)
+
+# Number of data points
+n = 250
+
+# Create features
+x1 = rng.normal(loc=0.0, scale=2.0, size=n)
+x2 = rng.normal(loc=0.0, scale=2.0, size=n)
+
+# Define target variable
+intercept = -0.5
+beta_x1 = 1
+beta_x2 = -1
+beta_interaction = 2
+z = intercept + beta_x1 * x1 + beta_x2 * x2 + beta_interaction * x1 * x2
+p = inverse_logit(z)
+
+y = rng.binomial(n=1, p=p, size=n)
+df = pd.DataFrame(dict(x1=x1, x2=x2, y=y))
+df
+```
+:::
+
+::: {.column width='66%'}
+```{python}
+#| echo: false
+rel = sns.relplot(x="x1", y="x2", data=df, hue="y")
+rel.set(ylim = (-9,9), xlim=(-9,9), title='Sample Data')
+#plt.show()
+```
+:::
+::::
+
+## Test-train split
+
+::: {.small}
+```{python}
+from sklearn.model_selection import train_test_split
+
+y, X = patsy.dmatrices("y ~ x1 * x2", data=df)
+
+X_lab = X.design_info.column_names
+y_lab = y.design_info.column_names
+y = np.asarray(y).flatten()
+X = np.asarray(X)
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.7)
+```
+:::
+
+. . .
+
+:::: {.columns}
+::: {.column width='50%'}
+```{python}
+#| echo: false
+#| out-width: 66%
+df_train = pd.DataFrame(
+  np.c_[y_train,X_train], 
+  columns=y_lab + X_lab
+)
+
+rel = sns.relplot(x="x1", y="x2", data=df_train, hue="y", legend=False, aspect=1)
+rel.set(ylim = (-9,9), xlim=(-9,9), title='Training Data')
+```
+:::
+
+::: {.column width='50%'}
+```{python}
+#| echo: false
+#| out-width: 66%
+df_test = pd.DataFrame(
+  np.c_[y_test,X_test], 
+  columns=y_lab + X_lab
+)
+
+rel = sns.relplot(x="x1", y="x2", data=df_test, hue="y", legend=False, aspect=1)
+rel.set(ylim = (-9,9), xlim=(-9,9), title='Test Data')
+```
+:::
+::::
+
+
+
+## Model
+
+```{python}
+with pm.Model(coords = {"coeffs": X_lab}) as model:
+    # data containers
+    X = pm.MutableData("X", X_train)
+    y = pm.MutableData("y", y_train)
+    # priors
+    b = pm.Normal("b", mu=0, sigma=3, dims="coeffs")
+    # linear model
+    mu = X @ b
+    # link function
+    p = pm.Deterministic("p", pm.math.invlogit(mu))
+    # likelihood
+    obs = pm.Bernoulli("obs", p=p, observed=y)
+```
+
+## Visualizing models
+
+```{python}
+#| eval: false
+pm.model_to_graphviz(model)
+```
+
+```{dot}
+//| echo: false
+digraph {
+	subgraph "cluster175 x 4" {
+		X [label="X~MutableData" shape=box style="rounded, filled"]
+		label="175 x 4" labeljust=r labelloc=b style=rounded
+	}
+	subgraph cluster175 {
+		p [label="p~Deterministic" shape=box]
+		obs [label="obs~Bernoulli" shape=ellipse style=filled]
+		y [label="y~MutableData" shape=box style="rounded, filled"]
+		label=175 labeljust=r labelloc=b style=rounded
+	}
+	subgraph "clustercoeffs (4)" {
+		b [label="b~Normal" shape=ellipse]
+		label="coeffs (4)" labeljust=r labelloc=b style=rounded
+	}
+	obs -> y
+	b -> p
+	X -> p
+	p -> obs
+}
+```
+
+## Fitting
+
+::: {.small}
+```{python}
+with model:
+    post = pm.sample(progressbar=False, random_seed=1234)
+```
+:::
+
+. . .
+
+::: {.small}
+```{python}
+az.summary(post)
+```
+:::
+
+
+## Trace plots
+
+::: {.small}
+```{python}
+#| out-width: 50%
+ax = az.plot_trace(post, var_names="b", compact=False)
+plt.show()
+```
+:::
+
+## Posterior plots
+
+::: {.small}
+```{python}
+ax = az.plot_posterior(
+    post, var_names=["b"], ref_val=[intercept, beta_x1, beta_x2, beta_interaction], figsize=(15, 6)
+)
+plt.show()
+```
+:::
+
+## Out-of-sample predictions
+
+:::: {.columns .small}
+::: {.column width='50%'}
+```{python}
+post
+```
+:::
+::::
+
+. . .
+
+:::: {.columns .small}
+::: {.column width='50%'}
+```{python}
+with model:
+  pm.set_data({"X": X_test, "y": y_test})
+  post = pm.sample_posterior_predictive(
+    post, progressbar=False, var_names=["obs", "p"],
+    extend_inferencedata = True
+  )
+```
+:::
+
+::: {.column width='50%' .fragment}
+```{python}
+post
+```
+:::
+::::
+
+
+## Posterior predictive summary
+
+::: {.small}
+```{python}
+az.summary(
+  post.posterior_predictive  
+)
+```
+:::
+
+## Evaluation
+
+::: {.small}
+```{python}
+post.posterior["p"].shape
+post.posterior_predictive["p"].shape
+p_train = post.posterior["p"].mean(dim=["chain", "draw"])
+p_test  = post.posterior_predictive["p"].mean(dim=["chain", "draw"])
+```
+:::
+
+. . .
+
+:::: {.columns .small}
+::: {.column width='50%'}
+```{python}
+p_train
+```
+:::
+
+::: {.column width='50%'}
+```{python}
+p_test
+```
+:::
+::::
+
+
+
+## ROC & AUC
+
+::: {.small}
+```{python}
+from sklearn.metrics import RocCurveDisplay, accuracy_score, auc, roc_curve
+
+# Test data
+fpr_test, tpr_test, thd_test = roc_curve(y_true=y_test, y_score=p_test)
+auc_test = auc(fpr_test, tpr_test); auc_test
+```
+
+```{python}
+# Training data
+fpr_train, tpr_train, thd_train = roc_curve(y_true=y_train, y_score=p_train)
+auc_train = auc(fpr_train, tpr_train); auc_train
+```
+:::
+
+## ROC Curves
+
+::: {.small}
+```{python}
+fig, ax = plt.subplots()
+roc = RocCurveDisplay(fpr=fpr_test, tpr=tpr_test).plot(ax=ax, label="test")
+roc = RocCurveDisplay(fpr=fpr_train, tpr=tpr_train).plot(ax=ax, color="k", label="train")
+plt.show()
+```
+:::
+
+
+# Demo 2 - Poisson Regression
+
+## Data
+
+```{python}
+#| include: false
+aids = pd.DataFrame({
+  'year': range(1981,1994),
+  'cases': [12, 14, 33, 50, 67, 74, 123, 141, 165, 204, 253, 246, 240]
+})
+```
+
+:::: {.columns .small}
+::: {.column width='25%'}
+```{python}
+aids
+```
+:::
+
+::: {.column width='75%'}
+```{python}
+#| echo: false
+plt.figure(figsize=(12,6))
+sns.scatterplot(x="year", y="cases", data=aids)
+plt.title("AIDS cases in Belgium")
+plt.show()
+```
+:::
+::::
+
+
+## Model
+
+::: {.small}
+```{python}
+y, X = patsy.dmatrices("cases ~ year", aids)
+
+X_lab = X.design_info.column_names
+y = np.asarray(y).flatten()
+X = np.asarray(X)
+
+with pm.Model(coords = {"coeffs": X_lab}) as model:
+    b = pm.Cauchy("b", alpha=0, beta=1, dims="coeffs")
+    η = X @ b
+    λ = pm.Deterministic("λ", np.exp(η))
+    
+    y_ = pm.Poisson("y", mu=λ, observed=y)
+    
+    post = pm.sample(random_seed=1234, progressbar=False)
+```
+:::
+
+
+## Adjusting the sampler
+
+::: {.small}
+```{python}
+with model:
+  post = pm.sample(
+    random_seed=1234, progressbar=False, 
+    step = pm.NUTS(max_treedepth=20)
+  )
+```
+:::
+
+
+## Summary
+
+::: {.small}
+```{python}
+az.summary(post)
+```
+:::
+
+
+## Trace plots
+
+::: {.small}
+```{python}
+ax = az.plot_trace(post)
+plt.show()
+```
+:::
+
+
+## Trace plots (again)
+
+::: {.small}
+```{python}
+ax = az.plot_trace(post.posterior["b"], compact=False)
+plt.show()
+```
+:::
+
+
+## Predictions (λ)
+
+::: {.small}
+```{python}
+plt.figure(figsize=(12,6))
+sns.scatterplot(x="year", y="cases", data=aids)
+sns.lineplot(x="year", y=post.posterior["λ"].mean(dim=["chain", "draw"]),
+             data=aids, color='red')
+plt.title("AIDS cases in Belgium")
+plt.show()
+```
+:::
+
+
+## Revised model
+
+::: {.small}
+```{python}
+y, X = patsy.dmatrices(
+  "cases ~ year_min + np.power(year_min,2)", 
+  aids.assign(year_min = lambda x: x.year-np.min(x.year))
+)
+
+X_lab = X.design_info.column_names
+y = np.asarray(y).flatten()
+X = np.asarray(X)
+
+with pm.Model(coords = {"coeffs": X_lab}) as model:
+    b = pm.Cauchy("b", alpha=0, beta=1, dims="coeffs")
+    η = X @ b
+    λ = pm.Deterministic("λ", np.exp(η))
+    
+    y_ = pm.Poisson("y", mu=λ, observed=y)
+    
+    post = pm.sample(random_seed=1234, progressbar=False)
+```
+:::
+
+## Summary
+
+::: {.small}
+```{python}
+az.summary(post)
+```
+:::
+
+## Trace plots
+
+::: {.small}
+```{python}
+ax = az.plot_trace(post.posterior["b"], compact=False)
+plt.show()
+```
+:::
+
+
+## Predictions (λ)
+
+::: {.small}
+```{python}
+plt.figure(figsize=(12,6))
+sns.scatterplot(x="year", y="cases", data=aids)
+sns.lineplot(x="year", y=post.posterior["λ"].mean(dim=["chain", "draw"]),
+             data=aids, color='red')
+plt.title("AIDS cases in Belgium")
+plt.show()
+```
+:::
+
+# Demo 3 - Gaussian Process
+
+## Data
+
+::: {.small}
+```{python}
+d = pd.read_csv("data/Lec20/gp.csv")
+d
+
+n = d.shape[0]
+D = np.array([ np.abs(xi - d.x) for xi in d.x])
+I = np.eye(n)
+```
+:::
+
+##
+
+::: {.small}
+```{python}
+fig = plt.figure(figsize=(12, 5))
+ax = sns.scatterplot(x="x", y="y", data=d)
+plt.show()
+```
+:::
+
+
+
+## GP model
+
+::: {.small}
+```{python}
+with pm.Model() as model:
+  l = pm.Gamma("l", alpha=2, beta=1)
+  s = pm.HalfCauchy("s", beta=5)
+  nug = pm.HalfCauchy("nug", beta=5)
+
+  cov = s**2 * pm.gp.cov.ExpQuad(1, l)
+  gp = pm.gp.Marginal(cov_func=cov)
+
+  y_ = gp.marginal_likelihood(
+    "y", 
+    X=d.x.to_numpy().reshape(-1,1), 
+    y=d.y.to_numpy(), 
+    sigma=nug
+  )
+```
+:::
+
+## Model visualization
+
+```{python}
+#| eval: false
+pm.model_to_graphviz(model)
+```
+
+```{dot}
+//| echo: false
+digraph {
+	s [label="s~HalfCauchy" shape=ellipse]
+	l [label="l~Gamma" shape=ellipse]
+	nug [label="nug~HalfCauchy" shape=ellipse]
+	subgraph cluster100 {
+		y [label="y~MvNormal" shape=ellipse style=filled]
+		label=100 labeljust=r labelloc=b style=rounded
+	}
+	s -> y
+	l -> y
+	nug -> y
+}
+```
+
+## MAP estimates
+
+::: {.small}
+
+```{python}
+#| results: hide
+with model:
+  gp_map = pm.find_MAP()
+```
+
+```
+|████████████████████████████████| 100.00% [22/22 00:00<00:00 logp = -134.97, ||grad|| = 0.0022539]
+```
+:::
+
+. . .
+
+::: {.small}
+```{python}
+gp_map
+```
+:::
+
+## Sampling
+
+::: {.small}
+```{python}
+with model:
+  post_nuts = pm.sample(
+    chains=2, cores=1,
+    progressbar = False
+  )
+```
+:::
+
+. . .
+
+::: {.small}
+```{python}
+az.summary(post_nuts)
+```
+:::
+
+
+## Trace plots
+
+::: {.small}
+```{python}
+ax = az.plot_trace(post_nuts)
+plt.show()
+```
+:::
+
+
+## slice sampler
+
+::: {.small}
+```{python}
+with model:
+    post_slice = pm.sample(
+        chains = 2, cores = 1,
+        step = pm.Slice([l,s,nug]),
+        progressbar = False
+    )
+```
+:::
+
+. . .
+
+::: {.small}
+```{python}
+az.summary(post_slice)
+```
+:::
+
+## MH sampler
+
+::: {.small}
+```{python}
+with model:
+    post_mh = pm.sample(
+        chains = 2, cores = 1,
+        step = pm.Metropolis([l,s,nug]),
+        progressbar = False
+    )
+```
+:::
+
+. . .
+
+::: {.small}
+```{python}
+az.summary(post_mh)
+```
+:::
+
+## Mixing and matching
+
+::: {.small}
+```{python}
+with model:
+    post_mix = pm.sample(
+        chains = 2, cores = 1,
+        step = [
+          pm.Metropolis([l]),
+          pm.Slice([s])
+        ],
+        progressbar = False
+    )
+```
+:::
+
+. . .
+
+::: {.small}
+```{python}
+az.summary(post_mix)
+```
+:::
+
+
+## NUTS sampler (JAX)
+
+::: {.small}
+```{python}
+from pymc.sampling import jax
+
+with model:
+    post_jax = jax.sample_blackjax_nuts(
+        chains = 2, cores = 1
+    )
+```
+:::
+
+. . .
+
+::: {.small}
+```{python}
+az.summary(post_jax)
+```
+:::
+
+
+
+
+## Conditional Predictions (MAP)
+
+::: {.small}
+```{python}
+#| results: hide
+with model:
+  X_new = np.linspace(0, 1.2, 121).reshape(-1, 1)
+  y_pred = gp.conditional("y_pred", X_new)
+  pred_map = pm.sample_posterior_predictive(
+    [gp_map], var_names=["y_pred"], progressbar = False
+  )
+```
+
+```
+Sampling: [y_pred]------------------------| 0.00% [0/1 00:00<?]
+ |████████████████████████████████████████| 100.00% [1/1 00:00<00:00]
+```
+:::
+
+
+
+. . .
+
+```{python}
+#| echo: false
+d_pred = pd.DataFrame({
+  "y": pred_map.posterior_predictive["y_pred"].values.reshape(-1),
+  "x": X_new.reshape(-1)
+})
+
+fig = plt.figure(figsize=(12, 5))
+ax = sns.scatterplot(x="x", y="y", data=d)
+ax = sns.lineplot(x="x", y="y", data=d_pred, color='red')
+plt.show()
+```
+
+
+## Conditional Predictions (thinned posterior)
+
+
+::: {.small}
+```{python}
+#| eval: false
+with model:
+  pred_post = pm.sample_posterior_predictive(
+    post_nuts.sel(draw=slice(None,None,10)), var_names=["y_pred"]
+  )
+```
+
+```
+Sampling: [y_pred]
+ |████████████████████████████████████████| 100.00% [400/400 03:40<00:00]
+```
+:::
+
+```{python}
+#| eval: false
+#| include: false
+pred_post.to_netcdf("data/Lec20/gp_post_pred.nc")
+```
+
+```{python}
+#| include: false
+pred_post = az.from_netcdf("data/Lec20/gp_post_pred.nc")
+```
+
+. . .
+
+```{python}
+#| echo: false
+
+fig = plt.figure(figsize=(12, 5))
+ax = sns.scatterplot(x="x", y="y", data=d)
+ax = plt.plot(
+  X_new.reshape(-1), 
+  pred_post.posterior_predictive["y_pred"].mean(dim=["chain", "draw"]),
+  color='red', label="post mean"
+)
+for y in pred_post.posterior_predictive["y_pred"][0]:
+  ax = plt.plot(X_new.reshape(-1), y, color='grey', alpha=0.1)
+l = plt.legend()
+plt.show()
+```
+
+
+## Conditional Predictions w/ nugget
+
+
+::: {.small}
+```{python}
+#| eval: false
+with model:
+  y_star = gp.conditional("y_star", X_new, pred_noise=True)
+  predn_post = pm.sample_posterior_predictive(
+    post_nuts.sel(draw=slice(None,None,10)), var_names=["y_star"]
+  )
+```
+
+```
+Sampling: [y_star]
+ |████████████████████████████████████████| 100.00% [200/200 01:51<00:00]
+```
+:::
+
+```{python}
+#| eval: false
+#| include: false
+predn_post.to_netcdf("data/Lec20/gp_post_predn.nc")
+```
+
+```{python}
+#| include: false
+predn_post = az.from_netcdf("data/Lec20/gp_post_predn.nc")
+```
+
+. . .
+
+```{python}
+#| echo: false
+
+fig = plt.figure(figsize=(12, 5))
+ax = sns.scatterplot(x="x", y="y", data=d)
+ax = plt.plot(
+  X_new.reshape(-1), 
+  predn_post.posterior_predictive["y_star"].mean(dim=["chain", "draw"]),
+  color='red', label="post mean"
+)
+for y in predn_post.posterior_predictive["y_star"][0]:
+  ax = plt.plot(X_new.reshape(-1), y, color='grey', alpha=0.1)
+l = plt.legend()
+plt.show()
+```

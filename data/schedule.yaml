@@ -231,7 +231,7 @@ schedule:
   day: 5
   lecture: "PyMC + ArviZ"
   slides: Lec19
-  screencast: 
+  screencast: https://youtu.be/2mTPyr3LK5w
   readings:
   - text: PyMC introduction
     link: https://www.pymc.io/projects/docs/en/stable/learn/core_notebooks/pymc_overview.html#pymc-overview
@@ -241,7 +241,7 @@ schedule:
 - week: 11
   day: 3
   lecture: "More PyMC"
-  slides: 
+  slides: Lec20
   screencast: 
   readings:
   notes: 
