@@ -218,7 +218,7 @@ schedule:
   day: 3
   lecture: "patsy + statsmodels"
   slides: Lec18
-  screencast: https://youtu.be/8K0aRBVelm0
+  screencast: https://youtu.be/u1Y7xEGNINo
   readings:
   - text: patsy docs
     link: https://patsy.readthedocs.io/en/latest/
