@@ -1,0 +1,144 @@
+---
+title: "Lec 21 - Demo"
+format: html
+---
+
+## Setup
+
+```{python}
+import numpy as np
+import pandas as pd
+import seaborn as sns
+
+import pyarrow as pa
+
+import polars as pl
+```
+
+## Data
+
+```{python}
+df_lazy  = pl.scan_parquet("~/Scratch/nyc_taxi/yellow_tripdata_2022-*.parquet")
+df_eager = pl.read_parquet("~/Scratch/nyc_taxi/yellow_tripdata_2022-*.parquet")
+```
+
+```{python}
+df_eager.schema
+```
+
+```{python}
+df_eager.columns
+```
+
+## Tipping rates
+
+```{python}
+df_eager.select([
+  "tpep_pickup_datetime", "tip_amount", "fare_amount", "total_amount",
+  (pl.col("tip_amount") / pl.col("fare_amount")).alias("tip_perc")
+])
+```
+
+```{python}
+df_eager.select([
+  "tpep_pickup_datetime", "tip_amount", "fare_amount", "total_amount",
+  (pl.col("tip_amount") / pl.col("fare_amount")).alias("tip_perc")
+]).select([
+  pl.min("tip_perc").alias("min"),
+  pl.mean("tip_perc").alias("mean"),
+  pl.median("tip_perc").alias("median"),
+  pl.max("tip_perc").alias("max")
+])
+```
+
+```{python}
+df_eager.filter(
+  (pl.col("fare_amount") > 0) &
+  (pl.col("tip_amount") > 0)
+).select([
+  "tpep_pickup_datetime", "tip_amount", "fare_amount", "total_amount",
+  (pl.col("tip_amount") / (pl.col("total_amount") - pl.col("tip_amount"))).alias("tip_perc")
+]).with_columns([
+  pl.all().sort_by("tip_perc")
+])
+```
+
+
+```{python}
+df_eager.filter(
+  (pl.col("fare_amount") > 0) &
+  (pl.col("tip_amount") > 0)
+).select([
+  "tpep_pickup_datetime", "tip_amount", "fare_amount", "total_amount",
+  (pl.col("tip_amount") / (pl.col("total_amount") - pl.col("tip_amount"))).alias("tip_perc")
+]).select([
+  pl.min("tip_perc").alias("min"),
+  pl.mean("tip_perc").alias("mean"),
+  pl.median("tip_perc").alias("median"),
+  pl.max("tip_perc").alias("max")
+])
+```
+
+```{python}
+df_eager.filter(
+  (pl.col("fare_amount") > 0) &
+  (pl.col("tip_amount") > 0)
+).select([
+  "tpep_pickup_datetime", "tip_amount", "fare_amount", "total_amount",
+  (pl.col("tip_amount") / (pl.col("total_amount") - pl.col("tip_amount"))).alias("tip_perc"),
+  pl.col("tpep_pickup_datetime").dt.hour().alias("hour"),
+  pl.col("tpep_pickup_datetime").dt.weekday().alias("wday")
+]).groupby(
+  ["hour","wday"]
+).agg([
+  pl.mean("tip_perc").alias("mean_tip_perc")
+]).with_columns([
+  pl.all().sort_by("mean_tip_perc")
+])
+```
+
+```{python}
+df_eager.filter(
+  (pl.col("fare_amount") > 0) &
+  (pl.col("tip_amount") > 0)
+).select([
+  "tpep_pickup_datetime", "tip_amount", "fare_amount", "total_amount",
+  (pl.col("tip_amount") / (pl.col("total_amount") - pl.col("tip_amount"))).alias("tip_perc"),
+  pl.col("tpep_pickup_datetime").dt.hour().alias("hour"),
+  pl.col("tpep_pickup_datetime").dt.weekday().alias("wday")
+]).groupby(
+  ["hour","wday"]
+).agg([
+  pl.mean("tip_perc").alias("mean_tip_perc")
+]).with_columns([
+  pl.col("mean_tip_perc").round(3)
+]).with_columns([
+  pl.all().sort_by(["wday", "hour"])
+]).pivot(
+  values="mean_tip_perc", index="wday", columns="hour"
+)
+```
+
+
+```{python}
+df_lazy.filter(
+  (pl.col("fare_amount") > 0) &
+  (pl.col("tip_amount") > 0)
+).select([
+  "tpep_pickup_datetime", "tip_amount", "fare_amount", "total_amount",
+  (pl.col("tip_amount") / (pl.col("total_amount") - pl.col("tip_amount"))).alias("tip_perc"),
+  pl.col("tpep_pickup_datetime").dt.hour().alias("hour"),
+  pl.col("tpep_pickup_datetime").dt.weekday().alias("wday")
+]).groupby(
+  ["hour","wday"]
+).agg([
+  pl.mean("tip_perc").alias("mean_tip_perc")
+]).with_columns([
+  pl.col("mean_tip_perc").round(3)
+]).with_columns([
+  pl.all().sort_by(["wday", "hour"])
+]).collect(
+).pivot(
+  values="mean_tip_perc", index="wday", columns="hour"
+)
+```

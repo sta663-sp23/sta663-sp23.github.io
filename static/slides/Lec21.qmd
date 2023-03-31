@@ -1,0 +1,977 @@
+---
+title: "Apache Arrow"
+subtitle: "Lecture 21"
+author: "Dr. Colin Rundel"
+footer: "Sta 663 - Spring 2023"
+format:
+  revealjs:
+    theme: slides.scss
+    transition: fade
+    slide-number: true
+    self-contained: true
+execute: 
+  echo: true
+---
+
+```{python setup}
+#| include: false
+import numpy as np
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+import scipy
+
+import os
+
+plt.rcParams['figure.dpi'] = 200
+
+np.set_printoptions(
+  edgeitems=30, linewidth=200,
+  precision = 5, suppress=True
+  #formatter=dict(float=lambda x: "%.5g" % x)
+)
+
+pd.set_option("display.width", 130)
+pd.set_option("display.max_columns", 10)
+pd.set_option("display.precision", 6)
+```
+
+```{r r_setup}
+#| include: false
+knitr::opts_chunk$set(
+  fig.align="center",
+  cache=FALSE
+)
+
+local({
+  hook_err_old <- knitr::knit_hooks$get("error")  # save the old hook
+  knitr::knit_hooks$set(error = function(x, options) {
+    # now do whatever you want to do with x, and pass
+    # the new x to the old hook
+    x = sub("## \n## Detailed traceback:\n.*$", "", x)
+    x = sub("Error in py_call_impl\\(.*?\\)\\: ", "", x)
+    #x = stringr::str_wrap(x, width = 100)
+    hook_err_old(x, options)
+  })
+  
+  hook_warn_old <- knitr::knit_hooks$get("warning")  # save the old hook
+  knitr::knit_hooks$set(warning = function(x, options) {
+    x = sub("<string>:1: ", "", x)
+    #x = stringr::str_wrap(x, width = 100)
+    hook_warn_old(x, options)
+  })
+  
+  hook_msg_old <- knitr::knit_hooks$get("output")  # save the old hook
+  knitr::knit_hooks$set(output = function(x, options) {
+    x = stringr::str_replace(x, "(## ).* ([A-Za-z]+Warning:)", "\\1\\2")
+    x = stringr::str_split(x, "\n")[[1]]
+    #x = stringr::str_wrap(x, width = 120, exdent = 3)
+    x = stringr::str_remove_all(x, "\r")
+    x = stringi::stri_wrap(x, width=120, exdent = 3, normalize=FALSE)
+    x = paste(x, collapse="\n")
+    
+    #x = stringr::str_wrap(x, width = 100)
+    hook_msg_old(x, options)
+  })
+})
+```
+
+
+## Apache Arrow
+
+:::: {.columns .small}
+::: {.column width='66%'}
+> Apache Arrow is a software development platform for building high performance applications that process and transport large data sets. It is designed to both improve the performance of analytical algorithms and the efficiency of moving data from one system or programming language to another.
+> <br/>
+> A critical component of Apache Arrow is its in-memory columnar format, a standardized, language-agnostic specification for representing structured, table-like datasets in-memory. This data format has a rich data type system (included nested and user-defined data types) designed to support the needs of analytic database systems, data frame libraries, and more.
+:::
+
+::: {.column width='33%'}
+![](imgs/arrow_cols.png){fig-align="center" width="100%"}
+:::
+::::
+
+
+
+## Language support
+
+:::: {.columns .small}
+::: {.column width='33%'}
+Core implementations in:
+
+* C
+* C++
+* C#
+* go
+* Java
+* JavaScript
+* Julia
+* Rust
+* MATLAB
+* Python
+* R
+* Ruby
+:::
+
+::: {.column width='66%'}
+<br/>
+<br/>
+![](imgs/arrow_memory.png){fig-align="center" width="100%"}
+:::
+::::
+
+
+## pyarrow
+
+```{python}
+import pyarrow as pa
+```
+
+. . .
+
+The basic building blocks of Arrow are `array` objects, arrays are collections of data of a uniform type.
+
+:::: {.columns .small}
+::: {.column width='50%'}
+```{python}
+num  = pa.array([1, 2, 3, 2], type=pa.int8()); num
+year = pa.array([2019,2020,2021,2022]); year
+```
+:::
+
+::: {.column width='50%' .fragment}
+```{python}
+name = pa.array(
+  ["Alice", "Bob", "Carol", "Dave"],
+  type=pa.string()
+)
+name
+```
+:::
+::::
+
+
+## Tables
+
+A table is created by combining multiple arrays together to form the columns while also attaching names for each column.
+
+::: {.small}
+```{python}
+t = pa.table(
+  [num, year, name],
+  names = ["num", "year", "name"]
+)
+t
+```
+:::
+
+
+::: {.aside}
+`table` is part of pyarrow but not part of the arrow standard, more on this in a bit
+:::
+
+
+## Array indexing
+
+Elements of an array can be selected using `[]` with an integer index or a slice, the former returns a typed scalar the latter an array.
+
+:::: {.columns .small}
+::: {.column width='50%'}
+```{python, error=TRUE}
+name[0]
+name[0:3]
+name[:]
+```
+:::
+
+::: {.column width='50%' .fragment}
+```{python, error=TRUE}
+name[-1]
+name[::-1]
+name[4]
+name[0] = "Patty"
+```
+:::
+::::
+
+::: {.aside}
+Arrow arrays are immutable and as such do not allow for element assignment.
+:::
+
+
+## Data Types
+
+The following types are language agnostic for the purpose of portability, however some differ slightly from what is available from Numpy and Pandas (or R),
+
+* *Fixed-length primitive types* - numbers, booleans, date and times, fixed size binary, decimals, and other values that fit into a given number
+  * Examples: `bool_()`, `uint64()`, `timestamp()`, `date64()`, and many more
+
+* *Variable-length primitive types* - binary, string
+
+* *Nested types* - list, map, struct, and union
+
+* *Dictionary type* - An encoded categorical type
+
+
+::: {.aside}
+See [here](https://arrow.apache.org/docs/python/api/datatypes.html#api-types) for the full list of types.
+:::
+
+## Schemas
+
+are a data structure that contains information on the names and types of columns for a table (or record batch),
+
+:::: {.columns .small}
+::: {.column width='50%'}
+```{python}
+t.schema
+```
+:::
+
+::: {.column width='50%'}
+```{python}
+pa.schema([
+  ('num', num.type),
+  ('year', year.type),
+  ('name', name.type)
+])
+```
+:::
+::::
+
+## Schema metadata
+
+Schemas can also store additional metadata (e.g. codebook like textual descriptions) in the form of a string:string dictionary,
+
+:::: {.columns .small}
+::: {.column width='50%'}
+```{python}
+new_schema = t.schema.with_metadata({
+  'num': "Favorite number",
+  'year': "Year expected to graduate",
+  'name': "First name"
+})
+```
+:::
+
+::: {.column width='50%'}
+```{python}
+new_schema
+```
+:::
+::::
+
+. . .
+
+:::: {.columns .small}
+::: {.column width='50%'}
+```{python}
+t.schema
+```
+:::
+
+::: {.column width='50%'}
+```{python}
+t.cast(new_schema).schema
+```
+:::
+::::
+
+
+
+## Missing values / None / NANs
+
+:::: {.columns .small}
+::: {.column width='50%'}
+```{python}
+pa.array([1,2,None,3])
+pa.array([1.,2.,None,3.])
+```
+:::
+
+::: {.column width='50%'}
+```{python}
+pa.array([1,2,np.nan,3])
+pa.array(["alice","bob",None,"dave"])
+```
+:::
+::::
+
+. . .
+
+:::: {.columns .small}
+::: {.column width='50%'}
+```{python}
+pa.array([1,2,None,3])[2]
+pa.array([1.,2.,None,3.])[2]
+```
+:::
+
+::: {.column width='50%'}
+```{python}
+pa.array([1,2,np.nan,3])[2]
+pa.array(["alice","bob",None,"dave"])[2]
+```
+:::
+::::
+
+
+## Nest type arrays
+
+:::: {.columns .small}
+::: {.column width='50%'}
+list type:
+```{python}
+pa.array([[1,2], [3,4], None, [5,None]])
+```
+:::
+
+::: {.column width='50%' .fragment}
+struct type:
+```{python}
+pa.array([
+  {'x': 1, 'y': True, 'z': "Alice"},
+  {'x': 2,            'z': "Bob"  },
+  {'x': 3, 'y': False             }
+])
+```
+:::
+::::
+
+::: {.aside}
+See also [map](https://arrow.apache.org/docs/python/data.html#map-arrays) and [union](https://arrow.apache.org/docs/python/data.html#union-arrays) arrays.
+:::
+
+## Dictionary array
+
+A dictionary array is the equivalent to a factor in R or pd.Categorical in Pandas,
+
+
+::: {.small}
+```{python}
+dict_array = pa.DictionaryArray.from_arrays(
+  indices = pa.array([0,0,2,1,3,None]), 
+  dictionary = pa.array(['sun', 'rain', 'clouds', 'snow'])
+)
+dict_array
+```
+:::
+
+##
+
+::: {.small}
+```{python}
+dict_array.type
+```
+:::
+
+
+
+:::: {.columns .small}
+::: {.column width='50%'}
+```{python}
+dict_array.dictionary_decode()
+```
+:::
+
+::: {.column width='50%' .fragment}
+```{python}
+pa.array(['sun', 'rain', 'clouds', 'sun']).dictionary_encode()
+```
+:::
+::::
+
+## Record Batches
+
+Between a table and an array Arrow has the concept of a Record Batch - which represents a chunk of a larger table. They are composed of a named collection of equal-length arrays.
+
+::: {.small}
+```{python}
+batch = pa.RecordBatch.from_arrays(
+  arrays = [num, year, name],
+  names = ["num", "year", "name"]
+)
+batch
+```
+:::
+
+:::: {.columns .small}
+::: {.column width='50%'}
+```{python}
+batch.num_columns
+batch.num_rows
+```
+:::
+
+::: {.column width='50%'}
+```{python}
+batch.nbytes
+batch.schema
+```
+:::
+::::
+
+## Batch indexing
+
+`[]` can be used with a Record Batch to select columns (by name or index) or rows (by slice), additionally the `slice()` method can be used to select rows.
+
+:::: {.columns .small}
+::: {.column width='50%'}
+```{python, error=TRUE}
+batch[0]
+batch["name"]
+```
+:::
+
+::: {.column width='50%' .fragment}
+```{python}
+batch[1::2].to_pandas()
+batch.slice(0,2).to_pandas()
+```
+:::
+::::
+
+## Tables vs Record Batches
+
+As mentioned previously, `table` objects are not part of the Arrow specification - rather they are a convenience tool provided to help with the wrangling of multiple Record Batches.
+
+::: {.small}
+```{python}
+table = pa.Table.from_batches([batch] * 3); table
+```
+:::
+
+. . .
+
+:::: {.columns .small}
+::: {.column width='50%'}
+```{python}
+table.num_columns
+table.num_rows
+```
+:::
+
+::: {.column width='50%'}
+```{python}
+table.to_pandas()
+```
+:::
+::::
+
+
+## Chunked Array
+
+The columns of `table` are therefore composed of the columns of each of the batches, these are stored as ChunckedArrays instead of Arrays to reflect this.
+
+:::: {.columns .small}
+::: {.column width='50%'}
+```{python}
+table["name"]
+```
+:::
+
+::: {.column width='50%'}
+```{python}
+table[1]
+```
+:::
+::::
+
+
+## Arrow + NumPy
+
+Conversion between NumPy arrays and Arrow arrays is straight forward,
+
+::: {.small}
+```{python}
+np.linspace(0,1,11)
+pa.array( np.linspace(0,1,6) )
+
+pa.array(range(10)).to_numpy()
+```
+:::
+
+
+## NumPy & data copies
+
+::: {.small}
+```{python, error=TRUE}
+pa.array(["hello", "world"]).to_numpy()
+pa.array(["hello", "world"]).to_numpy(zero_copy_only=False)
+```
+:::
+
+. . .
+
+::: {.small}
+```{python, error=TRUE}
+pa.array([1,2,None,4]).to_numpy()
+pa.array([1,2,None,4]).to_numpy(zero_copy_only=False)
+```
+:::
+
+. . .
+
+::: {.small}
+```{python, error=TRUE}
+pa.array([[1,2], [3,4], [5,6]]).to_numpy()
+pa.array([[1,2], [3,4], [5,6]]).to_numpy(zero_copy_only=False)
+```
+:::
+
+
+
+## Pandas -> Arrow
+
+We've already seen some basic conversion of Arrow table objects to Pandas, the conversions here are a bit more complex than with NumPy due in large part to how Pandas handles missing data.
+
+::: {.small}
+| Source (Pandas)       | Destination (Arrow)   |
+|-----------------------|-----------------------|
+| `bool`                | `BOOL`                |
+| `(u)int{8,16,32,64}`  | `(U)INT{8,16,32,64}`  |
+| `float32`             | `FLOAT`               |
+| `float64`             | `DOUBLE`              |
+| `str / unicode`       | `STRING`              |
+| `pd.Categorical`      | `DICTIONARY`          |
+| `pd.Timestamp`        | `TIMESTAMP(unit=ns)`  |
+| `datetime.date`       | `DATE`                |
+| `datetime.time`       | `TIME64`              |
+:::
+
+::: {.aside}
+From [Type differences](https://arrow.apache.org/docs/python/pandas.html#type-differences) documentation
+:::
+
+## Arrow -> Pandas
+
+::: {.small}
+| Source (Arrow)                  | Destination (Pandas)                           |
+|---------------------------------|------------------------------------------------|
+| `BOOL`                          | `bool`                                         |
+| `BOOL` with nulls	              | `object` (with values `True`, `False`, `None`) |
+| `(U)INT{8,16,32,64}`            | `(u)int{8,16,32,64}`                           |
+| `(U)INT{8,16,32,64}` with nulls	| `float64`                                      |
+| `FLOAT`	                        | `float32`                                      |
+| `DOUBLE`	                      | `float64`                                      |
+| `STRING`	                      | `str`                                          |
+| `DICTIONARY`	                  | `pd.Categorical`                               |
+| `TIMESTAMP(unit=*)`             | `pd.Timestamp` (`np.datetime64[ns]`)           |
+| `DATE`	                        | `object` (with `datetime.date` objects)        |
+| `TIME64`	                      | `object` (with `datetime.time` objects)        |
+:::
+
+
+
+::: {.aside}
+From [Type differences](https://arrow.apache.org/docs/python/pandas.html#type-differences) documentation
+:::
+
+
+## Series & data copies
+
+::: {.medium}
+Due to these discrepancies it is much more likely that converting from an Arrow array to a Panda series will require a type to be changed in which case the data will need to be copied. Like `to_numpy()`, `to_pandas()` also accepts the `zero_copy_only` argument, however its default is `False`.
+:::
+
+:::: {.columns .small}
+::: {.column width='50%'}
+```{python}
+pa.array([1,2,3,4]).to_pandas()
+pa.array(["hello", "world"]).to_pandas()
+pa.array(["hello", "world"]).dictionary_encode().to_pandas()
+```
+:::
+
+::: {.column width='50%'}
+```{python error=TRUE}
+pa.array([1,2,3,4]).to_pandas(zero_copy_only=True)
+pa.array(["hello", "world"]).to_pandas(zero_copy_only=True)
+pa.array(["hello", "world"]).dictionary_encode().to_pandas(zero_copy_only=True)
+```
+:::
+::::
+
+
+## Zero Copy Series conversions
+
+> Zero copy conversions from `Array` or `ChunkedArray` to NumPy arrays or pandas Series are possible in certain narrow cases:
+>
+> * The Arrow data is stored in an integer (signed or unsigned `int8` through `int64`) or floating point type (`float16` through `float64`). This includes many numeric types as well as timestamps.
+>
+> * The Arrow data has no null values (since these are represented using bitmaps which are not supported by pandas).
+> 
+> * For `ChunkedArray`, the data consists of a single chunk, i.e. `arr.num_chunks == 1`. Multiple chunks will always require a copy because of pandas’s contiguousness requirement.
+>
+> In these scenarios, `to_pandas` or `to_numpy` will be zero copy. In all other scenarios, a copy will be required.
+
+## DataFrame & data copies
+
+:::: {.columns .small}
+::: {.column width='33%'}
+```{python error=TRUE}
+table.to_pandas()
+table.schema
+```
+:::
+
+::: {.column width='66%'}
+```{python error=TRUE}
+table.to_pandas(zero_copy_only=True)
+table.drop(
+  ['name']
+).to_pandas(zero_copy_only=True)
+pa.table(
+  [num,year], names=["num","year"]
+).to_pandas(zero_copy_only=True)
+```
+:::
+::::
+
+
+::: {.aside}
+[Source](https://arrow.apache.org/docs/python/pandas.html#zero-copy-series-conversions)
+:::
+
+## Pandas DF -> Arrow
+
+To convert from a Pandas DataFrame to an Arrow Table we can use the `from_pandas()` method (schemas can also be inferred from DataFrames)
+
+::: {.small}
+```{python}
+df = pd.DataFrame({
+  'x': np.round(np.random.normal(size=5),3),
+  'y': ["A","A","B","C","C"],
+  'z': [1,2,3,4,5]
+})
+```
+:::
+
+:::: {.columns .small}
+::: {.column width='50%'}
+```{python}
+pa.Table.from_pandas(df)
+```
+:::
+
+::: {.column width='50%'}
+```{python}
+pa.Schema.from_pandas(df)
+```
+:::
+::::
+
+::: {.aside}
+The import of Pandas indexes is governed by the `preserve_index` argument
+:::
+
+# An aside on tabular file formats
+
+## Comma Separated Values
+
+This and other text & delimiter based file formats are the most common and generally considered the most portable, however they have a number of significant draw backs
+
+* no explicit schema or other metadata
+
+* column types must be inferred from the data
+
+* numerical values stored as text (efficiency and precision issues)
+
+* limited compression options
+
+## (Apache) Parquet
+
+> ... provides a standardized open-source columnar storage format for use in data analysis systems. It was created originally for use in Apache Hadoop with systems like Apache Drill, Apache Hive, Apache Impala, and Apache Spark adopting it as a shared standard for high performance data IO.
+
+. . .
+
+#### Core features:
+
+* The values in each column are physically stored in contiguous memory locations
+
+* Efficient column-wise compression saves storage space
+
+* Compression techniques specific to a type can be applied 
+
+* Queries that fetch specific column values do not read the entire row
+
+* Different encoding techniques can be applied to different columns
+
+
+## Feather
+
+> ... is a portable file format for storing Arrow tables or data frames (from languages like Python or R) that utilizes the Arrow IPC format internally. Feather was created early in the Arrow project as a proof of concept for fast, language-agnostic data frame storage for Python (pandas) and R.
+
+#### Core features:
+
+* Direct columnar serialization of Arrow tables
+
+* Supports all Arrow data types and compression
+
+* Language agnostic
+
+* Metadata makes it possible to read only the necessary columns for an operation
+
+
+# Example - File Format Performance
+
+::: {.small}
+ Based on [Apache Arrow: Read DataFrame With Zero Memory](https://towardsdatascience.com/apache-arrow-read-dataframe-with-zero-memory-69634092b1a) 
+:::
+
+
+## Building a large dataset
+
+::: {.small}
+```{python}
+np.random.seed(1234)
+
+df = (
+  pd.read_csv("https://sta663-sp22.github.io/slides/data/penguins.csv")
+    .sample(10_000_000, replace=True)
+    .reset_index(drop=True)
+)
+
+num_cols = ["bill_length_mm", "bill_depth_mm", "flipper_length_mm",	"body_mass_g"]
+df[num_cols] = df[num_cols] + np.random.normal(size=(df.shape[0],len(num_cols)))
+
+df
+```
+:::
+
+
+## Create output files
+
+::: {.small}
+```{python}
+#| eval: false
+import os
+os.makedirs("scratch/", exist_ok=True)
+
+df.to_csv("scratch/penguins-large.csv")
+df.to_parquet("scratch/penguins-large.parquet")
+
+import pyarrow.feather
+
+pyarrow.feather.write_feather(
+    pa.Table.from_pandas(df), 
+    "scratch/penguins-large.feather"
+)
+
+pyarrow.feather.write_feather(
+    pa.Table.from_pandas(df.dropna()), 
+    "scratch/penguins-large_nona.feather"
+)
+```
+:::
+
+
+## File Sizes
+
+::: {.small}
+```{python}
+def file_size(f):
+    x = os.path.getsize(f)
+    print(f, "\t\t", round(x / (1024 * 1024),2), "MB")
+```
+
+```python
+file_size( "scratch/penguins-large.csv" )
+```
+```
+## scratch/penguins-large.csv 		 1018.68 MB
+```
+
+```python
+file_size( "scratch/penguins-large.parquet" )
+```
+```
+## scratch/penguins-large.parquet 		 314.19 MB
+```
+
+```python
+file_size( "scratch/penguins-large.feather" )
+```
+```
+## scratch/penguins-large.feather 		 489.14 MB
+```
+
+```python
+file_size( "scratch/penguins-large_nona.feather" )
+```
+```
+## scratch/penguins-large_nona.feather 		 509.24 MB
+```
+:::
+
+
+## Read Performance
+
+```python
+%timeit pd.read_csv("scratch/penguins-large.csv")
+```
+```
+## 5.2 s ± 50.4 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+```
+
+. . .
+
+```python
+%timeit pd.read_parquet("scratch/penguins-large.parquet")
+```
+```
+## 713 ms ± 11.7 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+```
+
+. . .
+
+```python
+%timeit pyarrow.csv.read_csv("scratch/penguins-large.csv")
+```
+
+```
+## 359 ms ± 61.7 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+```
+
+. . .
+
+```python
+%timeit pyarrow.parquet.read_table("scratch/penguins-large.parquet")
+```
+```
+## 213 ms ± 2.83 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+```
+
+. . .
+
+```python
+%timeit pyarrow.feather.read_table("scratch/penguins-large.feather")
+```
+```
+90.9 ms ± 528 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)
+```
+
+. . .
+
+```python
+%timeit pyarrow.feather.read_table("scratch/penguins-large_nona.feather")
+```
+```
+94.5 ms ± 192 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)
+```
+
+## Read Performance (Arrow -> Pandas)
+
+```python
+%timeit pyarrow.csv.read_csv("scratch/penguins-large.csv").to_pandas()
+```
+
+```
+## 921 ms ± 75 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+```
+
+. . .
+
+```python
+%timeit pyarrow.parquet.read_table("scratch/penguins-large.parquet").to_pandas()
+```
+
+```
+## 727 ms ± 41.8 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+```
+
+. . .
+
+```python
+%timeit pyarrow.feather.read_feather("scratch/penguins-large.feather")
+```
+
+```
+## 542 ms ± 6 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+```
+
+. . .
+
+```python
+%timeit pyarrow.feather.read_feather("scratch/penguins-large_nona.feather")
+```
+
+```
+## 547 ms ± 16.6 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+```
+
+
+## Column subset calculations - CSV & Parquet
+
+```python
+%timeit pd.read_csv("scratch/penguins-large.csv")["flipper_length_mm"].mean()
+```
+
+```
+## 5.21 s ± 82.1 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+```
+
+. . .
+
+```python
+%timeit pd.read_parquet("scratch/penguins-large.parquet",  columns=["flipper_length_mm"]).mean()
+```
+
+```
+## 80.8 ms ± 619 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)
+```
+
+. . .
+
+```python
+%timeit pyarrow.parquet.read_table("scratch/penguins-large.parquet", columns=["flipper_length_mm"]).to_pandas().mean()
+```
+
+```
+## 85.8 ms ± 599 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)
+```
+
+. . .
+
+```python
+%timeit pyarrow.parquet.read_table("scratch/penguins-large.parquet")["flipper_length_mm"].to_pandas().mean()
+```
+
+```
+## 262 ms ± 9.97 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+```
+
+
+# Polars
+
+## What is Polars?
+
+> Polars is a lightning fast DataFrame library/in-memory query engine. Its embarrassingly parallel execution, cache efficient algorithms and expressive API makes it perfect for efficient data wrangling, data pipelines, snappy APIs and so much more.
+>
+> The goal of Polars is to provide a lightning fast DataFrame library that:
+>
+> * Utilizes all available cores on your machine.
+> * Optimizes queries to reduce unneeded work/memory allocations.
+> * Handles datasets much larger than your available RAM.
+> * Has an API that is consistent and predictable.
+> * Has a strict schema (data-types should be known before running the query).
+>
+> Polars is written in Rust which gives it C/C++ performance and allows it to fully control performance critical parts in a query engine.
+
+## Polars vs Pandas
+
+* Polars does not have a multi-index/index
+
+* Polars uses Apache Arrow arrays to represent data in memory while Pandas uses Numpy arrays
+
+* Polars has more support for parallel operations than Pandas
+
+* Polars can lazily evaluate queries and apply query optimization
+
+* Polars syntax is similar but distinct from Pandas
+
+
+# Demo 1 - NYC Taxis
+
+

@@ -242,20 +242,22 @@ schedule:
   day: 3
   lecture: "More PyMC"
   slides: Lec20
-  screencast: 
+  screencast: https://youtu.be/tEekdNI3ixo
   readings:
   notes: 
 
 - week: 11
   day: 5
-  lecture: "Apache Arrow"
-  slides: 
+  lecture: "Apache Arrow + Polars"
+  slides: Lec21
   screencast: 
   readings:
   - text: PyArrow documentation
     link: https://arrow.apache.org/docs/python/
   - text: PyArrow Cookbook
     link: https://arrow.apache.org/cookbook/py/
+  - text: Polars - User Guide
+    link: https://pola-rs.github.io/polars-book/user-guide/
   notes: 
 
 - week: 12
