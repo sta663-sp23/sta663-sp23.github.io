@@ -250,7 +250,7 @@ schedule:
   day: 5
   lecture: "Apache Arrow + Polars"
   slides: Lec21
-  screencast: 
+  screencast: https://youtu.be/ahKdpRH6LCs
   readings:
   - text: PyArrow documentation
     link: https://arrow.apache.org/docs/python/
@@ -263,7 +263,7 @@ schedule:
 - week: 12
   day: 3
   lecture: "pytorch - Intro"
-  slides: 
+  slides: Lec22
   screencast: 
   readings:
   - text: Intro to PyTorch Tensors

@@ -90,6 +90,10 @@ blockquote {
   max-height: 550px;
 }
 
+.reveal .limit200 pre.sourceCode code, .reveal .limit200 pre code  {
+  max-height: 200px;
+}
+
 .reveal div.sourceCode {
   margin-bottom: 0.33em !important;
 }
