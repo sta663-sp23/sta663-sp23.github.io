@@ -587,6 +587,7 @@ for x in [0.,1.]:
     inputs = (torch.tensor([x]), torch.tensor([y]))
     print(torch.autograd.functional.jacobian(f, inputs),"\n")
 ```
+:::
 
 ##
 

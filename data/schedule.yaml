@@ -264,7 +264,7 @@ schedule:
   day: 3
   lecture: "pytorch - Intro"
   slides: Lec22
-  screencast: 
+  screencast: https://youtu.be/trAAeYE_6U8
   readings:
   - text: Intro to PyTorch Tensors
     link: https://pytorch.org/tutorials/beginner/introyt/tensors_deeper_tutorial.html
@@ -276,7 +276,7 @@ schedule:
 - week: 12
   day: 5
   lecture: "pytorch - nn"
-  slides: 
+  slides: Lec23
   screencast: 
   readings:
   - text: Feedforward Neural Network with PyTorch
