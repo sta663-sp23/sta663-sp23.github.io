@@ -814,8 +814,9 @@ VGG16("cpu").model
 ::: {.small}
 ```{python}
 X, y = next(iter(training_loader))
-
 m_cpu = VGG16(device="cpu")
+tmp = m_cpu(X)
+
 with torch.autograd.profiler.profile(with_stack=True) as prof_cpu:
     tmp = m_cpu(X)
 ```
@@ -831,8 +832,10 @@ print(prof_cpu.key_averages().table(sort_by='self_cpu_time_total', row_limit=5))
 ::: {.small}
 ```{python}
 m_cuda = VGG16(device="cuda")
+Xc, yc = X.to(device="cuda"), y.to(device="cuda")
+tmp = m_cuda(Xc)
+
 with torch.autograd.profiler.profile(with_stack=True) as prof_cuda:
-    Xc, yc = X.to(device="cuda"), y.to(device="cuda")
     tmp = m_cuda(Xc)
 ```
 
@@ -848,8 +851,9 @@ print(prof_cuda.key_averages().table(sort_by='self_cpu_time_total', row_limit=5)
 ```{python}
 #| eval: false
 m_mps = VGG16(device="mps")
+Xm, ym = X.to(device="mps"), y.to(device="mps")
+
 with torch.autograd.profiler.profile(with_stack=True) as prof_mps:
-    Xm, ym = X.to(device="mps"), y.to(device="mps")
     tmp = m_mps(Xm)
 ```
 
@@ -862,13 +866,13 @@ print(prof_mps.key_averages().table(sort_by='self_cpu_time_total', row_limit=5))
 --------------------------------  ------------  ------------  ------------  ------------  ------------  ------------  
                             Name    Self CPU %      Self CPU   CPU total %     CPU total  CPU time avg    # of Calls  
 --------------------------------  ------------  ------------  ------------  ------------  ------------  ------------  
-         aten::native_batch_norm        32.10%       2.997ms        32.10%       2.997ms     230.538us            13  
-          aten::_mps_convolution        15.83%       1.478ms        17.14%       1.600ms     123.077us            13  
-                     aten::relu_        11.40%       1.064ms        11.40%       1.064ms      81.846us            13  
-                     aten::copy_        10.72%       1.001ms        10.77%       1.005ms     502.500us             2  
-                      aten::add_         9.64%     900.000us         9.69%     905.000us      69.615us            13  
+         aten::native_batch_norm        35.71%       3.045ms        35.71%       3.045ms     234.231us            13  
+          aten::_mps_convolution        19.67%       1.677ms        19.88%       1.695ms     130.385us            13  
+    aten::_batch_norm_impl_index        11.92%       1.016ms        36.02%       3.071ms     236.231us            13  
+                     aten::relu_        11.29%     963.000us        11.29%     963.000us      74.077us            13  
+                      aten::add_        10.40%     887.000us        10.44%     890.000us      68.462us            13  
 --------------------------------  ------------  ------------  ------------  ------------  ------------  ------------  
-Self CPU time total: 9.335ms
+Self CPU time total: 8.526ms
 ```
 
 
@@ -959,7 +963,8 @@ def report(model, loader, device):
 ##
 
 ::: {.small}
-```{python eval=FALSE}
+```{python}
+#| eval: false
 print(report(model=m, loader=test_loader, device="cuda"))
 
 ##               precision    recall  f1-score   support
