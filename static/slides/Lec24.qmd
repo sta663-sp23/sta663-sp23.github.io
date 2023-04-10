@@ -569,8 +569,9 @@ Based on [source](https://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.
 
 ::: {.small}
 ```{python}
-m_cpu = cifar_conv_model(device="cpu")
 X, y = next(iter(training_loader))
+
+m_cpu = cifar_conv_model(device="cpu")
 with torch.autograd.profiler.profile(with_stack=True) as prof_cpu:
     tmp = m_cpu(X)
 ```
@@ -586,10 +587,9 @@ print(prof_cpu.key_averages().table(sort_by='self_cpu_time_total', row_limit=5))
 ::: {.small}
 ```{python}
 m_cuda = cifar_conv_model(device="cuda")
-X, y = next(iter(training_loader))
 with torch.autograd.profiler.profile(with_stack=True) as prof_cuda:
-    X, y = X.to(device="cuda"), y.to(device="cuda")
-    tmp = m_cuda(X)
+    Xc, yc = X.to(device="cuda"), y.to(device="cuda")
+    tmp = m_cuda(Xc)
 ```
 
 ```{python, wrap=FALSE}
@@ -793,8 +793,6 @@ class VGG16(torch.nn.Module):
     
     def forward(self, X):
         return self.model(X)
-    
-    
 ```
 :::
 
@@ -806,7 +804,7 @@ Based on code from [pytorch-cifar](https://github.com/kuangliu/pytorch-cifar), o
 
 ::: {.small}
 ```{python}
-VGG16("cuda").model
+VGG16("cpu").model
 ```
 :::
 
@@ -815,8 +813,9 @@ VGG16("cuda").model
 
 ::: {.small}
 ```{python}
-m_cpu = VGG16(device="cpu")
 X, y = next(iter(training_loader))
+
+m_cpu = VGG16(device="cpu")
 with torch.autograd.profiler.profile(with_stack=True) as prof_cpu:
     tmp = m_cpu(X)
 ```
@@ -832,16 +831,45 @@ print(prof_cpu.key_averages().table(sort_by='self_cpu_time_total', row_limit=5))
 ::: {.small}
 ```{python}
 m_cuda = VGG16(device="cuda")
-X, y = next(iter(training_loader))
 with torch.autograd.profiler.profile(with_stack=True) as prof_cuda:
-    X, y = X.to(device="cuda"), y.to(device="cuda")
-    tmp = m_cuda(X)
+    Xc, yc = X.to(device="cuda"), y.to(device="cuda")
+    tmp = m_cuda(Xc)
 ```
 
 ```{python, wrap=FALSE}
 print(prof_cuda.key_averages().table(sort_by='self_cpu_time_total', row_limit=5))
 ```
 :::
+
+
+## VGG16 performance - Apple M1 GPU (mps)
+
+::: {.small}
+```{python}
+#| eval: false
+m_mps = VGG16(device="mps")
+with torch.autograd.profiler.profile(with_stack=True) as prof_mps:
+    Xm, ym = X.to(device="mps"), y.to(device="mps")
+    tmp = m_mps(Xm)
+```
+
+```{python}
+#| eval: false
+print(prof_mps.key_averages().table(sort_by='self_cpu_time_total', row_limit=5))
+```
+
+```
+--------------------------------  ------------  ------------  ------------  ------------  ------------  ------------  
+                            Name    Self CPU %      Self CPU   CPU total %     CPU total  CPU time avg    # of Calls  
+--------------------------------  ------------  ------------  ------------  ------------  ------------  ------------  
+         aten::native_batch_norm        32.10%       2.997ms        32.10%       2.997ms     230.538us            13  
+          aten::_mps_convolution        15.83%       1.478ms        17.14%       1.600ms     123.077us            13  
+                     aten::relu_        11.40%       1.064ms        11.40%       1.064ms      81.846us            13  
+                     aten::copy_        10.72%       1.001ms        10.77%       1.005ms     502.500us             2  
+                      aten::add_         9.64%     900.000us         9.69%     905.000us      69.615us            13  
+--------------------------------  ------------  ------------  ------------  ------------  ------------  ------------  
+Self CPU time total: 9.335ms
+```
 
 
 ## Fitting w/ `lr = 0.01`
