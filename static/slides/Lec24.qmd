@@ -423,6 +423,7 @@ print(prof_cuda.key_averages().table(sort_by='self_cpu_time_total', row_limit=5)
 
 ::: {.small}
 ```{python}
+#| results: hide
 import torchvision
 
 training_data = torchvision.datasets.CIFAR10(
@@ -572,6 +573,8 @@ Based on [source](https://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.
 X, y = next(iter(training_loader))
 
 m_cpu = cifar_conv_model(device="cpu")
+tmp = m_cpu(X)
+
 with torch.autograd.profiler.profile(with_stack=True) as prof_cpu:
     tmp = m_cpu(X)
 ```
@@ -587,8 +590,10 @@ print(prof_cpu.key_averages().table(sort_by='self_cpu_time_total', row_limit=5))
 ::: {.small}
 ```{python}
 m_cuda = cifar_conv_model(device="cuda")
+Xc, yc = X.to(device="cuda"), y.to(device="cuda")
+tmp = m_cuda(Xc)
+    
 with torch.autograd.profiler.profile(with_stack=True) as prof_cuda:
-    Xc, yc = X.to(device="cuda"), y.to(device="cuda")
     tmp = m_cuda(Xc)
 ```
 
@@ -605,6 +610,7 @@ print(prof_cuda.key_averages().table(sort_by='self_cpu_time_total', row_limit=5)
 ::: {.small}
 ```{python}
 m_cpu = cifar_conv_model(device="cpu")
+
 with torch.autograd.profiler.profile(with_stack=True) as prof_cpu:
     m_cpu.fit(loader=training_loader, epochs=1, n_report=501)
 ```
@@ -619,6 +625,7 @@ print(prof_cpu.key_averages().table(sort_by='self_cpu_time_total', row_limit=5))
 ::: {.small}
 ```{python}
 m_cuda = cifar_conv_model(device="cuda")
+
 with torch.autograd.profiler.profile(with_stack=True) as prof_cuda:
     m_cuda.fit(loader=training_loader, epochs=1, n_report=501)
 ```
@@ -630,35 +637,6 @@ print(prof_cuda.key_averages().table(sort_by='self_cpu_time_total', row_limit=5)
 
 
 
-
-## CNN Performance - CPU (2 epochs)
-
-::: {.small}
-```{python}
-m_cpu = cifar_conv_model(device="cpu")
-with torch.autograd.profiler.profile(with_stack=True) as prof_cpu:
-    m_cpu.fit(loader=training_loader, epochs=2, n_report=501)
-```
-
-```{python, wrap=FALSE}
-print(prof_cpu.key_averages().table(sort_by='self_cpu_time_total', row_limit=5))
-```
-:::
-
-
-## CNN Performance - GPU (2 epochs)
-
-::: {.small}
-```{python}
-m_cuda = cifar_conv_model(device="cuda")
-with torch.autograd.profiler.profile(with_stack=True) as prof_cuda:
-    m_cuda.fit(loader=training_loader, epochs=2, n_report=501)
-```
-
-```{python, wrap=FALSE}
-print(prof_cuda.key_averages().table(sort_by='self_cpu_time_total', row_limit=5))
-```
-:::
 
 
 
@@ -874,6 +852,7 @@ print(prof_mps.key_averages().table(sort_by='self_cpu_time_total', row_limit=5))
 --------------------------------  ------------  ------------  ------------  ------------  ------------  ------------  
 Self CPU time total: 8.526ms
 ```
+:::
 
 
 ## Fitting w/ `lr = 0.01`
@@ -983,5 +962,243 @@ print(report(model=m, loader=test_loader, device="cuda"))
 ##     accuracy                           0.84     10000
 ##    macro avg       0.84      0.84      0.84     10000
 ## weighted avg       0.84      0.84      0.84     10000
+```
+:::
+
+
+# Hugging Face
+
+## Hugging Face
+
+is an online community and platform for sharing machine learning models (architectures and weights), data, and related artifacts. They also maintain a number of packages and related training materials that help with building, training, and deploying ML models.
+
+Some notable resources,
+
+* [`transformers`](https://huggingface.co/docs/transformers/index) - APIs and tools to easily download and train state-of-the-art (pretrained) transformer based models 
+
+* [`diffusers`](https://huggingface.co/docs/diffusers/index) - provides pretrained vision and audio diffusion models, and serves as a modular toolbox for inference and training
+
+* [`timm`](https://huggingface.co/docs/timm/index) - a library containing SOTA computer vision models, layers, utilities, optimizers, schedulers, data-loaders, augmentations, and training/evaluation scripts
+
+
+## Stable Diffusion
+
+::: {.small}
+```{python}
+#| warning: false
+#| message: false
+#| results: hide
+from diffusers import StableDiffusionPipeline
+
+pipe = StableDiffusionPipeline.from_pretrained(
+  "stabilityai/stable-diffusion-2-1-base", torch_dtype=torch.float16
+).to("cuda")
+```
+
+. . .
+
+```{python sd1-1}
+#| results: hide
+#| cache: true
+prompt = "a picture of thomas bayes with a cat on his lap"
+generator = [torch.Generator(device="cuda").manual_seed(i) for i in range(6)]
+fit = pipe(prompt, generator=generator, num_inference_steps=20, num_images_per_prompt=6)
+```
+
+. . .
+
+```{python sd1-2}
+#| cache: true
+fit.images
+```
+:::
+
+##
+
+```{python sd1-plot}
+#| echo: false
+#| cache: true
+fig, axes = plt.subplots(nrows=2, ncols=3, figsize=(10, 6), layout="constrained")
+
+for i, ax in enumerate([ax for row in axes for ax in row]):
+    ax.set_axis_off()
+    p = ax.imshow(fit.images[i])
+    
+plt.show()
+```
+
+
+## Customizing prompts
+
+::: {.small}
+```{python sd2}
+#| results: hide
+#| cache: true
+prompt = "a picture of thomas bayes with a cat on his lap"
+prompts = [
+  prompt + t for t in 
+  ["in the style of a japanese wood block print",
+   "as a hipster with facial hair and glasses",
+   "as a simpsons character, cartoon, yellow",
+   "in the style of a vincent van gogh painting",
+   "in the style of a picasso painting",
+   "with flowery wall paper"
+  ]
+]
+
+generator = [torch.Generator(device="cuda").manual_seed(i) for i in range(6)]
+fit = pipe(prompts, generator=generator, num_inference_steps=20, num_images_per_prompt=1)
+```
+:::
+
+## 
+
+```{python sd2-plot}
+#| echo: false
+#| cache: true
+fig, axes = plt.subplots(nrows=2, ncols=3, figsize=(10, 6), layout="constrained")
+
+for i, ax in enumerate([ax for row in axes for ax in row]):
+    ax.set_axis_off()
+    p = ax.imshow(fit.images[i])
+    
+plt.show()
+```
+
+
+
+## Increasing inference steps
+
+::: {.small}
+```{python sd3}
+#| results: hide
+#| cache: true
+generator = [torch.Generator(device="cuda").manual_seed(i) for i in range(6)]
+fit = pipe(prompts, generator=generator, num_inference_steps=50, num_images_per_prompt=1)
+```
+:::
+
+```{python sd3-plot}
+#| echo: false
+#| cache: true
+fig, axes = plt.subplots(nrows=2, ncols=3, figsize=(10, 6), layout="constrained")
+
+for i, ax in enumerate([ax for row in axes for ax in row]):
+    ax.set_axis_off()
+    p = ax.imshow(fit.images[i])
+    
+plt.show()
+```
+
+
+
+
+## Stanford's Alpaca + Facebook's Llama
+
+::: {.small}
+```{python}
+#| eval: false
+from transformers import GenerationConfig, LlamaTokenizer, LlamaForCausalLM
+
+tokenizer = LlamaTokenizer.from_pretrained("chainyo/alpaca-lora-7b")
+
+model = LlamaForCausalLM.from_pretrained(
+    "chainyo/alpaca-lora-7b",
+    load_in_8bit=True,
+    torch_dtype=torch.float16,
+    device_map="auto",
+)
+
+generation_config = GenerationConfig(
+    temperature=0.2,
+    top_p=0.75,
+    top_k=40,
+    num_beams=4,
+    max_new_tokens=128,
+)
+```
+:::
+
+::: {.aside}
+Based on [chainyo/alpaca-lora-7b](https://huggingface.co/chainyo/alpaca-lora-7b), see also [alpaca](https://github.com/tatsu-lab/stanford_alpaca) & [llama](https://ai.facebook.com/blog/large-language-model-llama-meta-ai/)
+:::
+
+## Generate a prompt
+
+::: {.small}
+```{python}
+#| include: false
+def generate_prompt(instruction, input_ctxt = None):
+    if input_ctxt:
+        return f"""Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.
+
+### Instruction:
+{instruction}
+
+### Input:
+{input_ctxt}
+
+### Response:"""
+    else:
+        return f"""Below is an instruction that describes a task. Write a response that appropriately completes the request.
+
+### Instruction:
+{instruction}
+
+### Response:"""
+```
+
+
+```{python}
+#| eval: false
+instruction = "Write a short childrens story about Thomas Bayes and his pet cat"
+input_ctxt = None 
+prompt = generate_prompt(instruction, input_ctxt)
+print(prompt)
+```
+
+```
+Below is an instruction that describes a task. Write a response that appropriately completes the request.
+
+### Instruction:
+Write a short childrens story about Thomas Bayes and his pet cat
+
+### Response:
+```
+:::
+
+
+## Running the model
+
+::: {.small}
+```{python}
+#| eval: false
+input_ids = tokenizer(prompt, return_tensors="pt").input_ids.to(model.device)
+
+with torch.no_grad():
+    outputs = model.generate(
+        input_ids=input_ids,
+        generation_config=generation_config,
+        return_dict_in_generate=True,
+        output_scores=True,
+    )
+
+response = tokenizer.decode(outputs.sequences[0], skip_special_tokens=True)
+print(response)
+```
+
+```
+Below is an instruction that describes a task. Write a response that appropriately completes the request.
+
+### Instruction:
+Write a short childrens story about Thomas Bayes and his pet cat
+
+### Response:
+Once upon a time, there was a little boy named Thomas Bayes. He had a pet cat named Fluffy, and 
+they were the best of friends. One day, Thomas and Fluffy decided to go on an adventure. They 
+traveled far and wide, exploring new places and meeting new people. Along the way, Thomas and 
+Fluffy learned many valuable lessons, such as the importance of friendship and the joy of discovery.
+Eventually, Thomas and Fluffy made their way back home, where they were welcomed with open arms. 
+Thomas and Fluffy had a wonderful time.
 ```
 :::
