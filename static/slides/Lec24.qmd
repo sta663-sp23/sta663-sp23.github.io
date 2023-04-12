@@ -966,11 +966,11 @@ print(report(model=m, loader=test_loader, device="cuda"))
 :::
 
 
-# Hugging Face
+# Some state-of-the-art examples
 
 ## Hugging Face
 
-is an online community and platform for sharing machine learning models (architectures and weights), data, and related artifacts. They also maintain a number of packages and related training materials that help with building, training, and deploying ML models.
+This is an online community and platform for sharing machine learning models (architectures and weights), data, and related artifacts. They also maintain a number of packages and related training materials that help with building, training, and deploying ML models.
 
 Some notable resources,
 
@@ -1093,7 +1093,7 @@ plt.show()
 
 
 
-## Stanford's Alpaca + Facebook's Llama
+## Alpaca LoRA
 
 ::: {.small}
 ```{python}
@@ -1120,7 +1120,7 @@ generation_config = GenerationConfig(
 :::
 
 ::: {.aside}
-Based on [chainyo/alpaca-lora-7b](https://huggingface.co/chainyo/alpaca-lora-7b), see also [alpaca](https://github.com/tatsu-lab/stanford_alpaca) & [llama](https://ai.facebook.com/blog/large-language-model-llama-meta-ai/)
+Based on [chainyo/alpaca-lora-7b](https://huggingface.co/chainyo/alpaca-lora-7b), see also [alpaca lora](https://github.com/tloen/alpaca-lora), [stanform alpaca](https://github.com/tatsu-lab/stanford_alpaca) & [llama](https://ai.facebook.com/blog/large-language-model-llama-meta-ai/)
 :::
 
 ## Generate a prompt
