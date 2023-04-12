@@ -277,7 +277,7 @@ schedule:
   day: 5
   lecture: "pytorch - nn"
   slides: Lec23
-  screencast: 
+  screencast: https://youtu.be/X13BK7WkWyo
   readings:
   - text: Feedforward Neural Network with PyTorch
     link: https://www.deeplearningwizard.com/deep_learning/practical_pytorch/pytorch_feedforward_neuralnetwork/
@@ -289,7 +289,7 @@ schedule:
   day: 3
   lecture: "pytorch - gpu"
   slides: Lec24
-  screencast: https://youtu.be/X13BK7WkWyo
+  screencast: 
   readings:
   notes: 
 
