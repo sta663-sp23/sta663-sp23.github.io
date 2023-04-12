@@ -211,20 +211,24 @@ y @ z.to(cuda0)
 
 NN layers (parameters) also need to be assigned to the GPU to be used with GPU tensors,
 
+::: {.small}
 ```{python error=TRUE}
 nn = torch.nn.Linear(5,5)
 X = torch.randn(10,5).cuda()
 ```
+:::
 
 . . .
 
+::: {.small}
 ```{python error=TRUE}
 nn(X)
 ```
+:::
 
 . . .
 
-:::: {.columns}
+:::: {.columns .small}
 ::: {.column width='50%'}
 ```{python}
 nn.cuda()(X)
@@ -380,7 +384,7 @@ print(start.elapsed_time(end) / 1000)
 ::::
 
 
-## Profiling CPU
+## Profiling CPU - 1 forward step
 
 ::: {.small}
 ```{python}
@@ -394,7 +398,7 @@ print(prof_cpu.key_averages().table(sort_by='self_cpu_time_total', row_limit=5))
 ```
 :::
 
-## Profiling GPU
+## Profiling GPU - 1 forward step
 
 ::: {.small}
 ```{python}
@@ -408,6 +412,34 @@ print(prof_cuda.key_averages().table(sort_by='self_cpu_time_total', row_limit=5)
 ```
 :::
 
+
+## Profiling CPU - fit
+
+::: {.small}
+```{python}
+m = mnist_conv_model(device="cpu")
+with torch.autograd.profiler.profile(with_stack=True, profile_memory=True) as prof_cpu:
+    losses = m.fit(X_train, y_train, n=1000)
+```
+
+```{python, wrap=FALSE}
+print(prof_cpu.key_averages().table(sort_by='self_cpu_time_total', row_limit=5))
+```
+:::
+
+## Profiling GPU - fit
+
+::: {.small}
+```{python}
+m_cuda = mnist_conv_model(device="cuda")
+with torch.autograd.profiler.profile(with_stack=True) as prof_cuda:
+    losses = m_cuda.fit(X_train_cuda, y_train_cuda, n=1000)
+```
+
+```{python, wrap=FALSE}
+print(prof_cuda.key_averages().table(sort_by='self_cpu_time_total', row_limit=5))
+```
+:::
 
 
 
@@ -994,9 +1026,11 @@ pipe = StableDiffusionPipeline.from_pretrained(
   "stabilityai/stable-diffusion-2-1-base", torch_dtype=torch.float16
 ).to("cuda")
 ```
+:::
 
 . . .
 
+::: {.small}
 ```{python sd1-1}
 #| results: hide
 #| cache: true
@@ -1004,9 +1038,11 @@ prompt = "a picture of thomas bayes with a cat on his lap"
 generator = [torch.Generator(device="cuda").manual_seed(i) for i in range(6)]
 fit = pipe(prompt, generator=generator, num_inference_steps=20, num_images_per_prompt=6)
 ```
+:::
 
 . . .
 
+::: {.small}
 ```{python sd1-2}
 #| cache: true
 fit.images
@@ -1026,6 +1062,10 @@ for i, ax in enumerate([ax for row in axes for ax in row]):
     
 plt.show()
 ```
+
+::: {.aside}
+[Thomas Bayes GIS](https://www.google.com/search?q=thomas+bayes&source=lnms&tbm=isch&sa=X&biw=1280&bih=590&dpr=2)
+:::
 
 
 ## Customizing prompts
