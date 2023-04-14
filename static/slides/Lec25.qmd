@@ -588,7 +588,7 @@ lm.coef_
 
 ```{python}
 #| code-line-numbers: "|2"
-def fit(b, loss, λ=0., n=200, lr=0.001, X=X, y=y, model=model):
+def fit(b, loss, λ=0., n=250, lr=0.01, X=X, y=y, model=model):
   val_grad = jax.value_and_grad(loss)
   
   losses = []
@@ -607,7 +607,7 @@ def fit(b, loss, λ=0., n=200, lr=0.001, X=X, y=y, model=model):
 ::: {.small}
 ```{python}
 b = jax.random.normal(key, (X.shape[1],1))
-b_hat, losses = fit(b, reg_loss, n=10)
+b_hat, losses = fit(b, reg_loss)
 ```
 :::
 
@@ -635,7 +635,7 @@ plt.show()
 ::: {.small}
 ```{python}
 b = jax.random.normal(key, (X.shape[1],1))
-b_hat, losses = fit(b, ridge_loss, λ=10., n=10)
+b_hat, losses = fit(b, ridge_loss, λ=0.1)
 ```
 :::
 
@@ -662,7 +662,7 @@ plt.show()
 ::: {.small}
 ```{python}
 b = jax.random.normal(key, (X.shape[1],1))
-b_hat, losses = fit(b, lasso_loss, λ=10., n=10)
+b_hat, losses = fit(b, lasso_loss, λ=0.1)
 ```
 :::
 
@@ -695,7 +695,7 @@ plt.show()
 ```{python}
 #| error: true
 fit_jit = jax.jit(fit)
-b_hat, losses = fit_jit(b, reg_loss, λ=10., n=10)
+b_hat, losses = fit_jit(b, reg_loss, λ=0.1)
 ```
 :::
 
@@ -714,7 +714,7 @@ b_hat = fit_jit(b, reg_loss)
 
 ::: {.small}
 ```{python}
-def fit_simple(b, loss, λ=0., n=200, lr=0.001, X=X, y=y, model=model):
+def fit_simple(b, loss, λ=0., n=250, lr=0.01, X=X, y=y, model=model):
   grad = jax.grad(loss)
   
   for i in range(n):
@@ -741,15 +741,15 @@ b_hat_jit = fit_jit(b, reg_loss)
 
 ::: {.small}
 ```{python}
-%timeit b_hat = fit_simple(b, reg_loss, n=50)
+%timeit b_hat = fit_simple(b, reg_loss)
 ```
 
 ```{python}
-%timeit b_hat_jit = fit_jit(b, reg_loss, n=50)
+%timeit b_hat_jit = fit_jit(b, reg_loss)
 ```
 
 ```{python}
-%timeit b_hat_jit = fit_jit(b, reg_loss, n=50).block_until_ready()
+%timeit b_hat_jit = fit_jit(b, reg_loss).block_until_ready()
 ```
 :::
 
