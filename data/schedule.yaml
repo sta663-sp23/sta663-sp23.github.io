@@ -295,10 +295,10 @@ schedule:
 
 - week: 13
   day: 5
-  lecture: "jax"
+  lecture: "JAX"
   screencast: 
   slides: Lec25
-  raedings:
+  readings:
   - text: JAX 101
     link: https://jax.readthedocs.io/en/latest/jax-101/index.html
   - text: How to think in JAX
