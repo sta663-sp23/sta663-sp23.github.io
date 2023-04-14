@@ -1,0 +1,1031 @@
+---
+title: "JAX"
+subtitle: "Lecture 25"
+author: "Dr. Colin Rundel"
+footer: "Sta 663 - Spring 2023"
+format:
+  revealjs:
+    theme: slides.scss
+    transition: fade
+    slide-number: true
+    self-contained: true
+execute: 
+  echo: true
+jupyter: python3
+---
+
+```{python setup}
+#| include: false
+import numpy as np
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+import scipy
+
+import torch
+import jax
+
+import os
+
+plt.rcParams['figure.dpi'] = 200
+
+np.set_printoptions(
+  edgeitems=30, linewidth=60,
+  precision = 5, suppress=True
+)
+
+pd.set_option("display.width", 130)
+pd.set_option("display.max_columns", 10)
+pd.set_option("display.precision", 6)
+pd.set_option("display.notebook_repr_html", False)
+```
+
+
+## JAX
+
+> JAX is NumPy on the CPU, GPU, and TPU, with great automatic differentiation for high-performance machine learning research.
+>
+> * JAX provides a NumPy-inspired interface for convenience (`jax.numpy`), can often be used as drop-in replacement
+>
+> * All JAX operations are implemented in terms of operations in XLA (Accelerated Linear Algebra compiler)
+>
+> * Supports sequential execution or JIT compilation
+>
+> * Updated autograd which can be used with native Python and NumPy functions
+
+## JAX & NumPy
+
+:::: {.columns .small}
+::: {.column width='50%'}
+```{python}
+import numpy as np
+
+x_np = np.linspace(0, 10, 101)
+y_np = 2 * np.sin(x_np) * np.cos(x_np)
+plt.plot(x_np, y_np)
+```
+```{python}
+type(x_np)
+```
+:::
+
+::: {.column width='50%'}
+```{python}
+import jax.numpy as jnp
+
+x_jnp = jnp.linspace(0, 10, 101)
+y_jnp = 2 * jnp.sin(x_jnp) * jnp.cos(x_jnp)
+plt.plot(x_jnp, y_jnp)
+```
+```{python}
+type(x_jnp)
+```
+:::
+::::
+
+
+
+##
+
+:::: {.columns .small}
+::: {.column width='50%'}
+```{python}
+x_np
+```
+```{python}
+x_np.dtype
+```
+:::
+
+::: {.column width='50%'}
+```{python}
+x_jnp
+```
+```{python}
+x_jnp.dtype
+```
+:::
+::::
+
+
+
+## Compatibility
+
+::: {.small}
+```{python}
+y_mix = 2 * np.sin(x_jnp) * jnp.cos(x_np); y_mix
+```
+:::
+
+. . .
+
+::: {.small}
+```{python}
+type(y_mix)
+```
+:::
+
+# Aside - PRNG
+
+## JAX vs NumPy
+
+Pseudo random number generation in JAX is a bit different than with NumPy - the latter depends on a global state that is updated each time a random function is called.
+
+NumPy's PRNG guarantees something called sequential equivalence which amounts to sampling N numbers sequentially is the same as sampling N numbers at once (e.g. a vector of length N).
+
+::: {.small}
+```{python}
+np.random.seed(0)
+print("individually:", np.stack([np.random.uniform() for i in range(5)]))
+```
+
+```{python}
+np.random.seed(0)
+print("all at once: ", np.random.uniform(size=5))
+```
+:::
+
+
+## Parallelization & Sequential equivalence
+
+Sequantial equivalence can be problematic in light of parallelization, consider the following code:
+
+::: {.small}
+```{python}
+np.random.seed(0)
+
+def bar(): 
+  return np.random.uniform()
+def baz(): 
+  return np.random.uniform()
+
+def foo(): 
+  return bar() + 2 * baz()
+```
+:::
+
+. . .
+
+How do we guarantee that we get consistent results if we don't know the order that `bar()` and `baz()` will run?
+
+
+## PRNG keys
+
+JAX makes use of 'random keys` which are just a fancier version of random seeds - all of JAX's random functions require that a key be passed in.
+
+::: {.small}
+```{python}
+key = jax.random.PRNGKey(1234); key
+```
+:::
+
+. . .
+
+::: {.small}
+```{python}
+jax.random.normal(key)
+```
+```{python}
+jax.random.normal(key)
+```
+:::
+
+. . .
+
+::: {.small}
+```{python}
+jax.random.normal(key, shape=(3,))
+```
+
+Note that JAX does not provide a sequential equivalence guarantee - this is so that it can support vectorization for the generation of PRN.
+:::
+
+
+## Splitting keys
+
+Since a key is essentially a seed we do not want to reuse them (unless we want an identical output). Therefore to generate multiple different PRN we can split a key to deterministically generate two (or more) new keys.
+
+:::: {.columns .small}
+::: {.column width='50%'}
+```{python}
+new_key1, sub_key1 = jax.random.split(key)
+print(f"key    : {key}")
+print(f"new_key1: {new_key1}")
+print(f"sub_key1: {sub_key1}")
+```
+:::
+
+::: {.column width='50%'}
+```{python}
+new_key2, sub_key2 = jax.random.split(key)
+print(f"key    : {key}")
+print(f"new_key2: {new_key2}")
+print(f"sub_key2: {sub_key2}")
+```
+:::
+::::
+
+. . .
+
+::: {.small}
+```{python}
+new_key3, *sub_keys3 = jax.random.split(key, num=3)
+sub_keys3
+```
+:::
+
+# JAX performance & jit
+
+## JAX performance
+
+::: {.small}
+```{python}
+key = jax.random.PRNGKey(1234)
+x_jnp = jax.random.normal(key, (1000,1000))
+x_np = np.array(x_jnp)
+```
+:::
+
+:::: {.columns .small}
+::: {.column width='50%'}
+```{python}
+type(x_np)
+```
+```{python}
+x_np.shape
+```
+:::
+
+::: {.column width='50%' .fragment}
+```{python}
+type(x_jnp)
+```
+```{python}
+x_jnp.shape
+```
+:::
+::::
+
+. . .
+
+:::: {.columns .small}
+::: {.column width='50%'}
+```{python}
+%timeit y = x_np @ x_np
+```
+```{python}
+%timeit y = x_jnp @ x_jnp
+```
+```{python}
+%timeit y = (x_jnp @ x_jnp).block_until_ready()
+```
+:::
+
+::: {.column width='50%' .fragment}
+```{python}
+%timeit y = 3*x_np + x_np
+```
+```{python}
+%timeit y = 3*x_jnp + x_jnp
+```
+```{python}
+%timeit y = (3*x_jnp + x_jnp).block_until_ready()
+```
+:::
+::::
+
+## jit
+
+:::: {.columns .small}
+::: {.column width='50%'}
+```{python}
+def SELU_np(x, α=1.67, λ=1.05):
+  "Scaled Exponential Linear Unit"
+  return λ * np.where(x > 0, x, α * np.exp(x) - α)
+```
+:::
+
+::: {.column width='50%'}
+```{python}
+def SELU_jnp(x, α=1.67, λ=1.05):
+  "Scaled Exponential Linear Unit"
+  return λ * jnp.where(x > 0, x, α * jnp.exp(x) - α)
+```
+:::
+::::
+
+. . .
+
+:::: {.columns .small}
+::: {.column width='50%'}
+```{python}
+#| error: true
+SELU_np_jit = jax.jit(SELU_np)
+```
+:::
+
+::: {.column width='50%'}
+```{python}
+SELU_jnp_jit = jax.jit(SELU_jnp)
+```
+:::
+::::
+
+. . .
+
+<br/>
+
+:::: {.columns .small}
+::: {.column width='50%'}
+```{python}
+x = np.arange(1e6)
+%timeit y = SELU_np(x)
+```
+```{python}
+#| error: true
+%timeit y = SELU_np_jit(x).block_until_ready()
+```
+:::
+
+::: {.column width='50%' .fragment}
+```{python}
+x = jnp.arange(1e6)
+%timeit y = SELU_jnp(x).block_until_ready()
+```
+```{python}
+%timeit y = SELU_jnp_jit(x).block_until_ready()
+```
+:::
+::::
+
+
+## jit limitations
+
+When it works the jit tool is fantastic, but it does have a number of limitations,
+
+* Must use [pure functions](https://jax.readthedocs.io/en/latest/notebooks/Common_Gotchas_in_JAX.html#pure-functions) (no side effects)
+
+* Must primarily use JAX functions
+  * e.g. use `jnp.minimum()` not `np.minimum()` or `min()`
+
+* Must generally avoid conditionals / control flow
+
+* Issues around concrete values when tracing (static values)
+
+* Check performance - there are not always gains + there is the initial cost of compilation
+
+
+# autograd
+
+## Basics
+
+Like with torch, the `grad()` function takes a numerical function returning a scalar and returns a function for calculating the gradient of that function.
+
+:::: {.columns .small}
+::: {.column width='33%'}
+```{python}
+def f(x):
+  return x**2
+```
+
+```{python}
+f(3.)
+```
+```{python}
+jax.grad(f)(3.)
+```
+```{python}
+jax.grad(jax.grad(f))(3.)
+```
+:::
+
+::: {.column width='33%' .fragment}
+```{python}
+def g(x):
+  return jnp.exp(-x)
+```
+
+```{python}
+g(1.)
+```
+```{python}
+jax.grad(g)(1.)
+```
+```{python}
+jax.grad(jax.grad(g))(1.)
+```
+:::
+
+::: {.column width='33%' .fragment}
+```{python}
+def h(x):
+  return jnp.maximum(0,x)
+```
+
+```{python}
+h(-2.)
+```
+```{python}
+h(2.)
+```
+```{python}
+jax.grad(h)(-2.)
+```
+```{python}
+jax.grad(h)(2.)
+```
+:::
+::::
+
+## Aside - `vmap()`
+
+I would like to plot `h()` and `jax.grad(h)()` - lets see what happens,
+
+::: {.small}
+```{python}
+#| error: true
+x = jnp.linspace(-3,3,101)
+y = h(x)
+y_grad = jax.grad(h)(x)
+```
+:::
+
+. . .
+
+As mentiond on the previous slide - in order to calculate the gradient we need to apply it to a scalar valued function. We can transform our scalar function into a vectorized function using `vmap()`.
+
+::: {.small}
+```{python}
+y_grad = jax.vmap(
+  jax.grad(h)
+)(x)
+```
+:::
+
+::: {.aside}
+`vmap()` is significantly more powerful than just this as it allows for mapping over multiple input and output axes
+:::
+
+##
+
+```{python}
+#| echo: false
+
+plt.figure(figsize=(10, 4))
+
+plt.subplot(121)
+plt.plot(x, y, "-b")
+plt.title("h(x)")
+
+plt.subplot(122)
+plt.plot(x, y_grad, "-r")
+plt.title("∇h(x)")
+
+plt.show()
+```
+
+
+## Regession example
+
+:::: {.columns .small}
+::: {.column width='66%'}
+```{python}
+d = pd.read_csv("https://sta663-sp23.github.io/slides/data/ridge.csv");d
+```
+:::
+
+::: {.column width='33%'}
+```{python}
+X = jnp.array(
+  pd.get_dummies(
+    d.drop("y", axis=1)
+  ).to_numpy(dtype = np.float32)
+)
+X.shape
+```
+
+```{python}
+y = jnp.array(
+  d.y.to_numpy(dtype = np.float32)
+)
+y.shape
+```
+:::
+::::
+
+## Model & loss functions
+
+::: {.small}
+```{python}
+def model(b, X=X):
+  return X @ b
+
+def reg_loss(b, λ=0., X=X, y=y, model=model):
+  return jnp.mean((y - model(b,X).squeeze())**2)
+  
+def ridge_loss(b, λ=0., X=X, y=y, model=model):
+  return jnp.mean((y - model(b,X).squeeze())**2) + λ * jnp.sum(b**2)
+
+def lasso_loss(b, λ=0., X=X, y=y, model=model):
+  return jnp.mean((y - model(b,X).squeeze())**2) + λ * jnp.sum(jnp.abs(b))
+```
+:::
+
+. . .
+
+`grad()` of a multiargument function will take the gradient with respect to the first argument.
+
+::: {.small}
+```{python}
+grad_reg_loss = jax.grad(reg_loss)
+grad_ridge_loss = jax.grad(ridge_loss)
+grad_lasso_loss = jax.grad(lasso_loss)
+```
+:::
+
+##
+
+:::{.small}
+```{python}
+key = jax.random.PRNGKey(1234)
+b = jax.random.normal(key, (X.shape[1],1))
+```
+:::
+
+:::: {.columns .small}
+::: {.column width='33% .fragment'}
+```{python}
+grad_reg_loss(b)
+```
+:::
+
+::: {.column width='33%' .fragment}
+```{python}
+grad_ridge_loss(b, λ = 1)
+```
+:::
+::: {.column width='33%' .fragment}
+```{python}
+grad_lasso_loss(b, λ = 1)
+```
+:::
+::::
+
+## sklearn
+
+::: {.small}
+```{python}
+from sklearn.linear_model import LinearRegression
+
+lm = LinearRegression(fit_intercept=False).fit(X,y)
+lm.coef_
+```
+:::
+
+
+## Fit implementation
+
+```{python}
+#| code-line-numbers: "|2"
+def fit(b, loss, λ=0., n=200, lr=0.001, X=X, y=y, model=model):
+  val_grad = jax.value_and_grad(loss)
+  
+  losses = []
+  for i in range(n):
+    val, grad = val_grad(b, λ)
+    losses.append(val.item())
+    
+    b -= lr * grad
+    
+  return (b, losses)
+```
+
+
+## Linear regression
+
+::: {.small}
+```{python}
+b = jax.random.normal(key, (X.shape[1],1))
+b_hat, losses = fit(b, reg_loss, n=10)
+```
+:::
+
+:::: {.columns .small}
+::: {.column width='40%'}
+```{python}
+b_hat
+```
+:::
+
+::: {.column width='60%'}
+```{python}
+#| echo: false
+plt.figure(figsize=(10,8))
+plt.plot(losses)
+plt.title("Losses")
+plt.show()
+```
+:::
+::::
+
+
+## Ridge regression
+
+::: {.small}
+```{python}
+b = jax.random.normal(key, (X.shape[1],1))
+b_hat, losses = fit(b, ridge_loss, λ=10., n=10)
+```
+:::
+
+:::: {.columns .small}
+::: {.column width='40%'}
+```{python}
+b_hat
+```
+:::
+
+::: {.column width='60%'}
+```{python}
+#| echo: false
+plt.figure(figsize=(10,8))
+plt.plot(losses)
+plt.title("Losses")
+plt.show()
+```
+:::
+::::
+
+## Lasso regression
+
+::: {.small}
+```{python}
+b = jax.random.normal(key, (X.shape[1],1))
+b_hat, losses = fit(b, lasso_loss, λ=10., n=10)
+```
+:::
+
+:::: {.columns .small}
+::: {.column width='40%'}
+```{python}
+b_hat
+```
+:::
+
+::: {.column width='60%'}
+```{python}
+#| echo: false
+plt.figure(figsize=(10,8))
+plt.plot(losses)
+plt.title("Losses")
+plt.show()
+```
+:::
+::::
+
+
+
+
+
+
+## Jitting fit?
+
+::: {.small}
+```{python}
+#| error: true
+fit_jit = jax.jit(fit)
+b_hat, losses = fit_jit(b, reg_loss, λ=10., n=10)
+```
+:::
+
+. . .
+
+::: {.small}
+```{python}
+#| error: true
+fit_jit = jax.jit(fit, static_argnames=["loss","λ","n","X","y","model"])
+b_hat = fit_jit(b, reg_loss)
+```
+:::
+
+
+## Simpler fit
+
+::: {.small}
+```{python}
+def fit_simple(b, loss, λ=0., n=200, lr=0.001, X=X, y=y, model=model):
+  grad = jax.grad(loss)
+  
+  for i in range(n):
+    b -= lr * grad(b, λ)
+    
+  return b
+
+b_hat = fit_simple(b, reg_loss)
+```
+:::
+
+. . .
+
+::: {.small}
+```{python}
+#| error: true
+fit_jit = jax.jit(fit_simple, static_argnames=["loss","λ","n","X","y","model"])
+b_hat_jit = fit_jit(b, reg_loss)
+```
+::::
+
+
+## Performance
+
+::: {.small}
+```{python}
+%timeit b_hat = fit_simple(b, reg_loss, n=50)
+```
+
+```{python}
+%timeit b_hat_jit = fit_jit(b, reg_loss, n=50)
+```
+
+```{python}
+%timeit b_hat_jit = fit_jit(b, reg_loss, n=50).block_until_ready()
+```
+:::
+
+. . .
+
+:::: {.columns .small}
+::: {.column width='50%'}
+```{python}
+b_hat
+```
+:::
+
+::: {.column width='50%'}
+```{python}
+b_hat_jit
+```
+:::
+::::
+
+# Pytrees
+
+## What is a pytrees?
+
+> a pytree is a container of leaf elements and/or more pytrees. Containers include lists, tuples, and dicts. A leaf element is anything that’s not a pytree, e.g. an array. In other words, a pytree is just a possibly-nested standard or user-registered Python container. If nested, note that the container types do not need to match. A single “leaf”, i.e. a non-container object, is also considered a pytree.
+
+. . .
+
+<br/>
+
+Why do we need them?
+
+> In machine learning, some places where you commonly find pytrees are:
+>
+> * Model parameters
+> 
+> * Dataset entries
+
+This helps us avoid functions with large argument lists and make it possible to vectorize / map more operations.
+
+
+## tree_map
+
+JAX provides a number of built-in tools for working with / iterating over pytrees, `tree_map()` being the most commonly used,
+
+:::: {.columns .small}
+::: {.column width='50%'}
+```{python}
+list_of_lists = [
+    [1, 2, 3],
+    [1, 2],
+    [1, 2, 3, 4]
+]
+```
+```{python}
+jax.tree_map(
+  lambda x: x**2, 
+  list_of_lists
+)
+```
+```{python}
+jax.tree_map(
+  lambda x,y: x+y, 
+  list_of_lists, list_of_lists
+)
+```
+:::
+
+::: {.column width='50%' .fragment}
+```{python}
+d = {
+  'W': jnp.array([[1.,2.],[3.,4.],[5.,6.]]),
+  'b': jnp.array([-1.,1.])
+}
+```
+
+```{python}
+jax.tree_map(
+  lambda p: (p-jnp.mean(p))/jnp.std(p), 
+  d
+)
+```
+:::
+::::
+
+## Nested trees
+
+`tree_map()` will iterate and apply the desired function over *all* of the leaf elements while maintaining the structure of the pytree (similar to `rapply()` in R).
+
+::: {.small}
+```{python}
+example_trees = [
+    [1, 'a', object()],
+    (1, (2, 3), ()),
+    [1, {'k1': 2, 'k2': (3, 4)}, 5],
+    {'a': 2, 'b': (2, 3)},
+    jnp.array([1, 2, 3]),
+]
+
+jax.tree_map(type, example_trees)
+```
+:::
+
+
+## FNN example - Parameter setup
+
+::: {.small}
+```{python}
+#| code-line-numbers: "|3|1,4|5-10|13-14"
+def init_params(layer_widths, key):
+  params = []
+  for n_in, n_out in zip(layer_widths[:-1], layer_widths[1:]):
+    key, new_key = jax.random.split(key)
+    params.append(
+      dict(
+        W = jax.random.normal(new_key, shape=(n_in, n_out)) * np.sqrt(2/n_in),
+        b = jnp.ones(shape=(n_out,))
+      )
+    )
+  return params
+
+key = jax.random.PRNGKey(1234)
+params = init_params([1, 128, 128, 1], key)
+```
+:::
+
+. . .
+
+::: {.small}
+```{python}
+jax.tree_map(lambda x: x.shape, params)
+```
+:::
+
+::: {.aside}
+Based on JAX 101 - [Working with Pytrees]()
+:::
+
+
+## Model
+
+::: {.small}
+```{python}
+#| code-line-numbers: "|4-9|11-12|14-19|1,14-15|21-24|"
+from functools import partial
+
+class model:
+  def forward(self, params, x):
+    *hidden, last = params
+    for layer in hidden:
+      x = x @ layer['W'] + layer['b']
+      x = jax.nn.relu(x)
+    return x @ last['W'] + last['b']
+
+  def loss_fn(self, params, x, y):
+    return jnp.mean((self.forward(params, x) - y) ** 2)
+  
+  @partial(jax.jit, static_argnames=['self', 'lr'])
+  def step(self, params, x, y, lr=0.0001):
+    grads = jax.grad(self.loss_fn)(params, x, y) # Note that since `params` is a pytree so will `grads`
+    return jax.tree_map(
+      lambda p, g: p - lr * g, params, grads
+    )
+    
+  def fit(self, params, x, y, n = 1000):
+    for i in range(n):
+      params = self.step(params, x, y)
+    return params
+```
+:::
+
+
+::: {.aside}
+Based on JAX 101 - [Working with Pytrees]()
+:::
+
+
+## Data
+
+::: {.small}
+```{python}
+key = jax.random.PRNGKey(12345)
+x = jax.random.uniform(key, (128, 1), minval=-1., maxval=1.)
+y = x**2
+```
+```{python}
+x.shape, y.shape
+```
+:::
+
+:::: {.columns}
+::: {.column width='17%'}
+:::
+
+::: {.column width='66%'}
+```{python}
+#| echo: false
+plt.figure(figsize=(10,6))
+plt.plot(x, y, "b.")
+plt.show()
+```
+:::
+::::
+
+
+## Fitting
+
+::: {.small}
+```{python}
+m = model()
+```
+:::
+
+:::: {.columns .small}
+::: {.column width='50%' .fragment}
+```{python}
+m.loss_fn(params, x, y)
+```
+:::
+
+::: {.column width='50%' .fragment}
+```{python}
+params_fit = m.fit(params, x, y, n=1000)
+m.loss_fn(params_fit, x, y)
+```
+:::
+::::
+
+. . .
+
+::: {.small}
+```{python}
+y_hat = m.forward(params_fit, x)
+```
+:::
+
+. . .
+
+:::: {.columns}
+::: {.column width='17%'}
+:::
+
+::: {.column width='66%'}
+```{python}
+#| echo: false
+#| out-width: 50%
+plt.figure(figsize=(10,6))
+plt.plot(x, y, "b.")
+plt.plot(x, y_hat, "r.", label='Predictions')
+plt.legend()
+plt.show()
+```
+:::
+::::
+
+
+# What next?
+
+## Additional Resources
+
+There are a number of other libraries built on top of JAX that provide higher level interfaces for common tasks,
+
+* Neural networks (torch-like interfaces)
+
+  * [flax](https://flax.readthedocs.io/en/latest/) - Google brain
+  
+  * [haiku](https://dm-haiku.readthedocs.io/en/latest/) - DeepMind
+  
+  * [equinox](https://docs.kidger.site/equinox/)
+
+* Bayesian models
+
+  * [BlackJAX](https://blackjax-devs.github.io/blackjax/) - samplers for log-probability densities (optional backend for pymc)
+  
+  
+* Other
+
+  * [Optax](https://optax.readthedocs.io/en/latest/) - gradient processing and optimization library (DeepMind)
+  
+  * [Awesome-JAX](https://github.com/n2cholas/awesome-jax) - collection of JAX related links and resources
