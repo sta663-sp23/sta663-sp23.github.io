@@ -988,7 +988,7 @@ cr173@vcm-26406:~$ dpkg -L libcurl4-openssl-dev
 ## Lets try `sf`
 
 ::: {.small}
-```{.shell code-line-numbers="|14-19
+```{.shell code-line-numbers="|14-19"}
 cr173@vcm-26406:~$ R
 ...
  > install.packages("sf")
