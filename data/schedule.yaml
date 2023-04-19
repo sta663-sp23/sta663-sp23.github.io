@@ -296,7 +296,7 @@ schedule:
 - week: 13
   day: 5
   lecture: "JAX"
-  screencast: 
+  screencast: https://youtu.be/jsZVhQ3nXvI
   slides: Lec25
   readings:
   - text: JAX 101
@@ -307,8 +307,8 @@ schedule:
 
 - week: 14
   day: 3
-  lecture: "TBD"
-  slides: 
+  lecture: "Basic linux admin & Docker"
+  slides: Lec26
   screencast: 
   readings:
   notes: 
